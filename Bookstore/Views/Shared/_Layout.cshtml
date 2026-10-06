@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] · Nhà sách</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="site-header mb-4">
+        <nav class="container py-3 d-flex flex-wrap align-items-center gap-3" aria-label="Điều hướng chính">
+            <a class="brand me-2" asp-controller="Home" asp-action="Index">Nhà sách</a>
+            @if (User.IsInRole("Customer"))
+            {
+                <a asp-controller="Orders" asp-action="Cart">Giỏ hàng</a>
+                <a asp-controller="Orders" asp-action="Index">Đơn hàng của tôi</a>
+                <a asp-controller="Profile" asp-action="Index">Tài khoản của tôi</a>
+            }
+            @if (User.IsInRole("Sales"))
+            {
+                <a asp-controller="AdminOrders" asp-action="Index">Quản trị đơn hàng</a>
+            }
+            @if (User.IsInRole("Sales") || User.IsInRole("Warehouse") || User.IsInRole("Customer"))
+            {
+                <a asp-controller="Returns" asp-action="Index">Đổi trả</a>
+            }
+            @if (User.IsInRole("Warehouse") || User.IsInRole("Admin"))
+            {
+                <a asp-controller="Warehouse" asp-action="Index">Nhập kho</a>
+                <a asp-controller="Warehouse" asp-action="Stock">Kiểm kê</a>
+            }
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="CatalogAdmin" asp-action="Index">Sách và danh mục</a>
+                <a asp-controller="Vouchers" asp-action="Index">Voucher</a>
+                <a asp-controller="AdminAccounts" asp-action="Index">Tài khoản</a>
+                <a asp-controller="Reports" asp-action="Index">Báo cáo</a>
+            }
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form asp-controller="Account" asp-action="Logout" method="post" class="ms-auto">
+                    <button class="btn btn-outline-primary btn-sm">Đăng xuất (@User.Identity.Name)</button>
+                </form>
+            }
+            else
+            {
+                <a class="ms-auto" asp-controller="Account" asp-action="Login">Đăng nhập</a>
+                <a class="btn btn-primary btn-sm" asp-controller="Account" asp-action="Register">Đăng ký</a>
+            }
+        </nav>
+    </header>
+    <main class="container pb-5">
+        @if (TempData["Success"] is string success)
+        {
+            <p class="alert alert-success" role="status">@success</p>
+        }
+        @if (TempData["Error"] is string error)
+        {
+            <p class="alert alert-danger" role="alert">@error</p>
+        }
+        @RenderBody()
+    </main>
+</body>
+</html>
