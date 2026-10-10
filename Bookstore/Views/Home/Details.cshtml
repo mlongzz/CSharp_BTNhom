@@ -1,0 +1,107 @@
+@model BookDetails
+@{
+    var book = Model.Book;
+    ViewData["Title"] = book.Title;
+}
+<p><a asp-action="Index">← Danh mục sách</a></p>
+<article class="surface p-4 mb-4">
+    <div class="row g-4">
+        <div class="col-md-4">
+            @if (book.CoverUrl is string cover)
+            {
+                <img src="@cover" class="img-fluid" alt="Bìa @book.Title" />
+            }
+            else
+            {
+                <div class="book-cover cover-@book.Id"><span>NHÀ SÁCH</span><strong>@book.Title</strong></div>
+            }
+        </div>
+        <div class="col-md-8">
+            <p class="eyebrow mb-1">@book.Category</p>
+            <h1>@book.Title</h1>
+            <p>@book.Author · @book.Publisher</p>
+            <p class="fw-bold fs-5">@book.Price.ToString("N0") ₫</p>
+            <p>@(book.Stock == 0 ? "Hết hàng" : $"Còn {book.Stock} cuốn")</p>
+            <dl class="row">
+                <dt class="col-4">ISBN</dt><dd class="col-8">@book.Isbn</dd>
+                <dt class="col-4">Số trang</dt><dd class="col-8">@(book.Pages?.ToString() ?? "Chưa có dữ liệu")</dd>
+                <dt class="col-4">Năm xuất bản</dt><dd class="col-8">@(book.Year?.ToString() ?? "Chưa có dữ liệu")</dd>
+            </dl>
+            <p class="text-break" style="white-space: pre-wrap">@(book.Description ?? "Chưa có mô tả.")</p>
+            @if (User.IsInRole("Customer") && book.Stock > 0)
+            {
+                <form asp-controller="Orders" asp-action="Add" method="post" class="d-flex gap-2 flex-wrap align-items-center">
+                    <input type="hidden" name="bookId" value="@book.Id" />
+                    <label for="quantity">Số lượng</label>
+                    <input id="quantity" name="quantity" type="number" min="1" max="@book.Stock" value="1" required class="form-control quantity" />
+                    <button class="btn btn-outline-primary" name="buyNow" value="false">Thêm vào giỏ</button>
+                    <button class="btn btn-primary" name="buyNow" value="true">Mua ngay</button>
+                </form>
+            }
+            else if (User.Identity?.IsAuthenticated != true && book.Stock > 0)
+            {
+                <a class="btn btn-primary" asp-controller="Account" asp-action="Login"
+                   asp-route-returnUrl="@Url.Action("Details", "Home", new { id = book.Id })">Đăng nhập để mua</a>
+            }
+        </div>
+    </div>
+</article>
+<section class="surface p-4 mb-4">
+    <h2 class="h4">Đánh giá của khách hàng</h2>
+    @if (book.Reviews == 0)
+    {
+        <p class="text-secondary">Chưa có đánh giá.</p>
+    }
+    else
+    {
+        <p>@book.Rating.ToString("0.0") / 5 sao · @book.Reviews đánh giá</p>
+        @foreach (var review in Model.Reviews)
+        {
+            <div class="border-top py-2">
+                <p class="mb-1"><strong>@review.Stars / 5 sao</strong> · @review.CreatedAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy")</p>
+                <p class="text-break mb-0">@review.Comment</p>
+            </div>
+        }
+    }
+    @if (Model.EligibleOrders.Count > 0)
+    {
+        <form asp-action="Review" asp-route-id="@book.Id" method="post" class="mt-3">
+            <h3 class="h5">Viết đánh giá</h3>
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <label class="form-label" for="orderId">Đơn hoàn tất</label>
+                    <select class="form-select" id="orderId" name="orderId">
+                        @foreach (var order in Model.EligibleOrders)
+                        {
+                            <option value="@order">Đơn #@order</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label" for="stars">Chấm sao</label>
+                    <select class="form-select" id="stars" name="stars">
+                        @for (var i = 5; i >= 1; i--)
+                        {
+                            <option value="@i">@i sao</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <label class="form-label mt-2" for="comment">Nhận xét</label>
+            <textarea class="form-control mb-3" id="comment" name="comment" rows="3" maxlength="1000" required></textarea>
+            <button class="btn btn-primary">Gửi đánh giá</button>
+        </form>
+    }
+</section>
+@if (Model.Related.Count > 0)
+{
+    <section class="surface p-4">
+        <h2 class="h4">Sách liên quan</h2>
+        <ul class="mb-0">
+            @foreach (var related in Model.Related)
+            {
+                <li><a asp-action="Details" asp-route-id="@related.Id">@related.Title</a></li>
+            }
+        </ul>
+    </section>
+}
