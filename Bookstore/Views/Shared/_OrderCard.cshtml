@@ -1,0 +1,140 @@
+@model Order
+@{
+    var staff = User.IsInRole("Sales");
+    var (status, badge) = Model.Status switch
+    {
+        OrderStatus.Pending => ("Chờ xác nhận", "status-pending"),
+        OrderStatus.Confirmed => ("Đã xác nhận", "status-confirmed"),
+        OrderStatus.Packing => ("Đang đóng gói", "status-pending"),
+        OrderStatus.Shipped => ("Đang giao", "status-pending"),
+        OrderStatus.Completed => ("Hoàn tất", "status-confirmed"),
+        OrderStatus.Cancelled => ("Đã hủy", "status-cancelled"),
+        _ => ("Không rõ", "status-cancelled")
+    };
+}
+<article class="surface p-3 mb-3">
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <h2 class="h5 mb-0">Đơn #@Model.Id</h2>
+        <span class="status-pill @badge">@status</span>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-7">
+            @if (staff)
+            {
+                <p class="mb-1">Khách hàng <strong>@Model.Customer</strong></p>
+            }
+            <p>Giao đến @Model.Address</p>
+            <ul class="ps-3">
+                @foreach (var line in Model.Lines)
+                {
+                    <li>@line.Title · @line.Quantity × @line.Price.ToString("N0") ₫</li>
+                }
+            </ul>
+            <p>Tổng thanh toán <strong>@Model.Total.ToString("N0") ₫</strong>
+                · @(Model.PaymentMethod == "Cod" ? "COD" : "Trực tuyến")
+                · @(Model.PaymentStatus switch { "Paid" => "Đã thanh toán", "Refunded" => "Đã ghi nhận hoàn tiền", _ => "Chưa thu tiền" })</p>
+            @if (Model.TrackingCode is not null)
+            {
+                <p>Vận đơn @Model.TrackingCode · @Model.Carrier</p>
+            }
+            @if (Model.RejectionReason is not null)
+            {
+                <p>Lý do từ chối: @Model.RejectionReason</p>
+            }
+        </div>
+        <div class="col-md-5">
+            <h3 class="h6">Lịch sử xử lý</h3>
+            @if (Model.Events.Count == 0)
+            {
+                <p class="small text-secondary">Đơn được tạo trước khi có lịch sử xử lý.</p>
+            }
+            else
+            {
+                <ol class="timeline">
+                    @foreach (var entry in Model.Events)
+                    {
+                        var label = entry.Action switch
+                        {
+                            OrderAction.Placed => "Đã đặt hàng",
+                            OrderAction.Packing => "Đang đóng gói",
+                            OrderAction.Shipped => "Đang giao",
+                            OrderAction.Completed => "Đã giao thành công",
+                            OrderAction.Rejected => "Đã từ chối",
+                            OrderAction.Confirmed => "Đã xác nhận",
+                            OrderAction.Cancelled => "Đã hủy",
+                            _ => entry.Action.ToString()
+                        };
+                        <li>
+                            <strong>@label</strong>
+                            <small class="d-block text-secondary">
+                                @entry.OccurredAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm") · UTC+7
+                                @if (staff)
+                                {
+                                    <span> · @entry.Actor</span>
+                                }
+                            </small>
+                        </li>
+                    }
+                </ol>
+            }
+        </div>
+    </div>
+    @if (staff && Model.Status == OrderStatus.Pending)
+    {
+        <form asp-controller="AdminOrders" asp-action="Confirm" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button class="btn btn-primary">Xác nhận đơn</button>
+        </form>
+        <form asp-controller="AdminOrders" asp-action="Fulfill" method="post" class="mt-2 d-flex flex-wrap gap-2">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="action" value="Rejected" />
+            <input class="form-control w-auto" name="reason" aria-label="Lý do từ chối" placeholder="Lý do từ chối" maxlength="500" required />
+            <button class="btn btn-outline-danger">Từ chối đơn</button>
+        </form>
+    }
+    else if (staff && Model.Status is OrderStatus.Confirmed or OrderStatus.Packing or OrderStatus.Shipped)
+    {
+        var next = Model.Status == OrderStatus.Confirmed ? "Packing" : Model.Status == OrderStatus.Packing ? "Shipped" : "Completed";
+        <form asp-controller="AdminOrders" asp-action="Fulfill" method="post" class="d-flex flex-wrap gap-2">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="action" value="@next" />
+            @if (next == "Shipped")
+            {
+                <input class="form-control w-auto" name="carrier" aria-label="Đơn vị vận chuyển" placeholder="Đơn vị vận chuyển" maxlength="100" required />
+                <input class="form-control w-auto" name="tracking" aria-label="Mã vận đơn" placeholder="Mã vận đơn" maxlength="100" required />
+            }
+            <button class="btn btn-primary">@(next == "Packing" ? "Bắt đầu đóng gói" : next == "Shipped" ? "Ghi vận đơn và giao hàng" : "Xác nhận giao thành công")</button>
+        </form>
+    }
+    else if (!staff && Model.Status is OrderStatus.Pending or OrderStatus.Confirmed)
+    {
+        <form asp-controller="Orders" asp-action="Cancel" method="post" onsubmit="return confirm('Xác nhận hủy đơn này?')">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button class="btn btn-outline-danger">Hủy đơn</button>
+        </form>
+    }
+    @if (!staff && Model.Status == OrderStatus.Completed)
+    {
+        <details class="mt-3">
+            <summary>Yêu cầu đổi trả</summary>
+            <form asp-controller="Returns" asp-action="RequestReturn" method="post" class="mt-2">
+                <input type="hidden" name="orderId" value="@Model.Id" />
+                <label for="book-@Model.Id">Sách cần đổi trả</label>
+                <select class="form-select mb-2" name="bookId" id="book-@Model.Id">
+                    @foreach (var line in Model.Lines)
+                    {
+                        <option value="@line.BookId">@line.Title</option>
+                    }
+                </select>
+                <label for="outcome-@Model.Id">Hình thức</label>
+                <select class="form-select mb-2" name="outcome" id="outcome-@Model.Id">
+                    <option value="Refund">Hoàn tiền</option>
+                    <option value="Exchange">Đổi sách</option>
+                </select>
+                <label for="reason-@Model.Id">Lý do đổi trả</label>
+                <textarea class="form-control mb-2" name="reason" id="reason-@Model.Id" maxlength="500" required></textarea>
+                <button class="btn btn-outline-primary">Gửi yêu cầu</button>
+            </form>
+        </details>
+    }
+</article>
