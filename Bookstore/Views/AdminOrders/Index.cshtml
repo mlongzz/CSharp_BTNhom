@@ -1,0 +1,37 @@
+@model IReadOnlyList<Order>
+@{
+    ViewData["Title"] = "Quản trị đơn hàng";
+    var status = ViewData["Status"] as OrderStatus?;
+}
+<p class="eyebrow mb-1">KHU VỰC NHÂN VIÊN</p>
+<h1 class="mb-3">Quản trị đơn hàng</h1>
+<div class="row g-2 mb-3">
+    <div class="col-4"><div class="surface p-3">Chờ xác nhận <strong class="d-block fs-4">@ViewData["PendingCount"]</strong></div></div>
+    <div class="col-4"><div class="surface p-3">Đã xác nhận <strong class="d-block fs-4">@ViewData["ConfirmedCount"]</strong></div></div>
+    <div class="col-4"><div class="surface p-3">Đã hủy <strong class="d-block fs-4">@ViewData["CancelledCount"]</strong></div></div>
+</div>
+<form class="surface p-3 mb-3 row g-2" asp-action="Index" method="get">
+    <label class="col-md">Trạng thái
+        <select class="form-select" name="status">
+            <option value="">Tất cả</option>
+            @foreach (var option in new[] { ("Pending","Chờ xác nhận"), ("Confirmed","Đã xác nhận"),
+                ("Packing","Đang đóng gói"), ("Shipped","Đang giao"), ("Completed","Hoàn tất"), ("Cancelled","Đã hủy") })
+            {
+                <option value="@option.Item1" selected="@(status?.ToString() == option.Item1)">@option.Item2</option>
+            }
+        </select>
+    </label>
+    <label class="col-md">Mã đơn <input class="form-control" type="number" name="orderId" value="@ViewData["OrderId"]" /></label>
+    <label class="col-md">Khách <input class="form-control" name="customer" value="@ViewData["Customer"]" /></label>
+    <label class="col-md">Từ ngày <input class="form-control" type="date" name="from" value="@ViewData["From"]" /></label>
+    <label class="col-md">Đến ngày <input class="form-control" type="date" name="to" value="@ViewData["To"]" /></label>
+    <div class="col-md-auto align-self-end"><button class="btn btn-primary">Lọc đơn</button></div>
+</form>
+@if (Model.Count == 0)
+{
+    <p>Chưa có đơn hàng phù hợp.</p>
+}
+@foreach (var order in Model)
+{
+    <partial name="_OrderCard" model="order" />
+}
