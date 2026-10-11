@@ -1,0 +1,59 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "Tài khoản của tôi";
+}
+<h1>Tài khoản của tôi</h1>
+<div class="row g-4 mt-1">
+    <section class="col-lg-5">
+        <form class="surface p-3 p-md-4" asp-action="Update" method="post">
+            <h2 class="h5">Thông tin cá nhân</h2>
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <label class="form-label" for="name">Họ và tên</label>
+            <input class="form-control mb-2" id="name" name="name" value="@Model.Account.Name" maxlength="120" required />
+            <label class="form-label" for="email">Email đăng nhập</label>
+            <input class="form-control mb-2" id="email" name="email" type="email" value="@Model.Account.Email" maxlength="254" required />
+            <label class="form-label" for="phone">Số điện thoại</label>
+            <input class="form-control mb-3" id="phone" name="phone" type="tel" value="@Model.Account.Phone" pattern="0[0-9]{9}" required />
+            <button class="btn btn-primary">Lưu hồ sơ</button>
+        </form>
+    </section>
+    <section class="col-lg-7">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 mb-0">Địa chỉ giao hàng</h2>
+            <a class="btn btn-outline-primary" asp-action="Address">Thêm địa chỉ</a>
+        </div>
+        @if (Model.Addresses.Count == 0)
+        {
+            <p class="text-secondary">Bạn chưa lưu địa chỉ nào.</p>
+        }
+        @foreach (var address in Model.Addresses)
+        {
+            <article class="surface p-3 mb-2">
+                <p>@address.Formatted
+                    @if (address.IsDefault)
+                    {
+                        <span class="badge text-bg-success">Mặc định</span>
+                    }
+                </p>
+                <a asp-action="Address" asp-route-id="@address.Id">Sửa địa chỉ</a>
+                <a class="ms-3 text-danger" asp-action="Delete" asp-route-id="@address.Id">Xóa địa chỉ</a>
+            </article>
+        }
+    </section>
+</div>
+<section class="mt-4">
+    <h2 class="h5">Hộp thư demo</h2>
+    @if (Model.Mail.Count == 0)
+    {
+        <p class="text-secondary">Chưa có thư.</p>
+    }
+    @foreach (var mail in Model.Mail)
+    {
+        <article class="surface p-3 mb-2">
+            <h3 class="h6">@mail.Subject</h3>
+            <p class="mb-1">@mail.Message</p>
+            <small>@mail.CreatedAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm") · UTC+7</small>
+        </article>
+    }
+</section>
+
