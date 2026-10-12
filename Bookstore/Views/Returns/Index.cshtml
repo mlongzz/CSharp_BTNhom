@@ -1,0 +1,41 @@
+@model IReadOnlyList<ReturnRequest>
+@{ ViewData["Title"] = "Đổi trả sách"; }
+<h1>Đổi trả sách</h1>
+@if (Model.Count == 0)
+{
+    <p>Chưa có yêu cầu đổi trả.</p>
+}
+@foreach (var item in Model)
+{
+    var status = item.Status switch
+    {
+        "Pending" => "Chờ duyệt", "Approved" => "Đã duyệt, chờ kiểm tra hàng",
+        "Rejected" => "Đã từ chối", _ => "Hoàn tất"
+    };
+    <article class="surface p-3 mb-3">
+        <h2 class="h5">Yêu cầu #@item.Id · Đơn #@item.OrderId</h2>
+        <p>@item.Title · @item.Quantity cuốn · @(item.Outcome == "Refund" ? "Hoàn tiền" : "Đổi sách")</p>
+        <p>Lý do: @item.Reason</p>
+        <p>Trạng thái: <strong>@status</strong></p>
+        @if (item.Status == "Completed" && item.Outcome == "Refund")
+        {
+            <p>Tiền hoàn đã ghi nhận: @item.RefundAmount.ToString("N0") ₫</p>
+        }
+        @if (User.IsInRole("Sales") && item.Status == "Pending")
+        {
+            <form asp-action="Process" method="post" class="d-flex gap-2">
+                <input type="hidden" name="id" value="@item.Id" />
+                <button class="btn btn-primary" name="decision" value="Approve">Duyệt</button>
+                <button class="btn btn-outline-danger" name="decision" value="Reject">Từ chối</button>
+            </form>
+        }
+        @if (User.IsInRole("Warehouse") && item.Status == "Approved")
+        {
+            <form asp-action="Process" method="post" class="d-flex gap-2">
+                <input type="hidden" name="id" value="@item.Id" />
+                <button class="btn btn-primary" name="decision" value="Receive">Xác nhận đã nhận sách nguyên vẹn</button>
+                <button class="btn btn-outline-danger" name="decision" value="Reject">Hàng không đạt</button>
+            </form>
+        }
+    </article>
+}
