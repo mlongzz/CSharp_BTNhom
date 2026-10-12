@@ -1,0 +1,108 @@
+@model CatalogAdminPage
+@{
+    ViewData["Title"] = "Quản lý sách";
+}
+<p class="eyebrow mb-1">KHU VỰC QUẢN TRỊ</p>
+<h1>Quản lý sách</h1>
+<p><a asp-action="References">Thể loại, tác giả và nhà xuất bản</a></p>
+<div class="row g-4">
+    <section class="col-lg-5">
+        <form asp-action="SaveBook" method="post" class="surface p-3 p-md-4">
+            <h2 class="h5">@(Model.Input.Id is null ? "Thêm sách" : "Sửa thông tin sách")</h2>
+            <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+            <input asp-for="Input.Id" type="hidden" />
+            <label class="form-label" asp-for="Input.Title">Tên sách</label>
+            <input class="form-control mb-2" asp-for="Input.Title" maxlength="180" required />
+            <div class="row g-2">
+                <div class="col-6">
+                    <label class="form-label" asp-for="Input.Isbn">ISBN</label>
+                    <input class="form-control mb-2" asp-for="Input.Isbn" maxlength="40" required />
+                </div>
+                <div class="col-6">
+                    <label class="form-label" asp-for="Input.Price">Giá bán (₫)</label>
+                    <input class="form-control mb-2" asp-for="Input.Price" min="1" required />
+                </div>
+            </div>
+            <label class="form-label" asp-for="Input.CategoryId">Thể loại</label>
+            <select class="form-select mb-2" asp-for="Input.CategoryId" required>
+                <option value="">Chọn thể loại</option>
+                @foreach (var item in Model.References.Categories)
+                {
+                    <option value="@item.Id">@item.Name</option>
+                }
+            </select>
+            <label class="form-label" asp-for="Input.AuthorId">Tác giả</label>
+            <select class="form-select mb-2" asp-for="Input.AuthorId" required>
+                <option value="">Chọn tác giả</option>
+                @foreach (var item in Model.References.Authors)
+                {
+                    <option value="@item.Id">@item.Name</option>
+                }
+            </select>
+            <label class="form-label" asp-for="Input.PublisherId">Nhà xuất bản</label>
+            <select class="form-select mb-2" asp-for="Input.PublisherId" required>
+                <option value="">Chọn nhà xuất bản</option>
+                @foreach (var item in Model.References.Publishers)
+                {
+                    <option value="@item.Id">@item.Name</option>
+                }
+            </select>
+            <div class="row g-2">
+                <div class="col-6">
+                    <label class="form-label" asp-for="Input.Pages">Số trang</label>
+                    <input class="form-control mb-2" asp-for="Input.Pages" min="1" max="20000" />
+                </div>
+                <div class="col-6">
+                    <label class="form-label" asp-for="Input.Year">Năm xuất bản</label>
+                    <input class="form-control mb-2" asp-for="Input.Year" min="1000" />
+                </div>
+            </div>
+            <label class="form-label" asp-for="Input.CoverUrl">Đường dẫn ảnh bìa</label>
+            <input class="form-control mb-2" asp-for="Input.CoverUrl" maxlength="500" placeholder="https://..." />
+            <label class="form-label" asp-for="Input.Description">Mô tả</label>
+            <textarea class="form-control mb-2" asp-for="Input.Description" rows="3" maxlength="4000"></textarea>
+            <div class="form-check mb-3">
+                <input class="form-check-input" asp-for="Input.Active" />
+                <label class="form-check-label" asp-for="Input.Active">Đang kinh doanh</label>
+            </div>
+            <button class="btn btn-primary">Lưu sách</button>
+            @if (Model.Input.Id is not null)
+            {
+                <a class="btn btn-outline-secondary" asp-action="Index">Hủy sửa</a>
+            }
+        </form>
+    </section>
+    <section class="col-lg-7">
+        <form asp-action="Index" method="get" class="input-group mb-3">
+            <input class="form-control" name="q" value="@Model.Query" placeholder="Tìm sách" aria-label="Tìm sách quản trị" />
+            <button class="btn btn-outline-primary">Tìm</button>
+        </form>
+        <div class="table-responsive surface p-3">
+            <table class="table align-middle">
+                <thead><tr><th>Sách / ISBN</th><th>Giá</th><th>Tồn</th><th>Kinh doanh</th><th>Thao tác</th></tr></thead>
+                <tbody>
+                    @foreach (var book in Model.Books)
+                    {
+                        <tr>
+                            <th scope="row">@book.Title <small class="d-block text-secondary">@book.Isbn</small></th>
+                            <td>@book.Price.ToString("N0") ₫</td><td>@book.Stock</td>
+                            <td>@(book.Active ? "Đang bán" : "Đã ẩn")</td>
+                            <td>
+                                <a asp-action="Index" asp-route-editId="@book.Id" asp-route-q="@Model.Query">Sửa</a>
+                                <form asp-action="DeleteBook" method="post" class="d-inline"
+                                      onsubmit="return confirm('Xóa sách này khỏi danh mục?')">
+                                    <input type="hidden" name="id" value="@book.Id" />
+                                    <button class="btn btn-link text-danger p-0 ms-2">Xóa</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (Model.Books.Count == 0)
+            {
+                <p class="text-secondary">Không có sách phù hợp.</p>
+            }
+        </div>
+    </section>
+</div>
