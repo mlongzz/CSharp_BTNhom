@@ -1,0 +1,66 @@
+@model VouchersPage
+@{
+    ViewData["Title"] = "Quản lý voucher";
+}
+<p class="eyebrow mb-1">KHU VỰC QUẢN TRỊ</p>
+<h1>Quản lý voucher</h1>
+<div class="row g-4">
+    <section class="col-lg-5">
+        <form asp-action="Save" method="post" class="surface p-3 p-md-4">
+            <h2 class="h5">@(Model.Input.Id is null ? "Thêm voucher" : "Sửa voucher")</h2>
+            <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+            <input asp-for="Input.Id" type="hidden" />
+            <label class="form-label" asp-for="Input.Code">Mã voucher</label>
+            <input class="form-control mb-2" asp-for="Input.Code" maxlength="30" required />
+            <label class="form-label" asp-for="Input.DiscountType">Loại giảm</label>
+            <select class="form-select mb-2" asp-for="Input.DiscountType">
+                <option value="Percent">Phần trăm</option>
+                <option value="Amount">Số tiền (₫)</option>
+            </select>
+            <label class="form-label" asp-for="Input.Value">Giá trị giảm</label>
+            <input class="form-control mb-2" asp-for="Input.Value" min="1" required />
+            <label class="form-label" asp-for="Input.MinimumTotal">Đơn tối thiểu (₫)</label>
+            <input class="form-control mb-2" asp-for="Input.MinimumTotal" min="0" required />
+            <label class="form-label" asp-for="Input.StartsAt">Bắt đầu (UTC+7)</label>
+            <input class="form-control mb-2" asp-for="Input.StartsAt" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" required />
+            <label class="form-label" asp-for="Input.EndsAt">Hết hạn (UTC+7)</label>
+            <input class="form-control mb-2" asp-for="Input.EndsAt" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" required />
+            <label class="form-label" asp-for="Input.MaxUses">Số lượt tối đa</label>
+            <input class="form-control mb-3" asp-for="Input.MaxUses" min="1" required />
+            <button class="btn btn-primary">Lưu voucher</button>
+            @if (Model.Input.Id is not null)
+            {
+                <a class="btn btn-outline-secondary" asp-action="Index">Hủy sửa</a>
+            }
+        </form>
+    </section>
+    <section class="col-lg-7">
+        <div class="surface p-3 table-responsive">
+            <h2 class="h5">Voucher đã tạo</h2>
+            <table class="table align-middle">
+                <thead><tr><th>Mã</th><th>Giảm</th><th>Đơn tối thiểu</th><th>Hiệu lực (UTC+7)</th><th>Đã dùng</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var voucher in Model.Vouchers)
+                    {
+                        var draft = voucher.Draft;
+                        <tr>
+                            <th scope="row">@draft.Code</th>
+                            <td>@(draft.DiscountType == "Percent" ? $"{draft.Value}%" : $"{draft.Value:N0} ₫")</td>
+                            <td>@draft.MinimumTotal.ToString("N0") ₫</td>
+                            <td>
+                                @draft.StartsAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm")
+                                <span class="d-block">@draft.EndsAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm")</span>
+                            </td>
+                            <td>@voucher.UsedCount / @draft.MaxUses</td>
+                            <td><a asp-action="Index" asp-route-editId="@voucher.Id">Sửa</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (Model.Vouchers.Count == 0)
+            {
+                <p class="text-secondary">Chưa có voucher.</p>
+            }
+        </div>
+    </section>
+</div>
