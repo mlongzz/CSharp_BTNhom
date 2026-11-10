@@ -1,0 +1,13 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Lỗi hệ thống";
+}
+<section class="account-panel">
+    <h1>Lỗi hệ thống</h1>
+    <p>Không thể hoàn tất yêu cầu. Vui lòng thử lại.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p>Mã truy vết <code>@Model.RequestId</code></p>
+    }
+    <a asp-controller="Home" asp-action="Index">Về danh mục sách</a>
+</section>

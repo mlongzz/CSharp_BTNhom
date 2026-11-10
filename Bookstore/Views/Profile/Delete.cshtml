@@ -1,0 +1,15 @@
+@using Bookstore.Domain
+@model ShippingAddress
+@{
+    ViewData["Title"] = "Xác nhận xóa địa chỉ";
+}
+<section class="account-panel">
+    <h1>Xác nhận xóa địa chỉ</h1>
+    <p>@Model.Formatted</p>
+    <form asp-action="Delete" method="post">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button class="btn btn-danger">Xác nhận xóa</button>
+        <a class="ms-2" asp-action="Index">Giữ địa chỉ</a>
+    </form>
+</section>
+

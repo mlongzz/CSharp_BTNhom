@@ -1,0 +1,90 @@
+@model CatalogReferencePage
+@{
+    ViewData["Title"] = "Quản lý danh mục";
+    var title = Model.Kind switch
+    {
+        ReferenceKind.Category => "Thể loại",
+        ReferenceKind.Author => "Tác giả",
+        _ => "Nhà xuất bản"
+    };
+    var description = Model.Kind switch
+    {
+        ReferenceKind.Author => "Tiểu sử",
+        ReferenceKind.Publisher => "Địa chỉ",
+        _ => "Mô tả"
+    };
+}
+<p class="eyebrow mb-1">KHU VỰC QUẢN TRỊ</p>
+<h1>Quản lý danh mục</h1>
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a class="btn btn-outline-primary" asp-action="Index">Quản lý sách</a>
+    <a class="btn btn-outline-primary" asp-action="References" asp-route-kind="Category">Thể loại</a>
+    <a class="btn btn-outline-primary" asp-action="References" asp-route-kind="Author">Tác giả</a>
+    <a class="btn btn-outline-primary" asp-action="References" asp-route-kind="Publisher">Nhà xuất bản</a>
+</div>
+<div class="row g-4">
+    <section class="col-lg-5">
+        <form asp-action="SaveReference" method="post" class="surface p-3 p-md-4">
+            <h2 class="h5">@(Model.Input.Id is null ? "Thêm" : "Sửa") @title.ToLowerInvariant()</h2>
+            <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+            <input name="kind" value="@Model.Kind" type="hidden" />
+            <input asp-for="Input.Id" type="hidden" />
+            <label class="form-label" asp-for="Input.Name">Tên</label>
+            <input class="form-control mb-2" asp-for="Input.Name" maxlength="120" required />
+            <label class="form-label" asp-for="Input.Description">@description</label>
+            <textarea class="form-control mb-2" asp-for="Input.Description" maxlength="1500" rows="3"></textarea>
+            @if (Model.Kind == ReferenceKind.Category)
+            {
+                <label class="form-label" asp-for="Input.ParentId">Thể loại cha</label>
+                <select class="form-select mb-2" asp-for="Input.ParentId">
+                    <option value="">Không có</option>
+                    @foreach (var item in Model.References.Where(item => item.Id != Model.Input.Id))
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                </select>
+            }
+            <button class="btn btn-primary mt-2">Lưu</button>
+            @if (Model.Input.Id is not null)
+            {
+                <a class="btn btn-outline-secondary mt-2" asp-action="References" asp-route-kind="@Model.Kind">Hủy sửa</a>
+            }
+        </form>
+    </section>
+    <section class="col-lg-7">
+        <div class="surface p-3 table-responsive">
+            <h2 class="h5">@title</h2>
+            <table class="table align-middle">
+                <thead><tr><th>Tên</th><th>@description</th><th>Thao tác</th></tr></thead>
+                <tbody>
+                    @foreach (var item in Model.References)
+                    {
+                        <tr>
+                            <th scope="row">
+                                @item.Name
+                                @if (item.ParentId is int parent)
+                                {
+                                    <small class="d-block text-secondary">Cha: @Model.References.FirstOrDefault(x => x.Id == parent)?.Name</small>
+                                }
+                            </th>
+                            <td class="text-break">@item.Description</td>
+                            <td>
+                                <a asp-action="References" asp-route-kind="@Model.Kind" asp-route-editId="@item.Id">Sửa</a>
+                                <form asp-action="DeleteReference" method="post" class="d-inline"
+                                      onsubmit="return confirm('Xóa mục này?')">
+                                    <input name="kind" value="@Model.Kind" type="hidden" />
+                                    <input name="id" value="@item.Id" type="hidden" />
+                                    <button class="btn btn-link text-danger p-0 ms-2">Xóa</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (Model.References.Count == 0)
+            {
+                <p class="text-secondary">Chưa có bản ghi.</p>
+            }
+        </div>
+    </section>
+</div>

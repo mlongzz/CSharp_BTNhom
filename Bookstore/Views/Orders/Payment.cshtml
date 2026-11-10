@@ -1,0 +1,14 @@
+@model CheckoutPaymentViewModel
+@{
+    ViewData["Title"] = "Cổng thanh toán thử nghiệm";
+}
+<h1>Cổng thanh toán thử nghiệm</h1>
+<div class="surface p-4">
+    <p>Mô phỏng kết quả thanh toán cho đồ án. Tổng tiền @Model.Total.ToString("N0") ₫.</p>
+    <form asp-action="PaymentResult" method="post" class="d-flex flex-wrap gap-2">
+        <input type="hidden" name="ticket" value="@Model.Ticket" />
+        <button name="result" value="Success" class="btn btn-primary">Mô phỏng thành công</button>
+        <button name="result" value="Failure" class="btn btn-outline-danger">Mô phỏng thất bại</button>
+        <button name="result" value="Expired" class="btn btn-outline-secondary">Mô phỏng hết hạn</button>
+    </form>
+</div>

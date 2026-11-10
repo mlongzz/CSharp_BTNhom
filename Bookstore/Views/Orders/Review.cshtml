@@ -1,0 +1,19 @@
+@model CheckoutViewModel
+@{
+    ViewData["Title"] = "Xem lại đơn";
+}
+<h1>Xem lại đơn</h1>
+<div class="surface p-4">
+    <p>Giao đến @Model.Address</p>
+    <dl>
+        <dt>Tiền hàng</dt><dd>@Model.Quote.Subtotal.ToString("N0") ₫</dd>
+        <dt>Giảm giá</dt><dd>@Model.Quote.Discount.ToString("N0") ₫</dd>
+        <dt>Phí giao hàng</dt><dd>@Model.Quote.ShippingFee.ToString("N0") ₫</dd>
+        <dt>Tổng thanh toán</dt><dd>@Model.Quote.Total.ToString("N0") ₫</dd>
+    </dl>
+    <form asp-action="@(Model.Method == "Online" ? "Payment" : "Place")" method="post">
+        <input type="hidden" name="ticket" value="@Model.Ticket" />
+        <button class="btn btn-primary">@(Model.Method == "Online" ? "Sang cổng thanh toán thử nghiệm" : "Xác nhận đặt COD")</button>
+        <a class="ms-2" asp-action="Cart">Quay lại giỏ</a>
+    </form>
+</div>

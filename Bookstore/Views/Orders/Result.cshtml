@@ -1,0 +1,11 @@
+@model Order
+@{ ViewData["Title"] = "Kết quả đặt hàng"; }
+<h1>Đặt hàng thành công</h1>
+<section class="surface p-4">
+    <p>Mã đơn <strong>#@Model.Id</strong></p>
+    <p>Đơn hàng đã được ghi nhận. Bạn có thể xem trạng thái hiện tại trong lịch sử đơn.</p>
+    <p>Tổng thanh toán <strong>@Model.Total.ToString("N0") ₫</strong></p>
+    <a class="btn btn-primary" asp-action="Index">Theo dõi đơn hàng</a>
+    <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Index">Tiếp tục mua sách</a>
+</section>
+

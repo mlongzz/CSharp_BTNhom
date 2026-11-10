@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+<section class="account-panel">
+    <h1>Đăng ký khách hàng</h1>
+    <form asp-action="Register" method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <label class="form-label" for="email">Email</label>
+        <input class="form-control mb-3" name="email" id="email" type="email" value="@ViewData["Email"]"
+               autocomplete="email" maxlength="254" required />
+        <label class="form-label" for="password">Mật khẩu</label>
+        <input class="form-control mb-2" type="password" name="password" id="password"
+               autocomplete="new-password" minlength="8" maxlength="72" aria-describedby="password-hint" required />
+        <p id="password-hint" class="form-text">Ít nhất 8 ký tự, gồm chữ và số.</p>
+        <button class="btn btn-primary">Đăng ký</button>
+        <a class="ms-2" asp-action="Login">Quay lại đăng nhập</a>
+    </form>
+</section>
+

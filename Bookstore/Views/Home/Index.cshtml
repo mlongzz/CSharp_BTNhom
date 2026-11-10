@@ -1,0 +1,144 @@
+@model CatalogPage
+@{
+    ViewData["Title"] = "Danh mục sách";
+    var filter = Model.Filter;
+    var lastPage = Model.Total == 0 ? 1 : (Model.Total - 1) / Model.PageSize + 1;
+}
+<section class="hero mb-4">
+    <div>
+        <p class="eyebrow mb-2">NHÀ SÁCH TRỰC TUYẾN</p>
+        <h1>Danh mục sách</h1>
+        <p class="hero-note mb-0">Tìm sách theo tên, tác giả hoặc ISBN.</p>
+    </div>
+</section>
+<form class="surface p-3 p-md-4 mb-4" asp-action="Index" method="get" role="search">
+    <div class="row g-3 align-items-end">
+        <div class="col-lg-6">
+            <label class="form-label" for="q">Tên sách, tác giả hoặc ISBN</label>
+            <input id="q" name="q" class="form-control" type="search" value="@filter.Query" />
+        </div>
+        <div class="col-lg-3">
+            <label class="form-label" for="sort">Sắp xếp</label>
+            <select class="form-select" id="sort" name="sort">
+                <option value="new">Mới nhất</option>
+                <option value="price-asc" selected="@(filter.Sort == "price-asc")">Giá tăng dần</option>
+                <option value="price-desc" selected="@(filter.Sort == "price-desc")">Giá giảm dần</option>
+                <option value="bestselling" selected="@(filter.Sort == "bestselling")">Bán chạy</option>
+            </select>
+        </div>
+        <div class="col-lg-3 d-flex gap-2">
+            <button class="btn btn-primary">Tìm sách</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Xóa bộ lọc</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <label class="form-label" for="category">Thể loại</label>
+            <select class="form-select" id="category" name="category">
+                <option value="">Tất cả</option>
+                @foreach (var item in Model.References.Categories)
+                {
+                    <option value="@item.Id" selected="@(filter.Category == item.Id)">@item.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <label class="form-label" for="author">Tác giả</label>
+            <select class="form-select" id="author" name="author">
+                <option value="">Tất cả</option>
+                @foreach (var item in Model.References.Authors)
+                {
+                    <option value="@item.Id" selected="@(filter.Author == item.Id)">@item.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <label class="form-label" for="publisher">Nhà xuất bản</label>
+            <select class="form-select" id="publisher" name="publisher">
+                <option value="">Tất cả</option>
+                @foreach (var item in Model.References.Publishers)
+                {
+                    <option value="@item.Id" selected="@(filter.Publisher == item.Id)">@item.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <label class="form-label" for="minPrice">Giá từ (₫)</label>
+            <input class="form-control" id="minPrice" name="minPrice" type="number" min="0" value="@filter.MinimumPrice" />
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <label class="form-label" for="maxPrice">Giá đến (₫)</label>
+            <input class="form-control" id="maxPrice" name="maxPrice" type="number" min="0" value="@filter.MaximumPrice" />
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <label class="form-label" for="rating">Điểm từ</label>
+            <select class="form-select" id="rating" name="rating">
+                <option value="">Tất cả</option>
+                @for (var i = 1; i <= 5; i++)
+                {
+                    <option value="@i" selected="@(filter.Rating == i)">@i sao</option>
+                }
+            </select>
+        </div>
+    </div>
+</form>
+<p class="text-secondary">@Model.Total kết quả</p>
+@if (Model.Books.Count == 0)
+{
+    <p>Không tìm thấy sách phù hợp. <a asp-action="Index">Xem toàn bộ danh mục</a></p>
+}
+<div class="row g-3">
+    @foreach (var book in Model.Books)
+    {
+        <div class="col-sm-6 col-lg-4">
+            <article class="catalog-card h-100">
+                <a class="text-decoration-none" asp-action="Details" asp-route-id="@book.Id">
+                    @if (book.CoverUrl is string cover)
+                    {
+                        <img src="@cover" class="w-100 object-fit-contain" style="height: 10rem" alt="Bìa @book.Title" loading="lazy" />
+                    }
+                    else
+                    {
+                        <div class="book-cover cover-@book.Id"><span>NHÀ SÁCH</span><strong>@book.Title</strong></div>
+                    }
+                </a>
+                <div class="p-3">
+                    <h2 class="h5"><a asp-action="Details" asp-route-id="@book.Id">@book.Title</a></h2>
+                    <p class="text-secondary mb-1">@book.Author</p>
+                    <p class="fw-bold mb-1">@book.Price.ToString("N0") ₫</p>
+                    <p class="text-secondary">@(book.Stock == 0 ? "Hết hàng" : $"Còn {book.Stock} cuốn")</p>
+                    @if (User.IsInRole("Customer") && book.Stock > 0)
+                    {
+                        <form asp-controller="Orders" asp-action="Add" method="post">
+                            <input type="hidden" name="bookId" value="@book.Id" />
+                            <label class="visually-hidden" for="book-@book.Id">Số lượng @book.Title</label>
+                            <div class="d-flex gap-2">
+                                <input class="form-control quantity" id="book-@book.Id" name="quantity"
+                                       type="number" min="1" max="@book.Stock" value="1" required />
+                                <button class="btn btn-primary">Thêm vào giỏ</button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </article>
+        </div>
+    }
+</div>
+@if (lastPage > 1)
+{
+    <nav class="d-flex justify-content-center gap-3 align-items-center mt-4" aria-label="Phân trang">
+        @if (filter.Page > 1)
+        {
+            <a asp-action="Index" asp-route-page="@(filter.Page - 1)" asp-route-q="@filter.Query"
+               asp-route-category="@filter.Category" asp-route-author="@filter.Author" asp-route-publisher="@filter.Publisher"
+               asp-route-minPrice="@filter.MinimumPrice" asp-route-maxPrice="@filter.MaximumPrice"
+               asp-route-rating="@filter.Rating" asp-route-sort="@filter.Sort">Trang trước</a>
+        }
+        <span>Trang @filter.Page / @lastPage</span>
+        @if (filter.Page < lastPage)
+        {
+            <a asp-action="Index" asp-route-page="@(filter.Page + 1)" asp-route-q="@filter.Query"
+               asp-route-category="@filter.Category" asp-route-author="@filter.Author" asp-route-publisher="@filter.Publisher"
+               asp-route-minPrice="@filter.MinimumPrice" asp-route-maxPrice="@filter.MaximumPrice"
+               asp-route-rating="@filter.Rating" asp-route-sort="@filter.Sort">Trang sau</a>
+        }
+    </nav>
+}

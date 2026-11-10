@@ -1,0 +1,73 @@
+@model CartViewModel
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+<h1 class="mb-3">Giỏ hàng</h1>
+<div asp-validation-summary="All" class="text-danger"></div>
+@if (Model.Lines.Count == 0)
+{
+    <div class="account-panel ms-0">
+        <p>Giỏ hàng đang trống.</p>
+        <a class="btn btn-primary" asp-controller="Home" asp-action="Index">Xem danh mục sách</a>
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        <div class="col-lg-7">
+            <form class="surface p-3" asp-action="UpdateCart" method="post"
+                  onsubmit="return !Array.from(this.querySelectorAll('input[type=number]')).some(input => Number(input.value) === 0) || confirm('Xóa các đầu sách có số lượng 0?')">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead><tr><th scope="col">Sách</th><th scope="col">Số lượng</th><th scope="col">Thành tiền</th></tr></thead>
+                        <tbody>
+                            @foreach (var line in Model.Lines)
+                            {
+                                <tr>
+                                    <td>@line.Book.Title <small class="d-block text-secondary">@line.Book.Price.ToString("N0") ₫/cuốn</small></td>
+                                    <td>
+                                        <label class="visually-hidden" for="cart-@line.Book.Id">Số lượng @line.Book.Title</label>
+                                        <input id="cart-@line.Book.Id" name="quantities[@line.Book.Id]" type="number" min="0"
+                                               max="@line.Book.Stock" value="@line.Quantity" class="form-control quantity" required />
+                                        @if (line.Quantity > line.Book.Stock)
+                                        {
+                                            <small class="text-danger">Chỉ còn @line.Book.Stock cuốn</small>
+                                        }
+                                    </td>
+                                    <td class="text-nowrap">@line.Subtotal.ToString("N0") ₫</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-secondary small">Đặt số lượng về 0 để bỏ sách khỏi giỏ.</p>
+                <button class="btn btn-outline-primary">Cập nhật giỏ</button>
+                <a class="ms-2" asp-controller="Home" asp-action="Index">Chọn thêm sách</a>
+            </form>
+        </div>
+        <div class="col-lg-5">
+            <form class="surface p-3" id="checkout" asp-action="Review" method="post">
+                <h2 class="h5">Thanh toán</h2>
+                <p>Tạm tính <strong>@Model.Total.ToString("N0") ₫</strong></p>
+                <label class="form-label" for="addressId">Địa chỉ đã lưu</label>
+                <select class="form-select mb-2" id="addressId" name="addressId">
+                    <option value="">Nhập địa chỉ mới bên dưới</option>
+                    @foreach (var saved in Model.Addresses)
+                    {
+                        <option value="@saved.Id" selected="@saved.IsDefault">@saved.Formatted</option>
+                    }
+                </select>
+                <label class="form-label" for="address">Địa chỉ mới</label>
+                <textarea class="form-control mb-3" id="address" name="address" rows="2" maxlength="600">@Model.Address</textarea>
+                <label class="form-label" for="voucher">Mã giảm giá</label>
+                <input class="form-control mb-3" id="voucher" name="voucher" maxlength="50" />
+                <label class="form-label" for="method">Phương thức</label>
+                <select class="form-select mb-3" name="method" id="method">
+                    <option value="Cod">Thanh toán khi nhận hàng (COD)</option>
+                    <option value="Online">Thanh toán trực tuyến thử nghiệm</option>
+                </select>
+                <button class="btn btn-primary">Xem lại đơn</button>
+            </form>
+        </div>
+    </div>
+}

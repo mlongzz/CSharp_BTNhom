@@ -1,0 +1,139 @@
+@model WarehouseViewModel
+@{
+    ViewData["Title"] = "Quản lý nhập hàng";
+    var warehouse = User.IsInRole("Warehouse");
+}
+<p class="eyebrow mb-1">NGHIỆP VỤ KHO</p>
+<h1>Quản lý nhập hàng</h1>
+<p class="text-secondary">Lập phiếu, duyệt và xác nhận số lượng sách thực nhận.</p>
+<a class="btn btn-outline-secondary mb-4" asp-action="Stock">Tồn kho và kiểm kê</a>
+
+@if (warehouse)
+{
+    <section class="surface p-4 mb-4">
+        <h2 class="h4">Nhà cung cấp</h2>
+        <form asp-action="SaveSupplier" method="post" class="row g-2 mb-3 align-items-end">
+            <div class="col-md"><label class="form-label" for="supplier-name">Tên</label><input class="form-control" id="supplier-name" name="name" maxlength="120" required /></div>
+            <div class="col-md"><label class="form-label" for="supplier-phone">Điện thoại</label><input class="form-control" id="supplier-phone" name="phone" type="tel" /></div>
+            <div class="col-md"><label class="form-label" for="supplier-email">Email</label><input class="form-control" id="supplier-email" name="email" type="email" maxlength="254" /></div>
+            <div class="col-md"><label class="form-label" for="supplier-address">Địa chỉ</label><input class="form-control" id="supplier-address" name="address" maxlength="255" /></div>
+            <div class="col-md-auto"><button class="btn btn-primary">Thêm nhà cung cấp</button></div>
+        </form>
+        @foreach (var supplier in Model.Suppliers)
+        {
+            <details class="border-top pt-2 mb-2">
+                <summary>@supplier.Name</summary>
+                <form asp-action="SaveSupplier" method="post" class="row g-2 my-2 align-items-end">
+                    <input type="hidden" name="id" value="@supplier.Id" />
+                    <label class="col-md">Tên<input class="form-control" name="name" value="@supplier.Name" maxlength="120" required /></label>
+                    <label class="col-md">Điện thoại<input class="form-control" name="phone" value="@supplier.Phone" type="tel" /></label>
+                    <label class="col-md">Email<input class="form-control" name="email" value="@supplier.Email" type="email" maxlength="254" /></label>
+                    <label class="col-md">Địa chỉ<input class="form-control" name="address" value="@supplier.Address" maxlength="255" /></label>
+                    <div class="col-md-auto"><button class="btn btn-outline-primary">Lưu</button></div>
+                </form>
+                <form asp-action="DeleteSupplier" method="post" onsubmit="return confirm('Xóa nhà cung cấp này?');">
+                    <input type="hidden" name="id" value="@supplier.Id" />
+                    <button class="btn btn-sm btn-outline-danger">Xóa nhà cung cấp</button>
+                </form>
+            </details>
+        }
+    </section>
+
+    <form asp-action="Create" method="post" class="surface p-4 mb-4">
+        <h2 class="h4">Lập phiếu nhập</h2>
+        <label class="form-label" for="supplier">Nhà cung cấp</label>
+        <select class="form-select mb-3" name="supplierId" id="supplier" required>
+            <option value="">Chọn nhà cung cấp</option>
+            @foreach (var supplier in Model.Suppliers)
+            {
+                <option value="@supplier.Id">@supplier.Name</option>
+            }
+        </select>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead><tr><th scope="col">Sách</th><th scope="col">Tồn hiện tại</th><th scope="col">Số lượng đặt</th><th scope="col">Giá nhập (₫)</th></tr></thead>
+                <tbody>
+                @foreach (var book in Model.Books)
+                {
+                    <tr>
+                        <th scope="row" class="fw-normal">@book.Title</th>
+                        <td>@book.Stock</td>
+                        <td><input aria-label="Số lượng đặt @book.Title" name="quantities[@book.Id]" type="number" min="0" max="1000000" value="0" class="form-control" required /></td>
+                        <td><input aria-label="Giá nhập @book.Title" name="prices[@book.Id]" type="number" min="0" value="0" class="form-control" required /></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <p class="text-secondary small">Để số lượng bằng 0 ở đầu sách không đặt. Giá nhập của dòng đặt phải lớn hơn 0.</p>
+        <button class="btn btn-primary">Gửi duyệt</button>
+    </form>
+}
+
+<section aria-labelledby="purchase-history">
+    <h2 class="h4" id="purchase-history">Phiếu nhập</h2>
+    @if (Model.Purchases.Count == 0)
+    {
+        <p class="text-secondary">Chưa có phiếu nhập.</p>
+    }
+    @foreach (var purchase in Model.Purchases)
+    {
+        var status = purchase.Status switch
+        {
+            PurchaseStatus.Pending => "Chờ duyệt",
+            PurchaseStatus.Approved => "Đã duyệt",
+            _ => "Đã nhập"
+        };
+        <article class="surface p-4 mb-3">
+            <h3 class="h5">Phiếu #@purchase.Id · @status</h3>
+            <p>@purchase.Supplier · Lập bởi @purchase.CreatedBy · @purchase.CreatedAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm")</p>
+            @if (purchase.ApprovedBy is not null)
+            {
+                <p>Duyệt bởi @purchase.ApprovedBy</p>
+            }
+            @if (purchase.ReceivedAt is DateTimeOffset receivedAt)
+            {
+                <p>Nhận bởi @purchase.ReceivedBy · @receivedAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm")</p>
+            }
+            <ul>
+                @foreach (var line in purchase.Lines)
+                {
+                    <li>@line.Title · đặt @line.Quantity · giá nhập @line.UnitCost.ToString("N0") ₫
+                        @if (line.ReceivedQuantity is int quantity)
+                        {
+                            <span>· thực nhận @quantity</span>
+                        }
+                    </li>
+                }
+            </ul>
+            <p>Tổng đặt <strong>@purchase.Total.ToString("N0") ₫</strong></p>
+            @if (!string.IsNullOrEmpty(purchase.Note))
+            {
+                <p>Ghi chú: @purchase.Note</p>
+            }
+            @if (purchase.Status == PurchaseStatus.Pending && User.IsInRole("Admin"))
+            {
+                <form asp-action="Approve" method="post">
+                    <input type="hidden" name="id" value="@purchase.Id" />
+                    <button class="btn btn-primary">Duyệt phiếu</button>
+                </form>
+            }
+            @if (purchase.Status == PurchaseStatus.Approved && warehouse)
+            {
+                <form asp-action="Receive" method="post">
+                    <input type="hidden" name="id" value="@purchase.Id" />
+                    @foreach (var line in purchase.Lines)
+                    {
+                        <label class="d-block mb-2">Số lượng thực nhận @line.Title
+                            <input class="form-control quantity" type="number" name="quantities[@line.BookId]" value="@line.Quantity" min="0" required />
+                        </label>
+                    }
+                    <label class="d-block mb-2">Ghi chú chênh lệch
+                        <textarea class="form-control" name="note" maxlength="500"></textarea>
+                    </label>
+                    <button class="btn btn-primary">Xác nhận nhập kho</button>
+                </form>
+            }
+        </article>
+    }
+</section>

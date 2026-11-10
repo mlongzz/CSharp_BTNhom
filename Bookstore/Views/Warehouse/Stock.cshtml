@@ -1,0 +1,89 @@
+@model InventoryViewModel
+@{
+    ViewData["Title"] = "Kiểm kê tồn kho";
+    var canAdjust = User.IsInRole("Warehouse");
+}
+<p class="eyebrow mb-1">NGHIỆP VỤ KHO</p>
+<h1>Kiểm kê tồn kho</h1>
+<a class="btn btn-outline-secondary mb-4" asp-action="Index">Phiếu nhập</a>
+<div class="surface p-4 table-responsive mb-4">
+    <table class="table align-middle">
+        <thead><tr><th>Sách</th><th>Tồn</th><th>Ngưỡng</th><th>Cảnh báo</th>@if (canAdjust) { <th>Đối chiếu</th> }</tr></thead>
+        <tbody>
+        @foreach (var book in Model.Books)
+        {
+            <tr>
+                <th scope="row">@book.Title</th><td>@book.Stock</td>
+                <td>
+                    @if (canAdjust)
+                    {
+                        <form asp-action="SetMinimum" method="post" class="d-flex gap-2">
+                            <input type="hidden" name="bookId" value="@book.Id" />
+                            <input class="form-control quantity" aria-label="Ngưỡng @book.Title" name="minimum" type="number" min="0" value="@book.Minimum" required />
+                            <button class="btn btn-sm btn-outline-primary">Lưu</button>
+                        </form>
+                    }
+                    else
+                    {
+                        @book.Minimum
+                    }
+                </td>
+                <td>@(book.Stock < book.Minimum ? "Sắp hết" : "Đủ tồn")</td>
+                @if (canAdjust)
+                {
+                    <td>
+                        <details>
+                            <summary>Điều chỉnh theo kiểm kê</summary>
+                            <form asp-action="Reconcile" method="post" class="mt-2">
+                                <input type="hidden" name="bookId" value="@book.Id" />
+                                <label>Số lượng đếm thực tế<input class="form-control quantity" name="count" type="number" min="0" value="@book.Stock" required /></label>
+                                <label class="d-block mt-2">Lý do<input class="form-control" name="reason" maxlength="500" required /></label>
+                                <button class="btn btn-sm btn-primary mt-2">Ghi nhận</button>
+                            </form>
+                        </details>
+                    </td>
+                }
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<section class="surface p-4">
+    <h2 class="h4">Lịch sử biến động</h2>
+    <form asp-action="Stock" method="get" class="d-flex gap-2 align-items-center mb-3">
+        <label for="filter-book">Sách</label>
+        <select class="form-select w-auto" id="filter-book" name="bookId">
+            <option value="">Tất cả</option>
+            @foreach (var book in Model.Books)
+            {
+                <option value="@book.Id" selected="@(Model.SelectedBook == book.Id)">@book.Title</option>
+            }
+        </select>
+        <button class="btn btn-outline-primary">Lọc</button>
+    </form>
+    @if (Model.Movements.Count == 0)
+    {
+        <p class="text-secondary">Chưa có biến động.</p>
+    }
+    <div class="table-responsive">
+        <table class="table">
+            <thead><tr><th>Thời gian</th><th>Sách</th><th>Thay đổi</th><th>Nghiệp vụ</th><th>Người thực hiện</th><th>Ghi chú</th></tr></thead>
+            <tbody>
+            @foreach (var entry in Model.Movements)
+            {
+                var label = entry.Kind switch
+                {
+                    "Receipt" => "Nhập kho", "Sale" => "Bán", "Cancellation" => "Hủy đơn",
+                    "Return" => "Trả sách", "Exchange" => "Đổi sách", "Adjustment" => "Kiểm kê",
+                    _ => entry.Kind
+                };
+                <tr>
+                    <td>@entry.OccurredAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@entry.Title</td><td>@entry.Delta.ToString("+0;-0")</td>
+                    <td>@label @(entry.Reference is long id ? $"#{id}" : "")</td><td>@entry.Actor</td><td>@entry.Note</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
