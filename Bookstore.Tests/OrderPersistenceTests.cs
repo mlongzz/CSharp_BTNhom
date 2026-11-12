@@ -188,6 +188,67 @@ public sealed class OrderPersistenceTests : IDisposable
         Assert.Equal(130_000L, Assert.Single(service.Returns("khach")).RefundAmount);
     }
 
+    [Fact]
+    public void ExchangeRequiresReplacementStockBeforeRestockingReturnedBooks()
+    {
+        var service = Start();
+        var id = service.Place("khach", "Địa chỉ", new Dictionary<int, int> { [1] = 2 });
+        var otherOrder = service.Place("another", "Địa chỉ", new Dictionary<int, int> { [1] = 3 });
+        service.Confirm(id, "nhanvien");
+        service.Confirm(otherOrder, "nhanvien");
+        service.Fulfill(id, "nhanvien", OrderAction.Packing, null, null, null);
+        service.Fulfill(id, "nhanvien", OrderAction.Shipped, "Đơn vị demo", "BOOK-123", null);
+        service.Fulfill(id, "nhanvien", OrderAction.Completed, null, null, null);
+        service.RequestReturn(id, 1, "khach", "Đổi bản khác", "Exchange");
+        var request = Assert.Single(service.Returns("khach"));
+        service.ProcessReturn(request.Id, "nhanvien", "Sales", "Approve");
+
+        Assert.Throws<OrderRuleException>(() =>
+            service.ProcessReturn(request.Id, "kho", "Warehouse", "Receive"));
+        Assert.Equal("Approved", Assert.Single(service.Returns("khach")).Status);
+        Assert.Equal(0, Stock(service, 1));
+
+        service.Cancel(otherOrder, "another");
+        service.ProcessReturn(request.Id, "kho", "Warehouse", "Receive");
+
+        Assert.Equal("Completed", Assert.Single(service.Returns("khach")).Status);
+        Assert.Equal(3, Stock(service, 1));
+    }
+
+    [Fact]
+    public void FailedDeliveryRestocksOnlyAfterWarehouseReceiptAndOnlyOnce()
+    {
+        var service = Start();
+        var id = service.Place("khach", "Dia chi", new Dictionary<int, int> { [1] = 2 },
+            paymentReference: "delivery-failure", online: true);
+        Assert.Throws<OrderRuleException>(() => service.ReceiveFailedDelivery(id, "kho"));
+        service.Confirm(id, "nhanvien");
+        service.Fulfill(id, "nhanvien", OrderAction.Packing, null, null, null);
+        service.Fulfill(id, "nhanvien", OrderAction.Shipped, "Van chuyen demo", "RT-1", null);
+
+        Assert.Throws<OrderRuleException>(() =>
+            service.Fulfill(id, "nhanvien", OrderAction.DeliveryFailed, null, null, " "));
+        service.Fulfill(id, "nhanvien", OrderAction.DeliveryFailed, null, null, " Khach khong nhan ");
+
+        var failed = Assert.Single(service.CustomerOrders("khach"));
+        Assert.Equal(OrderStatus.DeliveryFailed, failed.Status);
+        Assert.Equal("Khach khong nhan", failed.RejectionReason);
+        Assert.Equal("RT-1", failed.TrackingCode);
+        Assert.Equal("Paid", failed.PaymentStatus);
+        Assert.Equal(3, Stock(service, 1));
+        Assert.Throws<OrderRuleException>(() => service.Cancel(id, "khach"));
+        Assert.Throws<OrderRuleException>(() =>
+            service.Fulfill(id, "nhanvien", OrderAction.Completed, null, null, null));
+
+        service.ReceiveFailedDelivery(id, "kho");
+        Assert.Throws<OrderRuleException>(() => service.ReceiveFailedDelivery(id, "kho"));
+        var returned = Assert.Single(Start().CustomerOrders("khach"));
+        Assert.Equal(OrderStatus.ReturnedToWarehouse, returned.Status);
+        Assert.Equal("Refunded", returned.PaymentStatus);
+        Assert.Equal(5, Stock(service, 1));
+        AssertEvent(returned.Events[^1], OrderAction.ReturnedToWarehouse, "kho");
+    }
+
     private static int Stock(OrderService service, int id) => service.Books().Single(book => book.Id == id).Stock;
 
     private static void AssertEvent(OrderEvent entry, OrderAction action, string actor)

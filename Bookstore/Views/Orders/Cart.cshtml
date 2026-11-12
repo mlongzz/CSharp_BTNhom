@@ -4,6 +4,18 @@
 }
 <h1 class="mb-3">Giỏ hàng</h1>
 <div asp-validation-summary="All" class="text-danger"></div>
+@if (Model.StockNotices.Count > 0)
+{
+    <div class="alert alert-warning" role="alert">
+        <strong>Tồn kho đã thay đổi</strong>
+        <ul class="mb-0">
+            @foreach (var notice in Model.StockNotices)
+            {
+                <li>@notice</li>
+            }
+        </ul>
+    </div>
+}
 @if (Model.Lines.Count == 0)
 {
     <div class="account-panel ms-0">
@@ -29,10 +41,7 @@ else
                                         <label class="visually-hidden" for="cart-@line.Book.Id">Số lượng @line.Book.Title</label>
                                         <input id="cart-@line.Book.Id" name="quantities[@line.Book.Id]" type="number" min="0"
                                                max="@line.Book.Stock" value="@line.Quantity" class="form-control quantity" required />
-                                        @if (line.Quantity > line.Book.Stock)
-                                        {
-                                            <small class="text-danger">Chỉ còn @line.Book.Stock cuốn</small>
-                                        }
+                                        <small class="text-secondary">Còn @line.Book.Stock cuốn</small>
                                     </td>
                                     <td class="text-nowrap">@line.Subtotal.ToString("N0") ₫</td>
                                 </tr>
@@ -51,20 +60,21 @@ else
                 <p>Tạm tính <strong>@Model.Total.ToString("N0") ₫</strong></p>
                 <label class="form-label" for="addressId">Địa chỉ đã lưu</label>
                 <select class="form-select mb-2" id="addressId" name="addressId">
-                    <option value="">Nhập địa chỉ mới bên dưới</option>
+                    <option value="" selected="@(Model.AddressId is null)">Nhập địa chỉ mới bên dưới</option>
                     @foreach (var saved in Model.Addresses)
                     {
-                        <option value="@saved.Id" selected="@saved.IsDefault">@saved.Formatted</option>
+                        <option value="@saved.Id" selected="@(Model.AddressId == saved.Id)">@saved.Formatted</option>
                     }
                 </select>
                 <label class="form-label" for="address">Địa chỉ mới</label>
-                <textarea class="form-control mb-3" id="address" name="address" rows="2" maxlength="600">@Model.Address</textarea>
+                <p id="address-help" class="form-text">Nếu nhập địa chỉ mới, đơn hàng sẽ giao đến địa chỉ đó.</p>
+                <textarea class="form-control mb-3" id="address" name="address" aria-describedby="address-help" rows="2" maxlength="@OrderRules.MaximumAddressLength">@Model.Address</textarea>
                 <label class="form-label" for="voucher">Mã giảm giá</label>
-                <input class="form-control mb-3" id="voucher" name="voucher" maxlength="50" />
+                <input class="form-control mb-3" id="voucher" name="voucher" value="@Model.Voucher" maxlength="50" />
                 <label class="form-label" for="method">Phương thức</label>
                 <select class="form-select mb-3" name="method" id="method">
                     <option value="Cod">Thanh toán khi nhận hàng (COD)</option>
-                    <option value="Online">Thanh toán trực tuyến thử nghiệm</option>
+                    <option value="Online" selected="@(Model.Method == "Online")">Thanh toán trực tuyến thử nghiệm</option>
                 </select>
                 <button class="btn btn-primary">Xem lại đơn</button>
             </form>

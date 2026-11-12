@@ -15,7 +15,7 @@
     <article class="surface p-3 mb-3">
         <h2 class="h5">Yêu cầu #@item.Id · Đơn #@item.OrderId</h2>
         <p>@item.Title · @item.Quantity cuốn · @(item.Outcome == "Refund" ? "Hoàn tiền" : "Đổi sách")</p>
-        <p>Lý do: @item.Reason</p>
+        <p class="text-break">Lý do: @item.Reason</p>
         <p>Trạng thái: <strong>@status</strong></p>
         @if (item.Status == "Completed" && item.Outcome == "Refund")
         {

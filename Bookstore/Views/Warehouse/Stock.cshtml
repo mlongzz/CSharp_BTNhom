@@ -36,6 +36,7 @@
                             <summary>Điều chỉnh theo kiểm kê</summary>
                             <form asp-action="Reconcile" method="post" class="mt-2">
                                 <input type="hidden" name="bookId" value="@book.Id" />
+                                <input type="hidden" name="expectedStock" value="@book.Stock" />
                                 <label>Số lượng đếm thực tế<input class="form-control quantity" name="count" type="number" min="0" value="@book.Stock" required /></label>
                                 <label class="d-block mt-2">Lý do<input class="form-control" name="reason" maxlength="500" required /></label>
                                 <button class="btn btn-sm btn-primary mt-2">Ghi nhận</button>
@@ -50,9 +51,9 @@
 </div>
 <section class="surface p-4">
     <h2 class="h4">Lịch sử biến động</h2>
-    <form asp-action="Stock" method="get" class="d-flex gap-2 align-items-center mb-3">
+    <form asp-action="Stock" method="get" class="d-flex flex-wrap gap-2 align-items-center mb-3">
         <label for="filter-book">Sách</label>
-        <select class="form-select w-auto" id="filter-book" name="bookId">
+        <select class="form-select w-auto mw-100" id="filter-book" name="bookId">
             <option value="">Tất cả</option>
             @foreach (var book in Model.Books)
             {
@@ -74,7 +75,7 @@
                 var label = entry.Kind switch
                 {
                     "Receipt" => "Nhập kho", "Sale" => "Bán", "Cancellation" => "Hủy đơn",
-                    "Return" => "Trả sách", "Exchange" => "Đổi sách", "Adjustment" => "Kiểm kê",
+                    "DeliveryReturn" => "Hàng giao thất bại hoàn kho", "Return" => "Trả sách", "Exchange" => "Đổi sách", "Adjustment" => "Kiểm kê",
                     _ => entry.Kind
                 };
                 <tr>

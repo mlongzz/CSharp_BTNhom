@@ -15,7 +15,7 @@ public interface IReceiptRepository
     IReadOnlyList<InventoryBook> Inventory();
     IReadOnlyList<StockMovement> Movements(int? bookId);
     void SetMinimum(int bookId, int minimum);
-    void Reconcile(int bookId, int count, string reason, string actor, DateTimeOffset now);
+    void Reconcile(int bookId, int expectedStock, int count, string reason, string actor, DateTimeOffset now);
 }
 
 public sealed class ReceivingService(IReceiptRepository receipts, TimeProvider clock)
@@ -72,12 +72,12 @@ public sealed class ReceivingService(IReceiptRepository receipts, TimeProvider c
         receipts.SetMinimum(bookId, minimum);
     }
 
-    public void Reconcile(int bookId, int count, string? reason, string actor)
+    public void Reconcile(int bookId, int expectedStock, int count, string? reason, string actor)
     {
         reason = reason?.Trim();
-        if (count < 0 || string.IsNullOrEmpty(reason) || reason.Length > 500)
+        if (expectedStock < 0 || count < 0 || string.IsNullOrEmpty(reason) || reason.Length > 500)
             throw new ReceivingRuleException("Nhập số lượng thực tế và lý do điều chỉnh từ 1 đến 500 ký tự.");
 
-        receipts.Reconcile(bookId, count, reason, actor, clock.GetUtcNow());
+        receipts.Reconcile(bookId, expectedStock, count, reason, actor, clock.GetUtcNow());
     }
 }

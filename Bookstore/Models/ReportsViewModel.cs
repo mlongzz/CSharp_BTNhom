@@ -4,7 +4,7 @@ namespace Bookstore.Models;
 
 public enum ReportSection { Overview, Revenue, Orders, TopBooks, Inventory }
 
-public sealed record ReportsViewModel(DateOnly From, DateOnly Through, ReportSection Section, BookstoreReport Report)
+public sealed record ReportsViewModel(DateOnly From, DateOnly Through, ReportSection Section, BookstoreReport? Report)
 {
     public static string Status(string status) => status switch
     {

@@ -1,8 +1,8 @@
 namespace Bookstore.Domain;
 
-public enum OrderStatus { Pending, Confirmed, Packing, Shipped, Completed, Cancelled }
+public enum OrderStatus { Pending, Confirmed, Packing, Shipped, Completed, Cancelled, DeliveryFailed, ReturnedToWarehouse }
 
-public enum OrderAction { Placed, Confirmed, Packing, Shipped, Completed, Cancelled, Rejected }
+public enum OrderAction { Placed, Confirmed, Packing, Shipped, Completed, Cancelled, Rejected, DeliveryFailed, ReturnedToWarehouse }
 
 public sealed record Book(int Id, string Title, int Price, int Stock);
 public sealed record OrderLine(int BookId, string Title, int Quantity, int Price);

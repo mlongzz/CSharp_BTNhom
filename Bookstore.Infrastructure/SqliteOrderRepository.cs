@@ -37,6 +37,21 @@ public sealed partial class SqliteOrderRepository(SqliteDatabase database) : IOr
         return orders.Select(order => Populate(connection, transaction, order)).ToList();
     }
 
+    public long? FindPayment(string customer, string reference)
+    {
+        using var connection = database.Open();
+        return ReadPayment(connection, null, customer, reference);
+    }
+
+    private static long? ReadPayment(SqliteConnection connection, SqliteTransaction? transaction,
+        string customer, string reference)
+    {
+        using var query = Command(connection, transaction,
+            "SELECT id FROM orders WHERE customer=$customer AND payment_reference=$reference",
+            ("$customer", customer), ("$reference", reference));
+        return query.ExecuteScalar() is long id ? id : null;
+    }
+
     public IOrderTransaction BeginTransaction() => new SqliteOrderTransaction(database.Open());
 
     private static Book ReadBook(SqliteDataReader reader) =>
@@ -171,13 +186,8 @@ public sealed partial class SqliteOrderRepository(SqliteDatabase database) : IOr
             return command.ExecuteScalar() is not null;
         }
 
-        public long? FindPayment(string customer, string reference)
-        {
-            using var query = Command(connection, transaction,
-                "SELECT id FROM orders WHERE customer=$customer AND payment_reference=$reference",
-                ("$customer", customer), ("$reference", reference));
-            return query.ExecuteScalar() is long id ? id : null;
-        }
+        public long? FindPayment(string customer, string reference) =>
+            ReadPayment(connection, transaction, customer, reference);
 
         public long VoucherDiscount(string code, long subtotal, bool redeem)
         {
@@ -239,7 +249,7 @@ public sealed partial class SqliteOrderRepository(SqliteDatabase database) : IOr
                     rejection_reason=COALESCE($rejection,rejection_reason),
                     completed_at=CASE WHEN $status='Completed' THEN $at ELSE completed_at END,
                     payment_status=CASE WHEN $status='Completed' THEN 'Paid'
-                        WHEN $status='Cancelled' AND payment_status='Paid' THEN 'Refunded' ELSE payment_status END
+                        WHEN $status IN ('Cancelled','ReturnedToWarehouse') AND payment_status='Paid' THEN 'Refunded' ELSE payment_status END
                 WHERE id=$id
                 """, ("$id", id), ("$status", status.ToString()), ("$at", Timestamp(at)),
                 ("$carrier", (object?)carrier ?? DBNull.Value), ("$tracking", (object?)tracking ?? DBNull.Value),
