@@ -10,28 +10,29 @@ public sealed class ReportsController(IBookstoreReports reports, TimeProvider cl
 {
     [HttpGet]
     public IActionResult Index(DateOnly? from, DateOnly? through, ReportSection section) =>
-        TryLoad(from, through, section, out var model) ? View(model) : BadRequest("Khoảng ngày báo cáo không hợp lệ.");
+        View(Load(from, through, section));
 
     [HttpGet]
     public IActionResult Export(DateOnly? from, DateOnly? through, ReportSection section)
     {
-        if (!TryLoad(from, through, section, out var model))
-            return BadRequest("Khoảng ngày báo cáo không hợp lệ.");
+        var model = Load(from, through, section);
+        if (model.Report is not { } report)
+            return View(nameof(Index), model);
 
-        return File(ReportWorkbook.Export(model!), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            $"Bao-cao-{model!.From:yyyyMMdd}-{model.Through:yyyyMMdd}.xlsx");
+        return File(ReportWorkbook.Export(model, report), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"Bao-cao-{model.From:yyyyMMdd}-{model.Through:yyyyMMdd}.xlsx");
     }
 
-    private bool TryLoad(DateOnly? from, DateOnly? through, ReportSection section, out ReportsViewModel? model)
+    private ReportsViewModel Load(DateOnly? from, DateOnly? through, ReportSection section)
     {
-        model = null;
         var today = DateOnly.FromDateTime(clock.GetUtcNow().ToOffset(TimeSpan.FromHours(7)).DateTime);
         var start = from ?? new DateOnly(today.Year, today.Month, 1);
         var end = through ?? today;
-        if (!ModelState.IsValid || !Enum.IsDefined(section) || start > end)
-            return false;
+        if (!Enum.IsDefined(section))
+            ModelState.AddModelError(nameof(section), "Loại báo cáo không hợp lệ.");
+        if (start > end)
+            ModelState.AddModelError(nameof(through), "Đến ngày phải bằng hoặc sau Từ ngày.");
 
-        model = new(start, end, section, reports.Read(start, end, today));
-        return true;
+        return new(start, end, section, ModelState.IsValid ? reports.Read(start, end, today) : null);
     }
 }

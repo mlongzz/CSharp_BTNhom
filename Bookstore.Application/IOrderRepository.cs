@@ -7,6 +7,7 @@ public interface IOrderRepository
     IReadOnlyList<Book> Books();
     IReadOnlyList<Order> Orders(string? customer);
     IReadOnlyList<ReturnRequest> Returns(string? customer);
+    long? FindPayment(string customer, string reference);
     IOrderTransaction BeginTransaction();
 }
 

@@ -254,7 +254,7 @@ public sealed class SqliteReceiptRepository(SqliteDatabase database) : IReceiptR
             throw new ReceivingRuleException("Không tìm thấy đầu sách.");
     }
 
-    public void Reconcile(int bookId, int count, string reason, string actor, DateTimeOffset now)
+    public void Reconcile(int bookId, int expectedStock, int count, string reason, string actor, DateTimeOffset now)
     {
         using var connection = database.Open();
         using var transaction = connection.BeginTransaction(deferred: false);
@@ -262,7 +262,10 @@ public sealed class SqliteReceiptRepository(SqliteDatabase database) : IReceiptR
         if (read.ExecuteScalar() is not long stock)
             throw new ReceivingRuleException("Không tìm thấy đầu sách.");
 
-        var delta = checked(count - (int)stock);
+        if (stock != expectedStock)
+            throw new ReceivingRuleException("Tồn kho đã thay đổi từ khi mở trang. Hãy kiểm kê lại trước khi lưu.");
+
+        var delta = count - expectedStock;
         if (delta != 0)
         {
             ChangeStock(connection, transaction, bookId, delta);
@@ -278,7 +281,7 @@ public sealed class SqliteReceiptRepository(SqliteDatabase database) : IReceiptR
             UPDATE books SET stock = stock + $delta
             WHERE id = $book AND stock + $delta >= 0 AND stock + $delta + COALESCE((
                 SELECT SUM(l.quantity) FROM order_lines l JOIN orders o ON o.id = l.order_id
-                WHERE l.book_id = $book AND o.status = 'Confirmed'
+                WHERE l.book_id = $book AND o.status IN ('Confirmed','Packing','Shipped','DeliveryFailed')
             ), 0) <= $maximum
             """, ("$book", bookId), ("$delta", delta), ("$maximum", int.MaxValue));
         if (command.ExecuteNonQuery() != 1)

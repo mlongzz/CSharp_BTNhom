@@ -2,10 +2,12 @@ namespace Bookstore.Domain;
 
 public static class OrderRules
 {
+    public const int MaximumAddressLength = 640;
+
     public static string ValidatePlacement(string? address, IReadOnlyDictionary<int, int> quantities)
     {
         var trimmedAddress = address?.Trim();
-        if (string.IsNullOrEmpty(trimmedAddress) || trimmedAddress.Length > 600 ||
+        if (string.IsNullOrEmpty(trimmedAddress) || trimmedAddress.Length > MaximumAddressLength ||
             quantities.Count == 0 || quantities.Values.Any(quantity => quantity <= 0))
             throw new OrderRuleException("Vui lòng chọn sách và nhập địa chỉ giao hàng hợp lệ.");
 

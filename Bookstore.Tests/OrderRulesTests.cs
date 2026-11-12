@@ -14,6 +14,16 @@ public sealed class OrderRulesTests
             OrderRules.ValidatePlacement(address, new Dictionary<int, int> { [1] = quantity }));
 
     [Fact]
+    public void CheckoutAcceptsLongestValidSavedAddress()
+    {
+        var address = new ShippingAddress(1, new string('A', 120), "0912345678", new string('P', 100),
+            new string('D', 100), new string('W', 100), new string('S', 180), true);
+
+        Assert.Equal(address.Formatted, OrderRules.ValidatePlacement(address.Formatted,
+            new Dictionary<int, int> { [1] = 1 }));
+    }
+
+    [Fact]
     public void TotalUsesUnitPriceAndQuantity()
     {
         var lines = new[] { new OrderLine(1, "Dế Mèn", 2, 65_000), new OrderLine(2, "Tuổi thơ", 1, 120_000) };

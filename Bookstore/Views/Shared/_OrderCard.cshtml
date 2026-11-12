@@ -7,12 +7,14 @@
         OrderStatus.Confirmed => ("Đã xác nhận", "status-confirmed"),
         OrderStatus.Packing => ("Đang đóng gói", "status-pending"),
         OrderStatus.Shipped => ("Đang giao", "status-pending"),
+        OrderStatus.DeliveryFailed => ("Giao thất bại · Chờ hoàn kho", "status-cancelled"),
+        OrderStatus.ReturnedToWarehouse => ("Đã hoàn về kho", "status-confirmed"),
         OrderStatus.Completed => ("Hoàn tất", "status-confirmed"),
         OrderStatus.Cancelled => ("Đã hủy", "status-cancelled"),
         _ => ("Không rõ", "status-cancelled")
     };
 }
-<article class="surface p-3 mb-3">
+<article id="order-@Model.Id" class="surface p-3 mb-3">
     <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
         <h2 class="h5 mb-0">Đơn #@Model.Id</h2>
         <span class="status-pill @badge">@status</span>
@@ -23,7 +25,7 @@
             {
                 <p class="mb-1">Khách hàng <strong>@Model.Customer</strong></p>
             }
-            <p>Giao đến @Model.Address</p>
+            <p class="text-break">Giao đến @Model.Address</p>
             <ul class="ps-3">
                 @foreach (var line in Model.Lines)
                 {
@@ -35,11 +37,11 @@
                 · @(Model.PaymentStatus switch { "Paid" => "Đã thanh toán", "Refunded" => "Đã ghi nhận hoàn tiền", _ => "Chưa thu tiền" })</p>
             @if (Model.TrackingCode is not null)
             {
-                <p>Vận đơn @Model.TrackingCode · @Model.Carrier</p>
+                <p class="text-break">Vận đơn @Model.TrackingCode · @Model.Carrier</p>
             }
             @if (Model.RejectionReason is not null)
             {
-                <p>Lý do từ chối: @Model.RejectionReason</p>
+                <p class="text-break">@(Model.Status is OrderStatus.DeliveryFailed or OrderStatus.ReturnedToWarehouse ? "Lý do giao thất bại" : "Lý do từ chối"): @Model.RejectionReason</p>
             }
         </div>
         <div class="col-md-5">
@@ -58,6 +60,8 @@
                             OrderAction.Placed => "Đã đặt hàng",
                             OrderAction.Packing => "Đang đóng gói",
                             OrderAction.Shipped => "Đang giao",
+                            OrderAction.DeliveryFailed => "Giao thất bại",
+                            OrderAction.ReturnedToWarehouse => "Kho đã nhận hàng hoàn",
                             OrderAction.Completed => "Đã giao thành công",
                             OrderAction.Rejected => "Đã từ chối",
                             OrderAction.Confirmed => "Đã xác nhận",
@@ -105,6 +109,16 @@
             }
             <button class="btn btn-primary">@(next == "Packing" ? "Bắt đầu đóng gói" : next == "Shipped" ? "Ghi vận đơn và giao hàng" : "Xác nhận giao thành công")</button>
         </form>
+        @if (Model.Status == OrderStatus.Shipped)
+        {
+            <form asp-controller="AdminOrders" asp-action="Fulfill" method="post" class="mt-2 d-flex flex-wrap gap-2">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="hidden" name="action" value="DeliveryFailed" />
+                <input class="form-control w-auto" name="reason" aria-label="Lý do giao thất bại"
+                       placeholder="Lý do giao thất bại" maxlength="500" required />
+                <button class="btn btn-outline-danger">Ghi nhận giao thất bại</button>
+            </form>
+        }
     }
     else if (!staff && Model.Status is OrderStatus.Pending or OrderStatus.Confirmed)
     {

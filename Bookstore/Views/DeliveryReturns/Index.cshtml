@@ -1,0 +1,29 @@
+@model IReadOnlyList<Order>
+@{ ViewData["Title"] = "Hàng hoàn từ giao vận"; }
+<h1>Hàng hoàn từ giao vận</h1>
+<p>Đối chiếu đủ số lượng và tình trạng sách trước khi xác nhận nhận hàng.</p>
+@if (Model.Count == 0)
+{
+    <p>Chưa có đơn giao thất bại.</p>
+}
+@foreach (var order in Model)
+{
+    <article class="surface p-3 mb-3">
+        <h2 class="h5">Đơn #@order.Id · @(order.Status == OrderStatus.DeliveryFailed ? "Chờ hoàn kho" : "Đã hoàn về kho")</h2>
+        <p class="text-break">Vận đơn @order.TrackingCode · @order.Carrier</p>
+        <p class="text-break">Lý do giao thất bại: @order.RejectionReason</p>
+        <ul>
+            @foreach (var line in order.Lines)
+            {
+                <li>@line.Title · @line.Quantity cuốn</li>
+            }
+        </ul>
+        @if (order.Status == OrderStatus.DeliveryFailed)
+        {
+            <form asp-action="Receive" method="post" onsubmit="return confirm('Xác nhận đã nhận đủ sách còn nguyên vẹn của đơn này?')">
+                <input type="hidden" name="id" value="@order.Id" />
+                <button class="btn btn-primary">Xác nhận đã nhận hàng hoàn</button>
+            </form>
+        }
+    </article>
+}

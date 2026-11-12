@@ -12,6 +12,7 @@
     </div>
 </section>
 <form class="surface p-3 p-md-4 mb-4" asp-action="Index" method="get" role="search">
+    <div asp-validation-summary="All" class="text-danger" role="alert"></div>
     <div class="row g-3 align-items-end">
         <div class="col-lg-6">
             <label class="form-label" for="q">Tên sách, tác giả hoặc ISBN</label>
@@ -80,10 +81,13 @@
         </div>
     </div>
 </form>
-<p class="text-secondary">@Model.Total kết quả</p>
-@if (Model.Books.Count == 0)
+@if (ViewData.ModelState.IsValid)
 {
-    <p>Không tìm thấy sách phù hợp. <a asp-action="Index">Xem toàn bộ danh mục</a></p>
+    <p class="text-secondary">@Model.Total kết quả</p>
+    @if (Model.Books.Count == 0)
+    {
+        <p>Không tìm thấy sách phù hợp. <a asp-action="Index">Xem toàn bộ danh mục</a></p>
+    }
 }
 <div class="row g-3">
     @foreach (var book in Model.Books)

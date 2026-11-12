@@ -29,7 +29,7 @@
         @foreach (var address in Model.Addresses)
         {
             <article class="surface p-3 mb-2">
-                <p>@address.Formatted
+                <p class="text-break">@address.Formatted
                     @if (address.IsDefault)
                     {
                         <span class="badge text-bg-success">Mặc định</span>

@@ -9,8 +9,22 @@ namespace Bookstore.Controllers;
 public class HomeController(CatalogService catalog) : Controller
 {
     public IActionResult Index(string? q, int? category, int? author, int? publisher, int? minPrice,
-        int? maxPrice, int? rating, string? sort, int page = 1) =>
-        View(catalog.Search(new CatalogFilter(q, category, author, publisher, minPrice, maxPrice, rating, sort, page)));
+        int? maxPrice, int? rating, string? sort, int page = 1)
+    {
+        if (minPrice is < 0 || maxPrice is < 0)
+            ModelState.AddModelError(nameof(minPrice), "Khoảng giá không được âm.");
+        else if (minPrice > maxPrice)
+            ModelState.AddModelError(nameof(maxPrice), "Giá đến phải lớn hơn hoặc bằng Giá từ.");
+
+        if (rating is < 1 or > 5)
+            ModelState.AddModelError(nameof(rating), "Điểm đánh giá phải từ 1 đến 5 sao.");
+
+        var filter = new CatalogFilter(q, category, author, publisher, minPrice, maxPrice, rating, sort, page);
+        if (!ModelState.IsValid)
+            return View(new CatalogPage([], filter, catalog.References(), 0, 1));
+
+        return View(catalog.Search(filter));
+    }
 
     public IActionResult Details(int id)
     {

@@ -4,15 +4,18 @@ namespace Bookstore.Infrastructure;
 
 public sealed class SqliteDatabase(string databasePath)
 {
-    private const int SchemaVersion = 3;
+    private const int SchemaVersion = 4;
 
-    internal SqliteConnection Open()
+    internal SqliteConnection Open(bool foreignKeys = true)
     {
-        var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+        var settings = new SqliteConnectionStringBuilder
         {
             DataSource = databasePath,
-            ForeignKeys = true
-        }.ToString());
+            ForeignKeys = foreignKeys
+        };
+        if (!foreignKeys)
+            settings.Pooling = false;
+        var connection = new SqliteConnection(settings.ToString());
         try
         {
             connection.Open();
@@ -27,7 +30,8 @@ public sealed class SqliteDatabase(string databasePath)
 
     public void Initialize()
     {
-        using var connection = Open();
+        // SQLite requires foreign keys disabled on this connection while rebuilding the orders table.
+        using var connection = Open(foreignKeys: false);
         using var transaction = connection.BeginTransaction();
         using var versionQuery = Command(connection, transaction, "PRAGMA user_version");
         var version = (long)versionQuery.ExecuteScalar()!;
@@ -42,10 +46,21 @@ public sealed class SqliteDatabase(string databasePath)
         if (version < 2)
             UpgradeReceipts(connection, transaction);
 
-        SqliteOrderRepository.Migrate(connection, transaction);
-        SqliteCustomerAccounts.Migrate(connection, transaction);
-        SqliteCatalogRepository.Migrate(connection, transaction);
-        SqliteReceiptRepository.Migrate(connection, transaction);
+        if (version < 3)
+        {
+            SqliteOrderRepository.Migrate(connection, transaction);
+            SqliteCustomerAccounts.Migrate(connection, transaction);
+            SqliteCatalogRepository.Migrate(connection, transaction);
+            SqliteReceiptRepository.Migrate(connection, transaction);
+        }
+
+        SqliteOrderRepository.MigrateDeliveryReturns(connection, transaction);
+        using (var check = Command(connection, transaction, "PRAGMA foreign_key_check"))
+        using (var violations = check.ExecuteReader())
+        {
+            if (violations.Read())
+                throw new InvalidOperationException("Bookstore database migration would leave invalid foreign keys.");
+        }
 
         using var setVersion = Command(connection, transaction, $"PRAGMA user_version = {SchemaVersion}");
         setVersion.ExecuteNonQuery();
@@ -152,4 +167,3 @@ public sealed class SqliteDatabase(string databasePath)
         return command;
     }
 }
-
