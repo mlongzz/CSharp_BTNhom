@@ -1,8 +1,0 @@
-NFR09
-Ngày chạy 15/11/2026, giờ Việt Nam
-Mã nguồn Bookstore commit 6f3c155; file TestCase nguồn commit 851fd834.
-Windows x64, .NET SDK 10.0.401, ASP.NET Core 10.0.12, DOTNET_ROLL_FORWARD=Major.
-Web HTTP loopback 127.0.0.1:5188. SQLite testcase-final.db độc lập.
-Khởi tạo dữ liệu bằng SQL. Thao tác nghiệp vụ kiểm tra qua MVC HTTP, cookie và antiforgery token.
-Trạng thái Bị chặn
-Kết quả Lượt chạy cục bộ ngắn. Chưa có staging cùng lịch sử giám sát liên tục đủ chu kỳ để kết luận hoạt động 24/7.
