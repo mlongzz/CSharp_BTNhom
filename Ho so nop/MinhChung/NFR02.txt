@@ -1,0 +1,12 @@
+NFR02
+Ngày chạy 15/11/2026, giờ Việt Nam.
+Môi trường Windows x64, .NET 10.0.12 chạy ứng dụng net9.0 bằng DOTNET_ROLL_FORWARD=Major.
+SQLite testcase-final.db riêng, HTTP 127.0.0.1:5188. Edge 157.0.4341.60.
+Trạng thái Bị chặn
+Kết quả 500 phiên cookie riêng cùng tài khoản demo. Search 500/500 HTTP 200, p95 667.95 ms. Checkout quote 500/500 hợp lệ, p95 792.96 ms. Chưa thống nhất ngưỡng lỗi/độ trễ để kết luận toàn bộ tiêu chí.
+
+500 virtual users bắt đầu mỗi pha bằng Barrier 501 bên tham gia.
+Mỗi phiên đăng nhập, có session/cart/token riêng. Không xác nhận đặt đơn trong kiểm thử tải.
+Orders trước/sau 25/25
+{"phase": "search", "users": 500, "requests": 500, "successful": 500, "p95_ms": 667.95, "max_ms": 738.82, "wall_seconds": 0.87}
+{"phase": "checkout-quote", "users": 500, "requests": 500, "successful": 500, "p95_ms": 792.96, "max_ms": 1015.62, "wall_seconds": 1.03}

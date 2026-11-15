@@ -1,0 +1,16 @@
+TC-081
+Ngày chạy 15/11/2026, giờ Việt Nam
+Mã nguồn Bookstore commit 6f3c155; file TestCase nguồn commit 851fd834.
+Windows x64, .NET SDK 10.0.401, ASP.NET Core 10.0.12, DOTNET_ROLL_FORWARD=Major.
+Web HTTP loopback 127.0.0.1:5188. SQLite testcase-final.db độc lập.
+Khởi tạo dữ liệu bằng SQL. Thao tác nghiệp vụ kiểm tra qua MVC HTTP, cookie và antiforgery token.
+Trạng thái Đạt
+Kết quả Phiếu đặt 10, thực nhận 8. Tồn 10 → 18, lưu số nhận 8 và ghi chú thiếu 2 cuốn, phiếu Received.
+
+HTTP GET /Warehouse -> 200, 9.6 ms, 18222 bytes, final=/Warehouse
+OK Trang lấy token trả HTTP 200 /Warehouse
+OK Có antiforgery token hợp lệ
+HTTP POST /Warehouse/Receive -> 200, 45.2 ms, 17680 bytes, final=/Warehouse
+OK Tồn 10 → 18, cộng đúng 8 cuốn
+OK Lưu received_quantity=8
+OK Lưu ghi chú chênh lệch

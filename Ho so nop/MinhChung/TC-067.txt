@@ -1,0 +1,19 @@
+TC-067
+Ngày chạy 15/11/2026, giờ Việt Nam
+Mã nguồn Bookstore commit 6f3c155; file TestCase nguồn commit 851fd834.
+Windows x64, .NET SDK 10.0.401, ASP.NET Core 10.0.12, DOTNET_ROLL_FORWARD=Major.
+Web HTTP loopback 127.0.0.1:5188. SQLite testcase-final.db độc lập.
+Khởi tạo dữ liệu bằng SQL. Thao tác nghiệp vụ kiểm tra qua MVC HTTP, cookie và antiforgery token.
+Trạng thái Đạt
+Kết quả Đơn Confirmed mua 2 cuốn được hủy, tồn 8 → 10. Gửi hủy lần hai bị từ chối, tồn vẫn 10.
+
+HTTP GET /Orders -> 200, 3.4 ms, 5014 bytes, final=/Orders
+OK Trang lấy token trả HTTP 200 /Orders
+OK Có antiforgery token hợp lệ
+HTTP POST /Orders/Cancel -> 200, 34.5 ms, 4894 bytes, final=/Orders
+HTTP GET /Orders -> 200, 17.7 ms, 4775 bytes, final=/Orders
+OK Trang lấy token trả HTTP 200 /Orders
+OK Có antiforgery token hợp lệ
+HTTP POST /Orders/Cancel -> 200, 32.9 ms, 4974 bytes, final=/Orders
+OK Tồn 8 → 10, hủy lặp vẫn 10
+OK Chỉ một biến động Cancellation +2

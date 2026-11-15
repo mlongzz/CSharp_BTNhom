@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="74556789-c907-478c-9c0b-6b255dd43d2c" name="quock@LAPTOP-6V95P9G9 2026-11-15 19:38:55" runUser="LAPTOP-6V95P9G9\quock" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-11-15T19:38:55.3420934+07:00" queuing="2026-11-15T19:38:55.3420942+07:00" start="2026-11-15T19:38:52.4338184+07:00" finish="2026-11-15T19:38:55.9034957+07:00" />
+  <TestSettings name="default" id="4395d1f9-c42d-4e66-a978-2710eb81aa70">
+    <Deployment runDeploymentRoot="quock_LAPTOP-6V95P9G9_2026-11-15_19_38_55" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="5025a05d-d663-4dcd-a44a-0bc42cbb5a15" testId="01abcf12-47d3-fc9b-8690-9df83f1291f5" testName="Bookstore.Tests.OrderRulesTests.PlacementRejectsInvalidAddressOrQuantity(address: &quot;12 An Dương Vương&quot;, quantity: -1)" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0007839" startTime="2026-11-15T19:38:55.1529889+07:00" endTime="2026-11-15T19:38:55.1529894+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5025a05d-d663-4dcd-a44a-0bc42cbb5a15" />
+    <UnitTestResult executionId="62fab368-9cab-4485-a822-2532997560e8" testId="74d9ea35-7510-fdf0-2c4e-61ef2dc1a836" testName="Bookstore.Tests.ReceivingTests.ReconcileRecordsAdjustmentAndThreshold" computerName="LAPTOP-6V95P9G9" duration="00:00:01.0484244" startTime="2026-11-15T19:38:55.3173226+07:00" endTime="2026-11-15T19:38:55.3173233+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="62fab368-9cab-4485-a822-2532997560e8" />
+    <UnitTestResult executionId="38f90637-1f4a-4a09-8123-f8be8a1553e5" testId="297058d2-011f-981a-9fc4-50e9b33488eb" testName="Bookstore.Tests.CatalogTests.SearchMatchesAuthorAndIsbnAndExcludesHiddenBooks" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0623386" startTime="2026-11-15T19:38:55.4161729+07:00" endTime="2026-11-15T19:38:55.4161734+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="38f90637-1f4a-4a09-8123-f8be8a1553e5" />
+    <UnitTestResult executionId="99f49bee-6bd6-43de-bca0-1d163df341a5" testId="fc37a2bd-f1bc-af06-5a16-785962c0db9f" testName="Bookstore.Tests.CatalogTests.VoucherCodeIsUniqueIgnoringCase" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0326769" startTime="2026-11-15T19:38:55.3537101+07:00" endTime="2026-11-15T19:38:55.3537108+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="99f49bee-6bd6-43de-bca0-1d163df341a5" />
+    <UnitTestResult executionId="1532205c-28eb-4fb5-99a3-6ebfb1c40ec9" testId="45bd09dd-6252-d00f-58c0-1e57eda1b8a5" testName="Bookstore.Tests.OrderPersistenceTests.InsufficientSecondLineRollsBackFirstStockChangeAndEvent" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0298442" startTime="2026-11-15T19:38:55.8513420+07:00" endTime="2026-11-15T19:38:55.8513425+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1532205c-28eb-4fb5-99a3-6ebfb1c40ec9" />
+    <UnitTestResult executionId="3a94a709-3597-4ebf-922f-db1bae45328b" testId="fdbc41c1-23ca-ed30-bd6f-858747499a19" testName="Bookstore.Tests.OrderPersistenceTests.PlacementConfirmationAndCancellationMaintainStockAndHistory" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0307558" startTime="2026-11-15T19:38:55.8213865+07:00" endTime="2026-11-15T19:38:55.8213868+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3a94a709-3597-4ebf-922f-db1bae45328b" />
+    <UnitTestResult executionId="9616a959-69fa-4ae9-b444-460aa0ff4f66" testId="2800da45-b083-69e0-9331-70f26666cfd4" testName="Bookstore.Tests.OrderRulesTests.SelectionCannotExceedStock" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0007994" startTime="2026-11-15T19:38:55.1317923+07:00" endTime="2026-11-15T19:38:55.1317924+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9616a959-69fa-4ae9-b444-460aa0ff4f66" />
+    <UnitTestResult executionId="59ce488b-fcb3-4e7d-8822-58da5e075de3" testId="62744a58-97ea-ed00-110e-af07dfb09fdb" testName="Bookstore.Tests.OrderPersistenceTests.ExchangeRequiresReplacementStockBeforeRestockingReturnedBooks" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0601908" startTime="2026-11-15T19:38:55.7904909+07:00" endTime="2026-11-15T19:38:55.7904912+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="59ce488b-fcb3-4e7d-8822-58da5e075de3" />
+    <UnitTestResult executionId="680b1e2f-acd0-4ac4-bc76-ab05867d9be9" testId="b93d33f7-4645-d844-2f62-e981bdaa7e3f" testName="Bookstore.Tests.AccountPersistenceTests.SignupDeduplicatesEmailAndRecordsConfirmation" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0252207" startTime="2026-11-15T19:38:55.4970145+07:00" endTime="2026-11-15T19:38:55.4970148+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="680b1e2f-acd0-4ac4-bc76-ab05867d9be9" />
+    <UnitTestResult executionId="2b795b21-7c89-4238-b6f6-827f7106af7d" testId="dce94e6b-a288-8fbb-47c3-3cd18537cfd0" testName="Bookstore.Tests.OrderRulesTests.CheckoutAcceptsLongestValidSavedAddress" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0327466" startTime="2026-11-15T19:38:55.1861889+07:00" endTime="2026-11-15T19:38:55.1861892+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2b795b21-7c89-4238-b6f6-827f7106af7d" />
+    <UnitTestResult executionId="a0d87492-e84d-4144-8dbd-0744a145103e" testId="bf433f7d-a2be-a4fd-c28e-89b4291388a2" testName="Bookstore.Tests.OrderRulesTests.PlacementRejectsInvalidAddressOrQuantity(address: &quot;   &quot;, quantity: 1)" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0000188" startTime="2026-11-15T19:38:55.1530692+07:00" endTime="2026-11-15T19:38:55.1530693+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a0d87492-e84d-4144-8dbd-0744a145103e" />
+    <UnitTestResult executionId="41e7cf83-ba07-4697-bcc8-ee4f95de280f" testId="9a1dcdfc-4f68-0354-f795-8ea29b2ffce1" testName="Bookstore.Tests.OrderPersistenceTests.OnlinePaymentFailureIsTerminalAndSuccessIsIdempotent" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0245906" startTime="2026-11-15T19:38:55.5827521+07:00" endTime="2026-11-15T19:38:55.5827524+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="41e7cf83-ba07-4697-bcc8-ee4f95de280f" />
+    <UnitTestResult executionId="a73fb23a-e912-4f3d-a5c0-8034cf6a346d" testId="747a73f1-3899-2d1d-9380-c0a9200903b3" testName="Bookstore.Tests.ReceivingTests.V2ReceiptMigrationKeepsAlreadyReceivedStockAndHistory" computerName="LAPTOP-6V95P9G9" duration="00:00:00.1581396" startTime="2026-11-15T19:38:55.4754996+07:00" endTime="2026-11-15T19:38:55.4755000+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a73fb23a-e912-4f3d-a5c0-8034cf6a346d" />
+    <UnitTestResult executionId="24939a7f-56f4-4715-adac-370a1f3dad73" testId="ec2bd821-17a8-ec01-0db6-e76a0f2638c2" testName="Bookstore.Tests.ReceivingTests.ReceiptRequiresApprovalAndAddsOnlyActuallyReceivedStock" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0549585" startTime="2026-11-15T19:38:55.5305540+07:00" endTime="2026-11-15T19:38:55.5305542+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="24939a7f-56f4-4715-adac-370a1f3dad73" />
+    <UnitTestResult executionId="2b90bc3d-3404-4e58-81f6-2684c880bbcd" testId="c58a62d4-d64f-0f28-5727-2d021c3290ac" testName="Bookstore.Tests.OrderRulesTests.TotalUsesUnitPriceAndQuantity" computerName="LAPTOP-6V95P9G9" duration="00:00:00.8575460" startTime="2026-11-15T19:38:55.1295253+07:00" endTime="2026-11-15T19:38:55.1295483+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2b90bc3d-3404-4e58-81f6-2684c880bbcd" />
+    <UnitTestResult executionId="83add05d-706f-4521-b07b-d7baff2dea28" testId="51da2fb0-7333-87ec-25dc-980e55cb1968" testName="Bookstore.Tests.CatalogTests.ReviewsRequireCompletedOwnedOrderAndCannotRepeat" computerName="LAPTOP-6V95P9G9" duration="00:00:01.0523825" startTime="2026-11-15T19:38:55.3208679+07:00" endTime="2026-11-15T19:38:55.3208681+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="83add05d-706f-4521-b07b-d7baff2dea28" />
+    <UnitTestResult executionId="03b4d62a-dccc-484d-b933-128598d1efaa" testId="b97617db-a294-7b07-ab71-bdfbee0b7e60" testName="Bookstore.Tests.OrderPersistenceTests.ConcurrentConfirmationDeductsStockOnlyOnce" computerName="LAPTOP-6V95P9G9" duration="00:00:00.2173790" startTime="2026-11-15T19:38:55.5567604+07:00" endTime="2026-11-15T19:38:55.5567609+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="03b4d62a-dccc-484d-b933-128598d1efaa" />
+    <UnitTestResult executionId="39e41a1c-4e53-44ab-8780-9daa9944eb4d" testId="13b878bb-ecde-e304-2f3a-1bb37690f5bc" testName="Bookstore.Tests.OrderRulesTests.PlacementRejectsInvalidAddressOrQuantity(address: &quot;12 An Dương Vương&quot;, quantity: 0)" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0001602" startTime="2026-11-15T19:38:55.1532742+07:00" endTime="2026-11-15T19:38:55.1532744+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="39e41a1c-4e53-44ab-8780-9daa9944eb4d" />
+    <UnitTestResult executionId="cb79d566-179f-46b9-aaf0-d4544fbc0ce8" testId="a47c9a84-e8db-ca49-bc52-ea42311a958e" testName="Bookstore.Tests.AccountPersistenceTests.AddressDefaultsAreScopedToOwnerAndPromotedAfterDeletion" computerName="LAPTOP-6V95P9G9" duration="00:00:01.0656847" startTime="2026-11-15T19:38:55.3342981+07:00" endTime="2026-11-15T19:38:55.3342988+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cb79d566-179f-46b9-aaf0-d4544fbc0ce8" />
+    <UnitTestResult executionId="171a98c0-2077-4c11-8c64-fb2adcd4b9a8" testId="b803672f-148b-bd3a-5d30-77193f055e29" testName="Bookstore.Tests.OrderPersistenceTests.MigratesLegacyDatabaseWithoutLosingAccountsOrdersOrStock" computerName="LAPTOP-6V95P9G9" duration="00:00:01.0655102" startTime="2026-11-15T19:38:55.3343600+07:00" endTime="2026-11-15T19:38:55.3343600+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="171a98c0-2077-4c11-8c64-fb2adcd4b9a8" />
+    <UnitTestResult executionId="9e35533a-b2a1-4b09-bd00-f66dae07ea3e" testId="4237bad2-7776-94c8-cb9f-ec65cb086d8f" testName="Bookstore.Tests.AccountPersistenceTests.LoginThrottlesFiveFailuresAndResetsAfterTimeout" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0582931" startTime="2026-11-15T19:38:55.4716878+07:00" endTime="2026-11-15T19:38:55.4716881+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9e35533a-b2a1-4b09-bd00-f66dae07ea3e" />
+    <UnitTestResult executionId="c0758c5d-f3f0-4ad6-9c2a-e1bd29887a9e" testId="5e8b619a-8bbb-7ab7-ff55-618d85a617a8" testName="Bookstore.Tests.AccountPersistenceTests.LockAndRoleChangeRevokeExistingSessions" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0788313" startTime="2026-11-15T19:38:55.4133176+07:00" endTime="2026-11-15T19:38:55.4133185+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c0758c5d-f3f0-4ad6-9c2a-e1bd29887a9e" />
+    <UnitTestResult executionId="702b46ef-3706-4c65-9170-8d790045712f" testId="e629cecd-4ce5-3669-a733-974103e20f5d" testName="Bookstore.Tests.ReceivingTests.UnknownSecondBookRollsBackWholePurchase" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0237941" startTime="2026-11-15T19:38:55.5545174+07:00" endTime="2026-11-15T19:38:55.5545180+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="702b46ef-3706-4c65-9170-8d790045712f" />
+    <UnitTestResult executionId="1f602e4f-8170-4de4-80dc-a01e6ee9ac28" testId="16c2e8f7-e647-03c8-f454-5e25ed6c9d37" testName="Bookstore.Tests.OrderRulesTests.PlacementRejectsInvalidAddressOrQuantity(address: null, quantity: 1)" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0220194" startTime="2026-11-15T19:38:55.1520394+07:00" endTime="2026-11-15T19:38:55.1520398+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1f602e4f-8170-4de4-80dc-a01e6ee9ac28" />
+    <UnitTestResult executionId="3da1546e-6ea2-4b4b-8db5-9673a63869e6" testId="3c8c888d-3525-c8dc-914f-6c159791d1b9" testName="Bookstore.Tests.OrderPersistenceTests.FailedDeliveryRestocksOnlyAfterWarehouseReceiptAndOnlyOnce" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0527738" startTime="2026-11-15T19:38:55.7301712+07:00" endTime="2026-11-15T19:38:55.7301717+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3da1546e-6ea2-4b4b-8db5-9673a63869e6" />
+    <UnitTestResult executionId="fb09a512-434e-4c43-b29e-9e229c21218a" testId="51a3af3d-aa5b-85f3-e5bf-3e180d11b823" testName="Bookstore.Tests.OrderPersistenceTests.DeliveryAndReturnRequireOrderedTransitionsAndRestockOnce" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0686249" startTime="2026-11-15T19:38:55.6772294+07:00" endTime="2026-11-15T19:38:55.6772298+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fb09a512-434e-4c43-b29e-9e229c21218a" />
+    <UnitTestResult executionId="91d87dec-7eea-4f74-ac63-74c89b3436f5" testId="c8067ad3-9220-967c-1d35-c9ee4e5c9830" testName="Bookstore.Tests.OrderPersistenceTests.PendingCancellationDoesNotAddStockAndRequiresOwner" computerName="LAPTOP-6V95P9G9" duration="00:00:00.0256742" startTime="2026-11-15T19:38:55.6084908+07:00" endTime="2026-11-15T19:38:55.6084911+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="91d87dec-7eea-4f74-ac63-74c89b3436f5" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="Bookstore.Tests.ReceivingTests.UnknownSecondBookRollsBackWholePurchase" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="e629cecd-4ce5-3669-a733-974103e20f5d">
+      <Execution id="702b46ef-3706-4c65-9170-8d790045712f" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.ReceivingTests" name="UnknownSecondBookRollsBackWholePurchase" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.AccountPersistenceTests.LockAndRoleChangeRevokeExistingSessions" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="5e8b619a-8bbb-7ab7-ff55-618d85a617a8">
+      <Execution id="c0758c5d-f3f0-4ad6-9c2a-e1bd29887a9e" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.AccountPersistenceTests" name="LockAndRoleChangeRevokeExistingSessions" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderPersistenceTests.ExchangeRequiresReplacementStockBeforeRestockingReturnedBooks" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="62744a58-97ea-ed00-110e-af07dfb09fdb">
+      <Execution id="59ce488b-fcb3-4e7d-8822-58da5e075de3" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderPersistenceTests" name="ExchangeRequiresReplacementStockBeforeRestockingReturnedBooks" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderRulesTests.SelectionCannotExceedStock" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="2800da45-b083-69e0-9331-70f26666cfd4">
+      <Execution id="9616a959-69fa-4ae9-b444-460aa0ff4f66" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderRulesTests" name="SelectionCannotExceedStock" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.AccountPersistenceTests.SignupDeduplicatesEmailAndRecordsConfirmation" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="b93d33f7-4645-d844-2f62-e981bdaa7e3f">
+      <Execution id="680b1e2f-acd0-4ac4-bc76-ab05867d9be9" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.AccountPersistenceTests" name="SignupDeduplicatesEmailAndRecordsConfirmation" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderRulesTests.PlacementRejectsInvalidAddressOrQuantity(address: &quot;   &quot;, quantity: 1)" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="bf433f7d-a2be-a4fd-c28e-89b4291388a2">
+      <Execution id="a0d87492-e84d-4144-8dbd-0744a145103e" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderRulesTests" name="PlacementRejectsInvalidAddressOrQuantity" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.CatalogTests.ReviewsRequireCompletedOwnedOrderAndCannotRepeat" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="51da2fb0-7333-87ec-25dc-980e55cb1968">
+      <Execution id="83add05d-706f-4521-b07b-d7baff2dea28" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.CatalogTests" name="ReviewsRequireCompletedOwnedOrderAndCannotRepeat" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.AccountPersistenceTests.LoginThrottlesFiveFailuresAndResetsAfterTimeout" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="4237bad2-7776-94c8-cb9f-ec65cb086d8f">
+      <Execution id="9e35533a-b2a1-4b09-bd00-f66dae07ea3e" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.AccountPersistenceTests" name="LoginThrottlesFiveFailuresAndResetsAfterTimeout" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderPersistenceTests.FailedDeliveryRestocksOnlyAfterWarehouseReceiptAndOnlyOnce" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="3c8c888d-3525-c8dc-914f-6c159791d1b9">
+      <Execution id="3da1546e-6ea2-4b4b-8db5-9673a63869e6" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderPersistenceTests" name="FailedDeliveryRestocksOnlyAfterWarehouseReceiptAndOnlyOnce" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderRulesTests.TotalUsesUnitPriceAndQuantity" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="c58a62d4-d64f-0f28-5727-2d021c3290ac">
+      <Execution id="2b90bc3d-3404-4e58-81f6-2684c880bbcd" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderRulesTests" name="TotalUsesUnitPriceAndQuantity" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.CatalogTests.VoucherCodeIsUniqueIgnoringCase" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="fc37a2bd-f1bc-af06-5a16-785962c0db9f">
+      <Execution id="99f49bee-6bd6-43de-bca0-1d163df341a5" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.CatalogTests" name="VoucherCodeIsUniqueIgnoringCase" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.AccountPersistenceTests.AddressDefaultsAreScopedToOwnerAndPromotedAfterDeletion" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="a47c9a84-e8db-ca49-bc52-ea42311a958e">
+      <Execution id="cb79d566-179f-46b9-aaf0-d4544fbc0ce8" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.AccountPersistenceTests" name="AddressDefaultsAreScopedToOwnerAndPromotedAfterDeletion" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.CatalogTests.SearchMatchesAuthorAndIsbnAndExcludesHiddenBooks" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="297058d2-011f-981a-9fc4-50e9b33488eb">
+      <Execution id="38f90637-1f4a-4a09-8123-f8be8a1553e5" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.CatalogTests" name="SearchMatchesAuthorAndIsbnAndExcludesHiddenBooks" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderRulesTests.PlacementRejectsInvalidAddressOrQuantity(address: null, quantity: 1)" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="16c2e8f7-e647-03c8-f454-5e25ed6c9d37">
+      <Execution id="1f602e4f-8170-4de4-80dc-a01e6ee9ac28" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderRulesTests" name="PlacementRejectsInvalidAddressOrQuantity" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderPersistenceTests.PendingCancellationDoesNotAddStockAndRequiresOwner" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="c8067ad3-9220-967c-1d35-c9ee4e5c9830">
+      <Execution id="91d87dec-7eea-4f74-ac63-74c89b3436f5" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderPersistenceTests" name="PendingCancellationDoesNotAddStockAndRequiresOwner" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderPersistenceTests.InsufficientSecondLineRollsBackFirstStockChangeAndEvent" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="45bd09dd-6252-d00f-58c0-1e57eda1b8a5">
+      <Execution id="1532205c-28eb-4fb5-99a3-6ebfb1c40ec9" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderPersistenceTests" name="InsufficientSecondLineRollsBackFirstStockChangeAndEvent" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.ReceivingTests.ReconcileRecordsAdjustmentAndThreshold" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="74d9ea35-7510-fdf0-2c4e-61ef2dc1a836">
+      <Execution id="62fab368-9cab-4485-a822-2532997560e8" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.ReceivingTests" name="ReconcileRecordsAdjustmentAndThreshold" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderPersistenceTests.DeliveryAndReturnRequireOrderedTransitionsAndRestockOnce" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="51a3af3d-aa5b-85f3-e5bf-3e180d11b823">
+      <Execution id="fb09a512-434e-4c43-b29e-9e229c21218a" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderPersistenceTests" name="DeliveryAndReturnRequireOrderedTransitionsAndRestockOnce" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderRulesTests.PlacementRejectsInvalidAddressOrQuantity(address: &quot;12 An Dương Vương&quot;, quantity: -1)" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="01abcf12-47d3-fc9b-8690-9df83f1291f5">
+      <Execution id="5025a05d-d663-4dcd-a44a-0bc42cbb5a15" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderRulesTests" name="PlacementRejectsInvalidAddressOrQuantity" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderRulesTests.PlacementRejectsInvalidAddressOrQuantity(address: &quot;12 An Dương Vương&quot;, quantity: 0)" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="13b878bb-ecde-e304-2f3a-1bb37690f5bc">
+      <Execution id="39e41a1c-4e53-44ab-8780-9daa9944eb4d" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderRulesTests" name="PlacementRejectsInvalidAddressOrQuantity" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderPersistenceTests.ConcurrentConfirmationDeductsStockOnlyOnce" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="b97617db-a294-7b07-ab71-bdfbee0b7e60">
+      <Execution id="03b4d62a-dccc-484d-b933-128598d1efaa" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderPersistenceTests" name="ConcurrentConfirmationDeductsStockOnlyOnce" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderPersistenceTests.OnlinePaymentFailureIsTerminalAndSuccessIsIdempotent" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="9a1dcdfc-4f68-0354-f795-8ea29b2ffce1">
+      <Execution id="41e7cf83-ba07-4697-bcc8-ee4f95de280f" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderPersistenceTests" name="OnlinePaymentFailureIsTerminalAndSuccessIsIdempotent" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderPersistenceTests.PlacementConfirmationAndCancellationMaintainStockAndHistory" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="fdbc41c1-23ca-ed30-bd6f-858747499a19">
+      <Execution id="3a94a709-3597-4ebf-922f-db1bae45328b" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderPersistenceTests" name="PlacementConfirmationAndCancellationMaintainStockAndHistory" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.ReceivingTests.V2ReceiptMigrationKeepsAlreadyReceivedStockAndHistory" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="747a73f1-3899-2d1d-9380-c0a9200903b3">
+      <Execution id="a73fb23a-e912-4f3d-a5c0-8034cf6a346d" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.ReceivingTests" name="V2ReceiptMigrationKeepsAlreadyReceivedStockAndHistory" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.ReceivingTests.ReceiptRequiresApprovalAndAddsOnlyActuallyReceivedStock" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="ec2bd821-17a8-ec01-0db6-e76a0f2638c2">
+      <Execution id="24939a7f-56f4-4715-adac-370a1f3dad73" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.ReceivingTests" name="ReceiptRequiresApprovalAndAddsOnlyActuallyReceivedStock" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderRulesTests.CheckoutAcceptsLongestValidSavedAddress" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="dce94e6b-a288-8fbb-47c3-3cd18537cfd0">
+      <Execution id="2b795b21-7c89-4238-b6f6-827f7106af7d" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderRulesTests" name="CheckoutAcceptsLongestValidSavedAddress" />
+    </UnitTest>
+    <UnitTest name="Bookstore.Tests.OrderPersistenceTests.MigratesLegacyDatabaseWithoutLosingAccountsOrdersOrStock" storage="d:\đồ án c#\csharp_btnhom-main\bookstore.tests\bin\debug\net9.0\bookstore.tests.dll" id="b803672f-148b-bd3a-5d30-77193f055e29">
+      <Execution id="171a98c0-2077-4c11-8c64-fb2adcd4b9a8" />
+      <TestMethod codeBase="D:\Đồ án C#\CSharp_BTNhom-main\Bookstore.Tests\bin\Debug\net9.0\Bookstore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Bookstore.Tests.OrderPersistenceTests" name="MigratesLegacyDatabaseWithoutLosingAccountsOrdersOrStock" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="01abcf12-47d3-fc9b-8690-9df83f1291f5" executionId="5025a05d-d663-4dcd-a44a-0bc42cbb5a15" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="74d9ea35-7510-fdf0-2c4e-61ef2dc1a836" executionId="62fab368-9cab-4485-a822-2532997560e8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="297058d2-011f-981a-9fc4-50e9b33488eb" executionId="38f90637-1f4a-4a09-8123-f8be8a1553e5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fc37a2bd-f1bc-af06-5a16-785962c0db9f" executionId="99f49bee-6bd6-43de-bca0-1d163df341a5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="45bd09dd-6252-d00f-58c0-1e57eda1b8a5" executionId="1532205c-28eb-4fb5-99a3-6ebfb1c40ec9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fdbc41c1-23ca-ed30-bd6f-858747499a19" executionId="3a94a709-3597-4ebf-922f-db1bae45328b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2800da45-b083-69e0-9331-70f26666cfd4" executionId="9616a959-69fa-4ae9-b444-460aa0ff4f66" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="62744a58-97ea-ed00-110e-af07dfb09fdb" executionId="59ce488b-fcb3-4e7d-8822-58da5e075de3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b93d33f7-4645-d844-2f62-e981bdaa7e3f" executionId="680b1e2f-acd0-4ac4-bc76-ab05867d9be9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="dce94e6b-a288-8fbb-47c3-3cd18537cfd0" executionId="2b795b21-7c89-4238-b6f6-827f7106af7d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bf433f7d-a2be-a4fd-c28e-89b4291388a2" executionId="a0d87492-e84d-4144-8dbd-0744a145103e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9a1dcdfc-4f68-0354-f795-8ea29b2ffce1" executionId="41e7cf83-ba07-4697-bcc8-ee4f95de280f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="747a73f1-3899-2d1d-9380-c0a9200903b3" executionId="a73fb23a-e912-4f3d-a5c0-8034cf6a346d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ec2bd821-17a8-ec01-0db6-e76a0f2638c2" executionId="24939a7f-56f4-4715-adac-370a1f3dad73" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c58a62d4-d64f-0f28-5727-2d021c3290ac" executionId="2b90bc3d-3404-4e58-81f6-2684c880bbcd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="51da2fb0-7333-87ec-25dc-980e55cb1968" executionId="83add05d-706f-4521-b07b-d7baff2dea28" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b97617db-a294-7b07-ab71-bdfbee0b7e60" executionId="03b4d62a-dccc-484d-b933-128598d1efaa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="13b878bb-ecde-e304-2f3a-1bb37690f5bc" executionId="39e41a1c-4e53-44ab-8780-9daa9944eb4d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a47c9a84-e8db-ca49-bc52-ea42311a958e" executionId="cb79d566-179f-46b9-aaf0-d4544fbc0ce8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b803672f-148b-bd3a-5d30-77193f055e29" executionId="171a98c0-2077-4c11-8c64-fb2adcd4b9a8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4237bad2-7776-94c8-cb9f-ec65cb086d8f" executionId="9e35533a-b2a1-4b09-bd00-f66dae07ea3e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5e8b619a-8bbb-7ab7-ff55-618d85a617a8" executionId="c0758c5d-f3f0-4ad6-9c2a-e1bd29887a9e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e629cecd-4ce5-3669-a733-974103e20f5d" executionId="702b46ef-3706-4c65-9170-8d790045712f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="16c2e8f7-e647-03c8-f454-5e25ed6c9d37" executionId="1f602e4f-8170-4de4-80dc-a01e6ee9ac28" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3c8c888d-3525-c8dc-914f-6c159791d1b9" executionId="3da1546e-6ea2-4b4b-8db5-9673a63869e6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="51a3af3d-aa5b-85f3-e5bf-3e180d11b823" executionId="fb09a512-434e-4c43-b29e-9e229c21218a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c8067ad3-9220-967c-1d35-c9ee4e5c9830" executionId="91d87dec-7eea-4f74-ac63-74c89b3436f5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="27" executed="27" passed="27" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 10.0.12)&#xD;
+[xUnit.net 00:00:00.85]   Discovering: Bookstore.Tests&#xD;
+[xUnit.net 00:00:00.90]   Discovered:  Bookstore.Tests&#xD;
+[xUnit.net 00:00:00.90]   Starting:    Bookstore.Tests&#xD;
+[xUnit.net 00:00:02.52]   Finished:    Bookstore.Tests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

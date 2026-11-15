@@ -1,0 +1,14 @@
+TC-084
+Ngày chạy 15/11/2026, giờ Việt Nam
+Mã nguồn Bookstore commit 6f3c155; file TestCase nguồn commit 851fd834.
+Windows x64, .NET SDK 10.0.401, ASP.NET Core 10.0.12, DOTNET_ROLL_FORWARD=Major.
+Web HTTP loopback 127.0.0.1:5188. SQLite testcase-final.db độc lập.
+Khởi tạo dữ liệu bằng SQL. Thao tác nghiệp vụ kiểm tra qua MVC HTTP, cookie và antiforgery token.
+Trạng thái Đạt
+Kết quả Xóa sách đã được order_lines tham chiếu bị chặn. Sách và lịch sử đơn vẫn tồn tại, không phá khóa ngoại.
+
+HTTP GET /CatalogAdmin -> 200, 29.7 ms, 32516 bytes, final=/CatalogAdmin
+OK Trang lấy token trả HTTP 200 /CatalogAdmin
+OK Có antiforgery token hợp lệ
+HTTP POST /CatalogAdmin/DeleteBook -> 200, 18.5 ms, 32691 bytes, final=/CatalogAdmin
+OK Giữ sách và order_lines lịch sử

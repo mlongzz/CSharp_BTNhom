@@ -1,0 +1,25 @@
+NFR07
+Ngày chạy 15/11/2026, giờ Việt Nam
+Mã nguồn Bookstore commit 6f3c155; file TestCase nguồn commit 851fd834.
+Windows x64, .NET SDK 10.0.401, ASP.NET Core 10.0.12, DOTNET_ROLL_FORWARD=Major.
+Web HTTP loopback 127.0.0.1:5188. SQLite testcase-final.db độc lập.
+Khởi tạo dữ liệu bằng SQL. Thao tác nghiệp vụ kiểm tra qua MVC HTTP, cookie và antiforgery token.
+Trạng thái Đạt
+Kết quả Payload script/HTML trong review và tên hồ sơ được HTML-encode ở phản hồi. Không có thẻ script thô trong hai trang.
+
+HTTP GET /Home/Details/25 -> 200, 2.8 ms, 5556 bytes, final=/Home/Details/25
+OK Trang lấy token trả HTTP 200 /Home/Details/25
+OK Có antiforgery token hợp lệ
+HTTP POST /Home/Review -> 200, 23.9 ms, 4324 bytes, final=/Home/Details/25
+HTTP GET /Home/Details/25 -> 200, 2.3 ms, 4200 bytes, final=/Home/Details/25
+OK Review encode thẻ script trong HTML phản hồi
+HTTP GET /Profile -> 200, 25.0 ms, 3324 bytes, final=/Profile
+OK Trang lấy token trả HTTP 200 /Profile
+OK Có antiforgery token hợp lệ
+HTTP POST /Profile/Update -> 200, 51.7 ms, 3513 bytes, final=/Profile
+HTTP GET /Profile -> 200, 10.6 ms, 3368 bytes, final=/Profile
+OK Profile encode thẻ script
+HTTP GET /Profile -> 200, 24.8 ms, 3368 bytes, final=/Profile
+OK Trang lấy token trả HTTP 200 /Profile
+OK Có antiforgery token hợp lệ
+HTTP POST /Profile/Update -> 200, 28.8 ms, 3479 bytes, final=/Profile

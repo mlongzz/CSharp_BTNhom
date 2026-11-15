@@ -1,0 +1,21 @@
+TC-079
+Ngày chạy 15/11/2026, giờ Việt Nam
+Mã nguồn Bookstore commit 6f3c155; file TestCase nguồn commit 851fd834.
+Windows x64, .NET SDK 10.0.401, ASP.NET Core 10.0.12, DOTNET_ROLL_FORWARD=Major.
+Web HTTP loopback 127.0.0.1:5188. SQLite testcase-final.db độc lập.
+Khởi tạo dữ liệu bằng SQL. Thao tác nghiệp vụ kiểm tra qua MVC HTTP, cookie và antiforgery token.
+Trạng thái Đạt
+Kết quả Sales bác yêu cầu quá hạn và Kho bác yêu cầu hàng hư. Cả hai chuyển Rejected, giữ lý do, không hoàn kho.
+
+HTTP GET /Returns -> 200, 12.6 ms, 2335 bytes, final=/Returns
+OK Trang lấy token trả HTTP 200 /Returns
+OK Có antiforgery token hợp lệ
+HTTP POST /Returns/Process -> 200, 35.6 ms, 1879 bytes, final=/Returns
+OK Bác yêu cầu Pending, không tăng tồn
+OK Giữ lý do trong yêu cầu
+HTTP GET /Returns -> 200, 30.9 ms, 2853 bytes, final=/Returns
+OK Trang lấy token trả HTTP 200 /Returns
+OK Có antiforgery token hợp lệ
+HTTP POST /Returns/Process -> 200, 43.4 ms, 2312 bytes, final=/Returns
+OK Bác yêu cầu Approved, không tăng tồn
+OK Giữ lý do trong yêu cầu

@@ -1,0 +1,19 @@
+TC-073
+Ngày chạy 15/11/2026, giờ Việt Nam
+Mã nguồn Bookstore commit 6f3c155; file TestCase nguồn commit 851fd834.
+Windows x64, .NET SDK 10.0.401, ASP.NET Core 10.0.12, DOTNET_ROLL_FORWARD=Major.
+Web HTTP loopback 127.0.0.1:5188. SQLite testcase-final.db độc lập.
+Khởi tạo dữ liệu bằng SQL. Thao tác nghiệp vụ kiểm tra qua MVC HTTP, cookie và antiforgery token.
+Trạng thái Đạt
+Kết quả Lý do rỗng và chỉ có khoảng trắng đều bị chặn. Không tạo yêu cầu đổi trả.
+
+HTTP GET /Orders -> 200, 20.4 ms, 17253 bytes, final=/Orders
+OK Trang lấy token trả HTTP 200 /Orders
+OK Có antiforgery token hợp lệ
+HTTP POST /Returns/RequestReturn -> 200, 26.2 ms, 1727 bytes, final=/Returns
+OK Không tạo yêu cầu thiếu lý do
+HTTP GET /Orders -> 200, 27.6 ms, 17253 bytes, final=/Orders
+OK Trang lấy token trả HTTP 200 /Orders
+OK Có antiforgery token hợp lệ
+HTTP POST /Returns/RequestReturn -> 200, 38.4 ms, 1727 bytes, final=/Returns
+OK Không tạo yêu cầu thiếu lý do

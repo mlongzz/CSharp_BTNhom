@@ -1,0 +1,18 @@
+TC-077
+Ngày chạy 15/11/2026, giờ Việt Nam
+Mã nguồn Bookstore commit 6f3c155; file TestCase nguồn commit 851fd834.
+Windows x64, .NET SDK 10.0.401, ASP.NET Core 10.0.12, DOTNET_ROLL_FORWARD=Major.
+Web HTTP loopback 127.0.0.1:5188. SQLite testcase-final.db độc lập.
+Khởi tạo dữ liệu bằng SQL. Thao tác nghiệp vụ kiểm tra qua MVC HTTP, cookie và antiforgery token.
+Trạng thái Đạt
+Kết quả POST nhận hoàn hai lần. Lần hai bị từ chối theo trạng thái, tồn vẫn 10, chỉ một DeliveryReturn.
+
+HTTP GET /DeliveryReturns -> 200, 21.9 ms, 3879 bytes, final=/DeliveryReturns
+OK Trang lấy token trả HTTP 200 /DeliveryReturns
+OK Có antiforgery token hợp lệ
+HTTP POST /DeliveryReturns/Receive -> 200, 19.5 ms, 3483 bytes, final=/DeliveryReturns
+HTTP GET /DeliveryReturns -> 200, 13.5 ms, 3285 bytes, final=/DeliveryReturns
+OK Trang lấy token trả HTTP 200 /DeliveryReturns
+OK Có antiforgery token hợp lệ
+HTTP POST /DeliveryReturns/Receive -> 200, 28.4 ms, 3475 bytes, final=/DeliveryReturns
+OK Nhận hoàn hai lần nhưng chỉ hoàn tồn một lần

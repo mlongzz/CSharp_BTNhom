@@ -1,0 +1,39 @@
+NFR03
+Ngày chạy 15/11/2026, giờ Việt Nam
+Mã nguồn Bookstore commit 6f3c155; file TestCase nguồn commit 851fd834.
+Windows x64, .NET SDK 10.0.401, ASP.NET Core 10.0.12, DOTNET_ROLL_FORWARD=Major.
+Web HTTP loopback 127.0.0.1:5188. SQLite testcase-final.db độc lập.
+Khởi tạo dữ liệu bằng SQL. Thao tác nghiệp vụ kiểm tra qua MVC HTTP, cookie và antiforgery token.
+Trạng thái Đạt
+Kết quả Đã chạy 15 tổ hợp vai trò/trang. Truy cập hợp lệ HTTP 200, trái vai trò HTTP 403.
+
+HTTP GET /AdminOrders -> 403, 19.3 ms, 1677 bytes, final=/Account/Denied
+OK /AdminOrders trả 403 theo vai trò
+HTTP GET /Warehouse -> 403, 29.0 ms, 1677 bytes, final=/Account/Denied
+OK /Warehouse trả 403 theo vai trò
+HTTP GET /CatalogAdmin -> 403, 15.4 ms, 1677 bytes, final=/Account/Denied
+OK /CatalogAdmin trả 403 theo vai trò
+HTTP GET /Vouchers -> 403, 15.0 ms, 1677 bytes, final=/Account/Denied
+OK /Vouchers trả 403 theo vai trò
+HTTP GET /AdminAccounts -> 403, 30.8 ms, 1677 bytes, final=/Account/Denied
+OK /AdminAccounts trả 403 theo vai trò
+HTTP GET /Reports -> 403, 4.9 ms, 1677 bytes, final=/Account/Denied
+OK /Reports trả 403 theo vai trò
+HTTP GET /AdminOrders -> 200, 28.5 ms, 52067 bytes, final=/AdminOrders
+OK /AdminOrders trả 200 theo vai trò
+HTTP GET /Warehouse -> 403, 28.6 ms, 1568 bytes, final=/Account/Denied
+OK /Warehouse trả 403 theo vai trò
+HTTP GET /AdminAccounts -> 403, 29.7 ms, 1568 bytes, final=/Account/Denied
+OK /AdminAccounts trả 403 theo vai trò
+HTTP GET /DeliveryReturns -> 200, 6.7 ms, 4665 bytes, final=/DeliveryReturns
+OK /DeliveryReturns trả 200 theo vai trò
+HTTP GET /AdminOrders -> 403, 40.3 ms, 1680 bytes, final=/Account/Denied
+OK /AdminOrders trả 403 theo vai trò
+HTTP GET /CatalogAdmin -> 200, 84.5 ms, 1280794 bytes, final=/CatalogAdmin
+OK /CatalogAdmin trả 200 theo vai trò
+HTTP GET /Vouchers -> 200, 3.4 ms, 6602 bytes, final=/Vouchers
+OK /Vouchers trả 200 theo vai trò
+HTTP GET /AdminAccounts -> 200, 17.0 ms, 10667 bytes, final=/AdminAccounts
+OK /AdminAccounts trả 200 theo vai trò
+HTTP GET /Reports -> 200, 27.0 ms, 137524 bytes, final=/Reports
+OK /Reports trả 200 theo vai trò

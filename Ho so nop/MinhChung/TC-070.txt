@@ -1,0 +1,19 @@
+TC-070
+Ngày chạy 15/11/2026, giờ Việt Nam
+Mã nguồn Bookstore commit 6f3c155; file TestCase nguồn commit 851fd834.
+Windows x64, .NET SDK 10.0.401, ASP.NET Core 10.0.12, DOTNET_ROLL_FORWARD=Major.
+Web HTTP loopback 127.0.0.1:5188. SQLite testcase-final.db độc lập.
+Khởi tạo dữ liệu bằng SQL. Thao tác nghiệp vụ kiểm tra qua MVC HTTP, cookie và antiforgery token.
+Trạng thái Đạt
+Kết quả Review hợp lệ đầu tiên được lưu. Lượt gửi trùng không tạo thêm hoặc ghi đè review đầu.
+
+HTTP GET /Home/Details/9 -> 200, 6.9 ms, 5553 bytes, final=/Home/Details/9
+OK Trang lấy token trả HTTP 200 /Home/Details/9
+OK Có antiforgery token hợp lệ
+HTTP POST /Home/Review -> 200, 33.9 ms, 4296 bytes, final=/Home/Details/9
+HTTP GET /Home/Details/9 -> 200, 4.1 ms, 4172 bytes, final=/Home/Details/9
+OK Trang lấy token trả HTTP 200 /Home/Details/9
+OK Có antiforgery token hợp lệ
+HTTP POST /Home/Review -> 200, 35.1 ms, 4378 bytes, final=/Home/Details/9
+OK Chỉ có một review cho khách-sách-đơn
+OK Nội dung lượt đầu được giữ

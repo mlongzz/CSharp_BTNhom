@@ -1,0 +1,19 @@
+TC-069
+Ngày chạy 15/11/2026, giờ Việt Nam
+Mã nguồn Bookstore commit 6f3c155; file TestCase nguồn commit 851fd834.
+Windows x64, .NET SDK 10.0.401, ASP.NET Core 10.0.12, DOTNET_ROLL_FORWARD=Major.
+Web HTTP loopback 127.0.0.1:5188. SQLite testcase-final.db độc lập.
+Khởi tạo dữ liệu bằng SQL. Thao tác nghiệp vụ kiểm tra qua MVC HTTP, cookie và antiforgery token.
+Trạng thái Đạt
+Kết quả Gửi review với đơn Pending và Confirmed qua MVC đều bị từ chối. Không có bản ghi reviews.
+
+HTTP GET /Home/Details/7 -> 200, 12.7 ms, 3990 bytes, final=/Home/Details/7
+OK Trang lấy token trả HTTP 200 /Home/Details/7
+OK Có antiforgery token hợp lệ
+HTTP POST /Home/Review -> 200, 78.8 ms, 4196 bytes, final=/Home/Details/7
+OK Không lưu review cho trạng thái Pending
+HTTP GET /Home/Details/8 -> 200, 15.3 ms, 3964 bytes, final=/Home/Details/8
+OK Trang lấy token trả HTTP 200 /Home/Details/8
+OK Có antiforgery token hợp lệ
+HTTP POST /Home/Review -> 200, 38.4 ms, 4170 bytes, final=/Home/Details/8
+OK Không lưu review cho trạng thái Confirmed

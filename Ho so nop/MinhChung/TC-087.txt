@@ -1,0 +1,29 @@
+TC-087
+Ngày chạy 15/11/2026, giờ Việt Nam
+Mã nguồn Bookstore commit 6f3c155; file TestCase nguồn commit 851fd834.
+Windows x64, .NET SDK 10.0.401, ASP.NET Core 10.0.12, DOTNET_ROLL_FORWARD=Major.
+Web HTTP loopback 127.0.0.1:5188. SQLite testcase-final.db độc lập.
+Khởi tạo dữ liệu bằng SQL. Thao tác nghiệp vụ kiểm tra qua MVC HTTP, cookie và antiforgery token.
+Trạng thái Đạt
+Kết quả Voucher yêu cầu tối thiểu 100.000 cho giỏ 90.000 và voucher hết hạn đều bị từ chối. Không tạo ticket, used_count vẫn 0.
+
+HTTP GET /Orders/Cart -> 200, 28.3 ms, 1767 bytes, final=/Orders/Cart
+OK Trang lấy token trả HTTP 200 /Orders/Cart
+OK Có antiforgery token hợp lệ
+HTTP POST /Orders/Add -> 200, 19.8 ms, 5580 bytes, final=/Orders/Cart
+HTTP GET /Orders/Cart -> 200, 16.0 ms, 5447 bytes, final=/Orders/Cart
+OK Trang lấy token trả HTTP 200 /Orders/Cart
+OK Có antiforgery token hợp lệ
+HTTP POST /Orders/Review -> 200, 29.2 ms, 5580 bytes, final=/Orders/Review
+OK Không tạo checkout ticket cho MINQA
+OK Không dùng lượt voucher lỗi
+HTTP GET /Orders/Cart -> 200, 23.2 ms, 5447 bytes, final=/Orders/Cart
+OK Trang lấy token trả HTTP 200 /Orders/Cart
+OK Có antiforgery token hợp lệ
+HTTP POST /Orders/Review -> 200, 16.5 ms, 5580 bytes, final=/Orders/Review
+OK Không tạo checkout ticket cho OLDQA
+OK Không dùng lượt voucher lỗi
+HTTP GET /Orders/Cart -> 200, 28.2 ms, 5447 bytes, final=/Orders/Cart
+OK Trang lấy token trả HTTP 200 /Orders/Cart
+OK Có antiforgery token hợp lệ
+HTTP POST /Orders/UpdateCart -> 200, 8.8 ms, 1767 bytes, final=/Orders/Cart

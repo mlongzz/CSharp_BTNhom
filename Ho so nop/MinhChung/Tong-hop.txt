@@ -1,0 +1,12 @@
+Kiểm thử TC-066–TC-089 và NFR01–NFR14, 15/11/2026.
+Nguồn TestCase.xlsx trong mlongzz/CSharp_BTNhom, commit 851fd834fb7e6d24fe714ea3e859f094a0b03fe6.
+Source code Bookstore commit 6f3c155ccba403dafe5c307898a0c113699ab742.
+Windows x64, .NET SDK 10.0.401, runtime 10.0.12 với DOTNET_ROLL_FORWARD=Major cho app net9.0.
+Edge 157.0.4341.60, HTTP loopback và SQLite thử nghiệm riêng.
+{"TC-": {"Đạt": 23, "Không đạt": 1}, "NFR": {"Đạt": 8, "Bị chặn": 5, "Không đạt": 1}}
+xUnit hiện có: 27 đạt, 0 lỗi, 0 bỏ qua. Chi tiết bookstore-tests.trx.
+TC-078 không đạt: Receive chưa xác thực số thực nhận/tình trạng hàng hoàn phía server.
+NFR11 không đạt: SC15 tràn ngang tại 360 px khi email dài hợp lệ.
+NFR02 còn thiếu SLA tải. NFR05 thiếu staging HTTPS. NFR09 thiếu giám sát dài hạn.
+NFR10 mới xác minh backup/restore, còn thiếu job/lịch sử hàng ngày. NFR14 còn thiếu tiêu chí/tài liệu API.
+Mỗi ca có file log riêng. Ảnh SCxx-360.png cùng browser-metrics.json ghi bằng chứng responsive.

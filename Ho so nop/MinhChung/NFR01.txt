@@ -1,0 +1,11 @@
+NFR01
+Ngày chạy 15/11/2026, giờ Việt Nam.
+Môi trường Windows x64, .NET 10.0.12 chạy ứng dụng net9.0 bằng DOTNET_ROLL_FORWARD=Major.
+SQLite testcase-final.db riêng, HTTP 127.0.0.1:5188. Edge 157.0.4341.60.
+Trạng thái Đạt
+Kết quả Edge tải đầy đủ HTML/CSS/JS tại local, 30 mẫu/bộ sau 3 lần làm nóng. 20 sách p95=21.5 ms, 100 sách p95=23.1 ms, 1000 sách p95=23.4 ms. Cả ba dưới 3 giây.
+
+{"size": 20, "samples": 30, "p95": 21.5, "min": 15.599999994039536, "max": 22}
+{"size": 100, "samples": 30, "p95": 23.100000008940697, "min": 16.200000002980232, "max": 23.200000002980232}
+{"size": 1000, "samples": 30, "p95": 23.399999991059303, "min": 16, "max": 24.100000008940697}
+Đo PerformanceNavigationTiming.loadEventEnd, không throttling mạng/CPU. Phiên local, chưa xác nhận SLA triển khai.

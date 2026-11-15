@@ -1,0 +1,19 @@
+TC-080
+Ngày chạy 15/11/2026, giờ Việt Nam
+Mã nguồn Bookstore commit 6f3c155; file TestCase nguồn commit 851fd834.
+Windows x64, .NET SDK 10.0.401, ASP.NET Core 10.0.12, DOTNET_ROLL_FORWARD=Major.
+Web HTTP loopback 127.0.0.1:5188. SQLite testcase-final.db độc lập.
+Khởi tạo dữ liệu bằng SQL. Thao tác nghiệp vụ kiểm tra qua MVC HTTP, cookie và antiforgery token.
+Trạng thái Đạt
+Kết quả NCC bằng 0 hoặc không tồn tại đều bị từ chối, không thêm phiếu nhập hoặc dòng phiếu.
+
+HTTP GET /Warehouse -> 200, 20.4 ms, 14545 bytes, final=/Warehouse
+OK Trang lấy token trả HTTP 200 /Warehouse
+OK Có antiforgery token hợp lệ
+HTTP POST /Warehouse/Create -> 200, 51.1 ms, 14779 bytes, final=/Warehouse
+OK Không tạo phiếu với supplier 0
+HTTP GET /Warehouse -> 200, 12.8 ms, 14545 bytes, final=/Warehouse
+OK Trang lấy token trả HTTP 200 /Warehouse
+OK Có antiforgery token hợp lệ
+HTTP POST /Warehouse/Create -> 200, 32.5 ms, 14675 bytes, final=/Warehouse
+OK Không tạo phiếu với supplier 999999
