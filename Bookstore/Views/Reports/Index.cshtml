@@ -2,18 +2,22 @@
 @{
     ViewData["Title"] = "Báo cáo";
     var report = Model.Report;
-    var lowStock = report.Inventory.Count(book => book.Stock < book.Minimum);
     var section = Model.Section;
 }
 <p class="eyebrow mb-1">KHU VỰC QUẢN TRỊ</p>
 <h1>Báo cáo và thống kê</h1>
-<div class="row g-3 mb-4">
-    <div class="col-6 col-md-3"><div class="surface p-3">Doanh thu hôm nay <strong class="d-block fs-4">@report.RevenueToday.ToString("N0") ₫</strong></div></div>
-    <div class="col-6 col-md-3"><div class="surface p-3">Đơn mới hôm nay <strong class="d-block fs-4">@report.NewOrdersToday</strong></div></div>
-    <div class="col-6 col-md-3"><div class="surface p-3">Đơn chờ xác nhận <strong class="d-block fs-4">@report.PendingOrders</strong></div></div>
-    <div class="col-6 col-md-3"><div class="surface p-3">Sách sắp hết <strong class="d-block fs-4">@lowStock</strong></div></div>
-</div>
+@if (report is not null)
+{
+    var lowStock = report.Inventory.Count(book => book.Stock < book.Minimum);
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3"><div class="surface p-3">Doanh thu hôm nay <strong class="d-block fs-4">@report.RevenueToday.ToString("N0") ₫</strong></div></div>
+        <div class="col-6 col-md-3"><div class="surface p-3">Đơn mới hôm nay <strong class="d-block fs-4">@report.NewOrdersToday</strong></div></div>
+        <div class="col-6 col-md-3"><div class="surface p-3">Đơn chờ xác nhận <strong class="d-block fs-4">@report.PendingOrders</strong></div></div>
+        <div class="col-6 col-md-3"><div class="surface p-3">Sách sắp hết <strong class="d-block fs-4">@lowStock</strong></div></div>
+    </div>
+}
 <form asp-action="Index" method="get" class="surface p-3 row g-2 align-items-end mb-4">
+    <div asp-validation-summary="All" class="col-12 text-danger" role="alert"></div>
     <label class="col-sm">Từ ngày<input class="form-control" type="date" name="from" value="@Model.From.ToString("yyyy-MM-dd")" required /></label>
     <label class="col-sm">Đến ngày<input class="form-control" type="date" name="through" value="@Model.Through.ToString("yyyy-MM-dd")" required /></label>
     <label class="col-sm">Loại báo cáo
@@ -31,6 +35,11 @@
     </div>
 </form>
 
+@if (report is null)
+{
+    return;
+}
+
 @if (section is ReportSection.Overview or ReportSection.Revenue)
 {
     <section class="surface p-4 mb-4">
@@ -43,18 +52,20 @@
         {
             var max = report.Revenue.Max(day => day.Revenue);
             <p>Tổng trong kỳ <strong>@report.Revenue.Sum(day => day.Revenue).ToString("N0") ₫</strong></p>
-            <table class="table align-middle">
-                <thead><tr><th>Ngày</th><th>Đơn hoàn tất</th><th>Doanh thu</th></tr></thead>
-                <tbody>
-                @foreach (var day in report.Revenue)
-                {
-                    <tr><td>@day.Day</td><td>@day.CompletedOrders</td><td>
-                        @day.Revenue.ToString("N0") ₫
-                        <progress class="d-block" aria-label="Doanh thu @day.Day" max="@Math.Max(1, max)" value="@day.Revenue"></progress>
-                    </td></tr>
-                }
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Ngày</th><th>Đơn hoàn tất</th><th>Doanh thu</th></tr></thead>
+                    <tbody>
+                    @foreach (var day in report.Revenue)
+                    {
+                        <tr><td>@day.Day</td><td>@day.CompletedOrders</td><td>
+                            @day.Revenue.ToString("N0") ₫
+                            <progress class="d-block" aria-label="Doanh thu @day.Day" max="@Math.Max(1, max)" value="@day.Revenue"></progress>
+                        </td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
         }
     </section>
 }
@@ -68,15 +79,17 @@
         }
         else
         {
-            <table class="table">
-                <thead><tr><th>Trạng thái</th><th>Số đơn</th></tr></thead>
-                <tbody>
-                @foreach (var order in report.Orders)
-                {
-                    <tr><td>@ReportsViewModel.Status(order.Status)</td><td>@order.Count</td></tr>
-                }
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead><tr><th>Trạng thái</th><th>Số đơn</th></tr></thead>
+                    <tbody>
+                    @foreach (var order in report.Orders)
+                    {
+                        <tr><td>@ReportsViewModel.Status(order.Status)</td><td>@order.Count</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
         }
     </section>
 }
@@ -91,18 +104,20 @@
         else
         {
             var max = report.TopBooks.Max(book => book.Quantity);
-            <table class="table align-middle">
-                <thead><tr><th>Sách</th><th>Số cuốn trong đơn hoàn tất</th></tr></thead>
-                <tbody>
-                @foreach (var book in report.TopBooks)
-                {
-                    <tr><td>@book.Title</td><td>
-                        @book.Quantity
-                        <progress class="d-block" aria-label="Số lượng @book.Title" max="@Math.Max(1, max)" value="@book.Quantity"></progress>
-                    </td></tr>
-                }
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Sách</th><th>Số cuốn trong đơn hoàn tất</th></tr></thead>
+                    <tbody>
+                    @foreach (var book in report.TopBooks)
+                    {
+                        <tr><td>@book.Title</td><td>
+                            @book.Quantity
+                            <progress class="d-block" aria-label="Số lượng @book.Title" max="@Math.Max(1, max)" value="@book.Quantity"></progress>
+                        </td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
         }
     </section>
 }
@@ -112,14 +127,16 @@
         <h2 class="h4">Nhập và tồn kho</h2>
         <p>Trong kỳ đã nhập <strong>@report.ReceivedQuantity cuốn</strong> với giá trị @report.ReceivingCost.ToString("N0") ₫ theo đơn giá trên phiếu.</p>
         <h3 class="h6">Tồn hiện tại</h3>
-        <table class="table">
-            <thead><tr><th>Sách</th><th>Tồn</th><th>Ngưỡng</th><th>Cảnh báo</th></tr></thead>
-            <tbody>
-            @foreach (var book in report.Inventory)
-            {
-                <tr><td>@book.Title</td><td>@book.Stock</td><td>@book.Minimum</td><td>@(book.Stock < book.Minimum ? "Sắp hết" : "Đủ tồn")</td></tr>
-            }
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table">
+                <thead><tr><th>Sách</th><th>Tồn</th><th>Ngưỡng</th><th>Cảnh báo</th></tr></thead>
+                <tbody>
+                @foreach (var book in report.Inventory)
+                {
+                    <tr><td>@book.Title</td><td>@book.Stock</td><td>@book.Minimum</td><td>@(book.Stock < book.Minimum ? "Sắp hết" : "Đủ tồn")</td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
     </section>
 }

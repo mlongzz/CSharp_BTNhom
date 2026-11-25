@@ -1,0 +1,30 @@
+@model AddressInput
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Thêm địa chỉ" : "Sửa địa chỉ";
+}
+<section class="account-panel">
+    <h1>@ViewData["Title"]</h1>
+    <form asp-action="Address" method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <input asp-for="Id" type="hidden" />
+        <label class="form-label" asp-for="Recipient"></label>
+        <input class="form-control mb-2" asp-for="Recipient" />
+        <label class="form-label" asp-for="Phone"></label>
+        <input class="form-control mb-2" asp-for="Phone" type="tel" pattern="0[0-9]{9}" />
+        <label class="form-label" asp-for="Province"></label>
+        <input class="form-control mb-2" asp-for="Province" />
+        <label class="form-label" asp-for="District"></label>
+        <input class="form-control mb-2" asp-for="District" />
+        <label class="form-label" asp-for="Ward"></label>
+        <input class="form-control mb-2" asp-for="Ward" />
+        <label class="form-label" asp-for="Street"></label>
+        <input class="form-control mb-2" asp-for="Street" />
+        <div class="form-check mb-3">
+            <input class="form-check-input" asp-for="IsDefault" />
+            <label class="form-check-label" asp-for="IsDefault"></label>
+        </div>
+        <button class="btn btn-primary">Lưu địa chỉ</button>
+        <a class="ms-2" asp-action="Index">Quay lại</a>
+    </form>
+</section>
+

@@ -38,3 +38,6 @@ Có thể đăng nhập bằng bí danh ở trên hoặc địa chỉ `<bí danh
 ```powershell
 dotnet test .\Bookstore.Tests\Bookstore.Tests.csproj
 ```
+## Thêm Github Actions
+Workflow Bookstore CI đã chạy thành công.
+## Chạy bằng docker http://127.0.0.1:8080

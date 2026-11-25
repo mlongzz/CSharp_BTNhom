@@ -20,6 +20,12 @@ public class AdminOrdersController(OrderService orders, ILogger<AdminOrdersContr
         ViewData["OrderId"] = orderId;
         ViewData["From"] = from?.ToString("yyyy-MM-dd");
         ViewData["To"] = to?.ToString("yyyy-MM-dd");
+        if (from > to)
+            ModelState.AddModelError(nameof(to), "Đến ngày phải bằng hoặc sau Từ ngày.");
+
+        if (!ModelState.IsValid)
+            return View(Array.Empty<Order>());
+
         return View(allOrders.Where(order => (status is null || order.Status == status) &&
             (orderId is null || order.Id == orderId) &&
             (string.IsNullOrWhiteSpace(customer) || order.Customer.Contains(customer, StringComparison.OrdinalIgnoreCase)) &&

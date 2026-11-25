@@ -65,8 +65,9 @@ public sealed class ReceivingTests : IDisposable
     {
         var service = Start();
         service.SetMinimum(1, 4);
-        service.Reconcile(1, 3, "Đếm tại kệ", "kho");
-        service.Reconcile(1, 3, "Đếm lại", "kho");
+        service.Reconcile(1, 5, 3, "Đếm tại kệ", "kho");
+        Assert.Throws<ReceivingRuleException>(() => service.Reconcile(1, 5, 4, "Kiểm kê từ trang cũ", "kho"));
+        service.Reconcile(1, 3, 3, "Đếm lại", "kho");
         var book = service.Inventory().Single(item => item.Id == 1);
         Assert.Equal(3, book.Stock);
         Assert.Equal(4, book.Minimum);

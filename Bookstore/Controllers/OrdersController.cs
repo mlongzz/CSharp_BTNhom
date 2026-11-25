@@ -21,17 +21,7 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
     public IActionResult Index() => View(orders.CustomerOrders(Customer));
 
     [HttpGet]
-    public IActionResult Cart()
-    {
-        var selected = ReadCart();
-        var model = BuildCart(selected, null);
-        if (model.Lines.Count != selected.Count)
-        {
-            SaveCart(model.Lines.ToDictionary(line => line.Book.Id, line => line.Quantity));
-            TempData["Error"] = "Đã bỏ khỏi giỏ các sách ngừng kinh doanh.";
-        }
-        return View(model);
-    }
+    public IActionResult Cart() => View(BuildCart(ReadCart(), null));
 
     [HttpGet]
     public IActionResult Result(long id)
@@ -91,24 +81,37 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
     public IActionResult Review(string? address, long? addressId, string? voucher, string method)
     {
         var selected = ReadCart();
+
+        CartViewModel CurrentCart() => BuildCart(selected, address) with
+        {
+            AddressId = addressId,
+            Voucher = voucher,
+            Method = method
+        };
+
         try
         {
             if (!ModelState.IsValid || method is not ("Cod" or "Online"))
                 throw new OrderRuleException("Chọn phương thức thanh toán hợp lệ.");
-            if (addressId.HasValue)
-                address = accounts.Address(Customer, addressId.Value)?.Formatted
-                    ?? throw new OrderRuleException("Địa chỉ đã lưu không còn khả dụng.");
+            var shippingAddress = string.IsNullOrWhiteSpace(address) && addressId is long savedId
+                ? accounts.Address(Customer, savedId)?.Formatted
+                    ?? throw new OrderRuleException("Địa chỉ đã lưu không còn khả dụng.")
+                : address;
 
-            var quote = orders.Quote(address, selected, voucher);
-            var draft = new CheckoutDraft(Customer, address!, selected, voucher, method,
+            var currentCart = CurrentCart();
+            if (currentCart.StockNotices.Count > 0)
+                return View(nameof(Cart), currentCart);
+
+            var quote = orders.Quote(shippingAddress, selected, voucher);
+            var draft = new CheckoutDraft(Customer, shippingAddress!, selected, voucher, method,
                 quote.Total, Guid.NewGuid().ToString("N"), clock.GetUtcNow().AddMinutes(15));
             var ticket = checkout.Protect(JsonSerializer.Serialize(draft));
-            return View(new CheckoutViewModel(quote, address!, method, ticket));
+            return View(new CheckoutViewModel(quote, shippingAddress!, method, ticket));
         }
         catch (OrderRuleException exception)
         {
             ModelState.AddModelError("", exception.Message);
-            return View(nameof(Cart), BuildCart(selected, address));
+            return View(nameof(Cart), CurrentCart());
         }
     }
 
@@ -133,18 +136,26 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
     private IActionResult Submit(string ticket, string method, string result)
     {
         var draft = ReadDraft(ticket);
-        if (draft is null || draft.Method != method || result != "Success")
+        if (draft is null || draft.Method != method)
         {
-            if (draft?.Method == "Online" && method == "Online" && result is "Failure" or "Expired")
-                orders.RejectPayment(draft.Reference);
-            TempData["Error"] = "Thanh toán thất bại hoặc đã hết hạn. Giỏ hàng được giữ lại.";
+            TempData["Error"] = "Phiên thanh toán không hợp lệ hoặc đã hết hạn.";
             return RedirectToAction(nameof(Cart));
         }
+
+        // A retry can arrive after checkout has cleared the old cart.
+        if (orders.FindPlacedOrder(Customer, draft.Reference) is long previous)
+            return RedirectToAction(nameof(Result), new { id = previous });
+
         var selected = ReadCart();
-        if (selected.Count != draft.Quantities.Count ||
-            draft.Quantities.Any(item => selected.GetValueOrDefault(item.Key) != item.Value))
+        var cartChanged = selected.Count != draft.Quantities.Count ||
+            draft.Quantities.Any(item => selected.GetValueOrDefault(item.Key) != item.Value);
+        if (result != "Success" || cartChanged)
         {
-            TempData["Error"] = "Giỏ hàng đã thay đổi. Vui lòng kiểm tra lại.";
+            if (method == "Online" && result is "Failure" or "Expired")
+                orders.RejectPayment(draft.Reference);
+            TempData["Error"] = result == "Success"
+                ? "Giỏ hàng đã thay đổi. Vui lòng kiểm tra lại."
+                : "Thanh toán thất bại hoặc đã hết hạn. Giỏ hàng được giữ lại.";
             return RedirectToAction(nameof(Cart));
         }
 
@@ -170,10 +181,10 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
 
     [HttpPost("/Home/Place")]
     public IActionResult PlaceLegacy(string? address, [Bind(Prefix = "quantities")] Dictionary<int, int>? quantities) =>
-        PlaceOrder(address, quantities?.Where(item => item.Value != 0).ToDictionary() ?? []);
+        PlaceOrder(address, quantities?.Where(item => item.Value != 0).ToDictionary() ?? [], reconcileSession: false);
 
     private IActionResult PlaceOrder(string? address, Dictionary<int, int> selected, string? voucher = null,
-        string? paymentReference = null, long? expectedTotal = null, bool online = false)
+        string? paymentReference = null, long? expectedTotal = null, bool online = false, bool reconcileSession = true)
     {
         try
         {
@@ -189,7 +200,7 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
         catch (OrderRuleException exception)
         {
             ModelState.AddModelError("", exception.Message);
-            return View(nameof(Cart), BuildCart(selected, address));
+            return View(nameof(Cart), BuildCart(selected, address, reconcileSession));
         }
     }
 
@@ -222,7 +233,37 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
     private void SaveCart(Dictionary<int, int> cart) =>
         HttpContext.Session.SetString(CartKey, JsonSerializer.Serialize(cart));
 
-    private CartViewModel BuildCart(Dictionary<int, int> cart, string? address) =>
-        new(orders.Books().Where(book => cart.ContainsKey(book.Id))
-            .Select(book => new CartLine(book, cart[book.Id])).ToList(), address, accounts.Addresses(Customer));
+    private CartViewModel BuildCart(Dictionary<int, int> cart, string? address, bool reconcileSession = true)
+    {
+        var books = orders.Books().ToDictionary(book => book.Id);
+        var lines = new List<CartLine>();
+        var notices = new List<string>();
+        foreach (var (id, quantity) in cart)
+        {
+            if (!books.TryGetValue(id, out var book))
+            {
+                notices.Add("Đã bỏ một đầu sách ngừng kinh doanh khỏi giỏ.");
+                continue;
+            }
+            if (book.Stock == 0)
+            {
+                notices.Add($"{book.Title} đã hết hàng và được bỏ khỏi giỏ.");
+                continue;
+            }
+            if (quantity > book.Stock)
+                notices.Add($"{book.Title} chỉ còn {book.Stock} cuốn. Số lượng trong giỏ đã giảm từ {quantity} xuống {book.Stock}.");
+
+            lines.Add(new CartLine(book, Math.Min(quantity, book.Stock)));
+        }
+
+        if (reconcileSession && notices.Count > 0)
+            SaveCart(lines.ToDictionary(line => line.Book.Id, line => line.Quantity));
+
+        var addresses = accounts.Addresses(Customer);
+        return new CartViewModel(lines, address, addresses)
+        {
+            StockNotices = notices,
+            AddressId = addresses.FirstOrDefault(saved => saved.IsDefault)?.Id
+        };
+    }
 }

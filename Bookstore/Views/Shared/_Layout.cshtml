@@ -14,7 +14,7 @@
             @if (User.IsInRole("Customer"))
             {
                 <a asp-controller="Orders" asp-action="Cart">Giỏ hàng</a>
-                <a asp-controller="Orders" asp-action="Index">Đơn hàng của tôi</a>
+                <a asp-controller="Orders" asp-action="Index">Lịch sử đơn hàng</a>
                 <a asp-controller="Profile" asp-action="Index">Tài khoản của tôi</a>
             }
             @if (User.IsInRole("Sales"))
@@ -29,6 +29,10 @@
             {
                 <a asp-controller="Warehouse" asp-action="Index">Nhập kho</a>
                 <a asp-controller="Warehouse" asp-action="Stock">Kiểm kê</a>
+            }
+            @if (User.IsInRole("Warehouse"))
+            {
+                <a asp-controller="DeliveryReturns" asp-action="Index">Hàng hoàn từ giao vận</a>
             }
             @if (User.IsInRole("Admin"))
             {

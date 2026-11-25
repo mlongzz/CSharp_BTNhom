@@ -1,4 +1,5 @@
 using System.Globalization;
+using Bookstore.Application;
 using System.IO.Compression;
 using System.Xml.Linq;
 
@@ -12,9 +13,8 @@ internal static class ReportWorkbook
     private static readonly XNamespace Types = "http://schemas.openxmlformats.org/package/2006/content-types";
     private const string SpreadsheetMime = "application/vnd.openxmlformats-officedocument.spreadsheetml";
 
-    public static byte[] Export(ReportsViewModel model)
+    public static byte[] Export(ReportsViewModel model, BookstoreReport report)
     {
-        var report = model.Report;
         var sheets = new List<Sheet>
         {
             new("Tổng quan", [

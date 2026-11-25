@@ -57,4 +57,27 @@ public sealed partial class SqliteOrderRepository
             """);
         command.ExecuteNonQuery();
     }
+
+    internal static void MigrateDeliveryReturns(SqliteConnection connection, SqliteTransaction transaction)
+    {
+        using var command = Command(connection, transaction, """
+            CREATE TABLE orders_v4 (
+                id INTEGER PRIMARY KEY, customer TEXT NOT NULL, address TEXT NOT NULL,
+                status TEXT NOT NULL CHECK(status IN ('Pending','Confirmed','Packing','Shipped','Completed',
+                    'Cancelled','DeliveryFailed','ReturnedToWarehouse')),
+                total INTEGER NOT NULL CHECK(total >= 0),
+                created_at TEXT, completed_at TEXT, carrier TEXT, tracking_code TEXT, rejection_reason TEXT,
+                payment_method TEXT NOT NULL DEFAULT 'Cod', payment_status TEXT NOT NULL DEFAULT 'Unpaid',
+                payment_reference TEXT UNIQUE, discount INTEGER NOT NULL DEFAULT 0, shipping_fee INTEGER NOT NULL DEFAULT 0
+            );
+            INSERT INTO orders_v4(id,customer,address,status,total,created_at,completed_at,carrier,tracking_code,
+                rejection_reason,payment_method,payment_status,payment_reference,discount,shipping_fee)
+            SELECT id,customer,address,status,total,created_at,completed_at,carrier,tracking_code,
+                rejection_reason,payment_method,payment_status,payment_reference,discount,shipping_fee FROM orders;
+            DROP TABLE orders;
+            ALTER TABLE orders_v4 RENAME TO orders;
+            CREATE INDEX idx_orders_customer ON orders(customer);
+            """);
+        command.ExecuteNonQuery();
+    }
 }

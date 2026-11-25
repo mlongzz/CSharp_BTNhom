@@ -16,6 +16,8 @@ public sealed class OrderService(IOrderRepository repository, TimeProvider clock
         return Price(transaction, SelectLines(transaction, quantities), voucher, false);
     }
 
+    public long? FindPlacedOrder(string customer, string reference) => repository.FindPayment(customer, reference);
+
     public void RejectPayment(string reference)
     {
         using var transaction = repository.BeginTransaction();
@@ -117,12 +119,33 @@ public sealed class OrderService(IOrderRepository repository, TimeProvider clock
             (OrderStatus.Packing, OrderAction.Shipped) when !string.IsNullOrWhiteSpace(carrier) && carrier.Length <= 100 &&
                 !string.IsNullOrWhiteSpace(tracking) && tracking.Length <= 100 => OrderStatus.Shipped,
             (OrderStatus.Shipped, OrderAction.Completed) => OrderStatus.Completed,
+            (OrderStatus.Shipped, OrderAction.DeliveryFailed) when !string.IsNullOrWhiteSpace(reason) && reason.Length <= 500
+                => OrderStatus.DeliveryFailed,
             _ => throw new OrderRuleException("Trạng thái hoặc thông tin xử lý đơn không hợp lệ.")
         };
         var now = clock.GetUtcNow();
         transaction.UpdateStatus(id, next, now, action == OrderAction.Shipped ? carrier!.Trim() : null,
-            action == OrderAction.Shipped ? tracking!.Trim() : null, action == OrderAction.Rejected ? reason!.Trim() : null);
+            action == OrderAction.Shipped ? tracking!.Trim() : null, action is OrderAction.Rejected or OrderAction.DeliveryFailed ? reason!.Trim() : null);
         transaction.AppendEvent(id, new(action, staff, now));
+        transaction.Commit();
+    }
+
+    public void ReceiveFailedDelivery(long id, string staff)
+    {
+        using var transaction = repository.BeginTransaction();
+        var order = transaction.FindOrder(id) ?? throw OrderNotFound();
+        if (order.Status != OrderStatus.DeliveryFailed)
+            throw new OrderRuleException("Chỉ nhận hoàn cho đơn giao thất bại đang chờ về kho.");
+
+        var now = clock.GetUtcNow();
+        foreach (var line in order.Lines)
+        {
+            transaction.RestoreStock(line.BookId, line.Quantity);
+            transaction.StockMovement(line.BookId, line.Quantity, "DeliveryReturn", id, staff, now);
+        }
+
+        transaction.UpdateStatus(id, OrderStatus.ReturnedToWarehouse, now);
+        transaction.AppendEvent(id, new(OrderAction.ReturnedToWarehouse, staff, now));
         transaction.Commit();
     }
 
@@ -157,14 +180,14 @@ public sealed class OrderService(IOrderRepository repository, TimeProvider clock
         };
         if (status == "Completed")
         {
+            var exchange = request.Outcome == "Exchange";
+            if (exchange && !transaction.TryDeductStock(request.BookId, request.Quantity))
+                throw new OrderRuleException("Kho không đủ sách để đổi. Vui lòng thử lại sau khi có hàng.");
+
             transaction.RestoreStock(request.BookId, request.Quantity);
             transaction.StockMovement(request.BookId, request.Quantity, "Return", id, staff, now);
-            if (request.Outcome == "Exchange")
-            {
-                if (!transaction.TryDeductStock(request.BookId, request.Quantity))
-                    throw new OrderRuleException("Không đủ sách để đổi.");
+            if (exchange)
                 transaction.StockMovement(request.BookId, -request.Quantity, "Exchange", id, staff, now);
-            }
         }
         var refund = 0L;
         if (status == "Completed" && request.Outcome == "Refund")

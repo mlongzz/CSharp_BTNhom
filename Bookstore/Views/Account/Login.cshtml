@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+<section class="account-panel">
+    <h1>Đăng nhập</h1>
+    <p class="text-secondary">Đăng nhập bằng email hoặc tài khoản mẫu.</p>
+    <form asp-action="Login" method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+        <label class="form-label" for="username">Email</label>
+        <input class="form-control mb-3" name="username" id="username" value="@ViewData["Identity"]"
+               autocomplete="username" maxlength="254" required />
+        <label class="form-label" for="password">Mật khẩu</label>
+        <input class="form-control mb-3" type="password" name="password" id="password" autocomplete="current-password" required />
+        <button class="btn btn-primary">Đăng nhập</button>
+        <a class="ms-2" asp-action="Register">Đăng ký tài khoản</a>
+    </form>
+</section>
+

@@ -3,6 +3,7 @@ using Bookstore.Domain;
 using Bookstore.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Bookstore.Controllers;
 
@@ -52,12 +53,12 @@ public sealed class WarehouseController(ReceivingService receiving, ILogger<Ware
         }, "Đã xác nhận thực nhận và cập nhật tồn kho.");
 
     [HttpPost, Authorize(Roles = "Warehouse")]
-    public IActionResult SetMinimum(int bookId, int minimum) =>
+    public IActionResult SetMinimum(int bookId, [BindRequired] int minimum) =>
         Run(() => receiving.SetMinimum(bookId, minimum), "Đã cập nhật ngưỡng cảnh báo.", nameof(Stock));
 
     [HttpPost, Authorize(Roles = "Warehouse")]
-    public IActionResult Reconcile(int bookId, int count, string? reason) =>
-        Run(() => receiving.Reconcile(bookId, count, reason, Actor), "Đã ghi nhận kết quả kiểm kê.", nameof(Stock));
+    public IActionResult Reconcile(int bookId, [BindRequired] int expectedStock, [BindRequired] int count, string? reason) =>
+        Run(() => receiving.Reconcile(bookId, expectedStock, count, reason, Actor), "Đã ghi nhận kết quả kiểm kê.", nameof(Stock));
 
     private IActionResult Run(Action operation, string success, string destination = nameof(Index))
     {

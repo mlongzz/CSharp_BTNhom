@@ -1,0 +1,53 @@
+@using Bookstore.Domain
+@model IReadOnlyList<Account>
+@{
+    ViewData["Title"] = "Tài khoản và phân quyền";
+    string RoleLabel(string role) => role switch
+    {
+        AccountRoles.Admin => "Quản trị viên",
+        AccountRoles.Sales => "Nhân viên bán hàng",
+        AccountRoles.Warehouse => "Nhân viên kho",
+        _ => "Khách hàng"
+    };
+}
+<p class="eyebrow mb-1">QUẢN TRỊ HỆ THỐNG</p>
+<h1>Tài khoản và phân quyền</h1>
+@foreach (var account in Model)
+{
+    <article class="surface p-3 mb-3">
+        <h2 class="h5 mb-2">@(string.IsNullOrWhiteSpace(account.Name) ? account.Email ?? account.Username : account.Name)</h2>
+        <p class="mb-2">@(account.Email ?? account.Username) · @(account.IsLocked ? "Đã khóa" : "Hoạt động")</p>
+        @if (account.LastLogin is { } login)
+        {
+            <p class="small text-secondary">Đăng nhập gần nhất @login.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm") · UTC+7</p>
+        }
+        @if (account.Username != User.Identity?.Name)
+        {
+            <form asp-action="Update" method="post" class="d-flex flex-wrap align-items-end gap-3">
+                <input type="hidden" name="username" value="@account.Username" />
+                <label>
+                    Vai trò
+                    <select class="form-select" name="role">
+                        @foreach (var role in AccountRoles.All)
+                        {
+                            <option value="@role" selected="@(account.Role == role)">@RoleLabel(role)</option>
+                        }
+                    </select>
+                </label>
+                <label>
+                    Trạng thái
+                    <select class="form-select" name="locked">
+                        <option value="false" selected="@(!account.IsLocked)">Hoạt động</option>
+                        <option value="true" selected="@account.IsLocked">Đã khóa</option>
+                    </select>
+                </label>
+                <button class="btn btn-primary">Lưu quyền</button>
+            </form>
+        }
+        else
+        {
+            <p class="mb-0">Quản trị viên · Tài khoản đang dùng</p>
+        }
+    </article>
+}
+
