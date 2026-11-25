@@ -33,6 +33,27 @@ public sealed class CatalogTests : IDisposable
     }
 
     [Fact]
+    public void AvailabilityCanChangeWithoutEditingLegacyCatalogFields()
+    {
+        var catalog = OpenCatalog();
+        using (var connection = new SqliteConnection($"Data Source={DatabasePath};Pooling=False"))
+        {
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = "UPDATE books SET category_id=NULL, author_id=NULL, publisher_id=NULL WHERE id=1";
+            command.ExecuteNonQuery();
+        }
+
+        var original = Assert.IsType<CatalogBook>(catalog.FindBook(1));
+        catalog.SetBookActive(1, false);
+        Assert.Equal(original with { Active = false }, catalog.FindBook(1));
+        Assert.Null(catalog.Details(1, null));
+
+        catalog.SetBookActive(1, true);
+        Assert.Equal(original, catalog.FindBook(1));
+    }
+
+    [Fact]
     public void ReviewsRequireCompletedOwnedOrderAndCannotRepeat()
     {
         var catalog = OpenCatalog();

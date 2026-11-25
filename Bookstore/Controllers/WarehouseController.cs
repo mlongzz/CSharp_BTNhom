@@ -37,7 +37,7 @@ public sealed class WarehouseController(ReceivingService receiving, ILogger<Ware
             logger.LogInformation("Purchase {PurchaseId} created by {Actor}", id, Actor);
         }, "Đã lập phiếu và chuyển sang chờ duyệt.");
 
-    [HttpPost, Authorize(Roles = "Admin")]
+    [HttpPost]
     public IActionResult Approve(long id) => Run(() =>
     {
         receiving.Approve(id, Actor);

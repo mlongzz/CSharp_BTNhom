@@ -26,7 +26,7 @@ app.SeedBookstoreAccounts();
 app.UseExceptionHandler("/Home/Error");
 app.UseStaticFiles();
 app.UseRouting();
-app.UseSession();
+app.UseWhen(context => !context.Request.Path.StartsWithSegments("/api"), web => web.UseSession());
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

@@ -55,6 +55,23 @@ public sealed partial class SqliteCustomerAccounts(SqliteDatabase database) : IC
         MigrateMailDelivery(connection, transaction);
     }
 
+    internal static void RetireLegacyDemoAccounts(SqliteConnection connection, SqliteTransaction transaction)
+    {
+        using var retire = Command(connection, transaction, """
+            UPDATE customers SET locked = 1
+            WHERE lower(username) IN ('kho', 'nhanvien') AND locked = 0
+              AND (role <> 'Admin' OR EXISTS (
+                  SELECT 1 FROM customers
+                  WHERE role = 'Admin' AND locked = 0 AND lower(username) NOT IN ('kho', 'nhanvien')
+              ));
+
+            DELETE FROM auth_sessions WHERE username IN (
+                SELECT username FROM customers WHERE lower(username) IN ('kho', 'nhanvien') AND locked = 1
+            );
+            """);
+        retire.ExecuteNonQuery();
+    }
+
     public bool Create(string username, string email, string name, string passwordHash, string role, bool sendWelcome)
     {
         if (!AccountRoles.All.Contains(role))

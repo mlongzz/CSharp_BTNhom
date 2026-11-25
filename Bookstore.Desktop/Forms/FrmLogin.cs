@@ -7,8 +7,8 @@ namespace Bookstore.Desktop.Forms;
 
 public sealed class FrmLogin : Form
 {
-    private readonly BookstoreApiClient api =
-        new("http://localhost:5187/");
+    private readonly BookstoreApiClient api;
+    private readonly CancellationTokenSource lifetime = new();
 
     private readonly TextBox txtUsername = new();
     private readonly TextBox txtPassword = new();
@@ -16,6 +16,9 @@ public sealed class FrmLogin : Form
 
     public FrmLogin()
     {
+        var apiUrl = Environment.GetEnvironmentVariable("Bookstore__DesktopApiUrl");
+        api = new BookstoreApiClient(string.IsNullOrWhiteSpace(apiUrl) ? "http://localhost:5187/" : apiUrl.Trim());
+
         Text = "Đăng nhập - Bookstore Admin";
         ClientSize = new Size(420, 330);
         StartPosition = FormStartPosition.CenterScreen;
@@ -40,6 +43,7 @@ public sealed class FrmLogin : Form
 
         txtUsername.Bounds =
             new Rectangle(50, 115, 320, 32);
+        txtUsername.MaxLength = 254;
 
         var lblPassword = new Label
         {
@@ -51,6 +55,7 @@ public sealed class FrmLogin : Form
             new Rectangle(50, 185, 320, 32);
 
         txtPassword.UseSystemPasswordChar = true;
+        txtPassword.MaxLength = 128;
 
         btnLogin.Text = "ĐĂNG NHẬP";
         btnLogin.Bounds =
@@ -74,8 +79,6 @@ public sealed class FrmLogin : Form
 
         btnLogin.Click += async (_, _) =>
             await HandleLoginAsync();
-
-        FormClosed += (_, _) => api.Dispose();
     }
 
     private async Task HandleLoginAsync()
@@ -86,21 +89,23 @@ public sealed class FrmLogin : Form
         if (string.IsNullOrWhiteSpace(username) ||
             string.IsNullOrWhiteSpace(password))
         {
-            MessageBox.Show(
+            MessageBox.Show(this,
                 "Vui lòng nhập tài khoản và mật khẩu.");
             return;
         }
 
         btnLogin.Enabled = false;
+        var cancellationToken = lifetime.Token;
 
         try
         {
             bool success = await api.LoginAsync(
-                username, password);
+                username, password, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (!success)
             {
-                MessageBox.Show(
+                MessageBox.Show(this,
                     "Đăng nhập không thành công hoặc không có quyền Admin.");
                 return;
             }
@@ -120,31 +125,51 @@ public sealed class FrmLogin : Form
                 }
                 catch (HttpRequestException)
                 {
-                    // Token vẫn được xóa khỏi client.
+                }
+                catch (OperationCanceledException)
+                {
                 }
 
-                txtPassword.Clear();
-                Show();
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    txtPassword.Clear();
+                    Show();
+                    txtPassword.Focus();
+                }
             }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
         }
         catch (HttpRequestException ex)
         {
-            MessageBox.Show(
-                "Không thể giao tiếp với backend:\n" + ex.Message);
+            if (!cancellationToken.IsCancellationRequested)
+                MessageBox.Show(this, "Không thể giao tiếp với backend.\n" + ex.Message);
         }
-        catch (TaskCanceledException)
+        catch (OperationCanceledException)
         {
-            MessageBox.Show(
-                "Kết nối quá thời gian cho phép.");
+            MessageBox.Show(this, "Kết nối quá thời gian cho phép.");
         }
         catch (Exception ex)
         {
-            MessageBox.Show(
-                "Đã xảy ra lỗi:\n" + ex.Message);
+            if (!cancellationToken.IsCancellationRequested)
+                MessageBox.Show(this, "Đã xảy ra lỗi.\n" + ex.Message);
         }
         finally
         {
-            btnLogin.Enabled = true;
+            if (!cancellationToken.IsCancellationRequested)
+                btnLogin.Enabled = true;
         }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && !IsDisposed)
+        {
+            lifetime.Cancel();
+            lifetime.Dispose();
+            api.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }

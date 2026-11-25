@@ -9,6 +9,7 @@ public interface ICatalogRepository
     CatalogBook? FindBook(int id);
     IReadOnlyList<CatalogBook> ManageBooks(string? query);
     int SaveBook(int? id, CatalogBookDraft draft);
+    void SetBookActive(int id, bool active);
     void DeleteBook(int id);
     CatalogReferences References();
     void SaveReference(ReferenceKind kind, int? id, CatalogReferenceDraft draft);
@@ -31,6 +32,7 @@ public sealed class CatalogService(ICatalogRepository catalog, TimeProvider cloc
     public IReadOnlyList<CatalogBook> ManageBooks(string? query) => catalog.ManageBooks(Clean(query));
     public CatalogReferences References() => catalog.References();
     public IReadOnlyList<Voucher> Vouchers() => catalog.Vouchers();
+    public void SetBookActive(int id, bool active) => catalog.SetBookActive(id, active);
     public void DeleteBook(int id) => catalog.DeleteBook(id);
     public void DeleteReference(ReferenceKind kind, int id) => catalog.DeleteReference(kind, id);
 

@@ -1,6 +1,7 @@
 @model Order
 @{
-    var staff = User.IsInRole("Sales");
+    var isAdmin = User.IsInRole(AccountRoles.Admin);
+    var isCustomer = User.IsInRole(AccountRoles.Customer);
     var (status, badge) = Model.Status switch
     {
         OrderStatus.Pending => ("Chờ xác nhận", "status-pending"),
@@ -21,7 +22,7 @@
     </div>
     <div class="row g-3">
         <div class="col-md-7">
-            @if (staff)
+            @if (isAdmin)
             {
                 <p class="mb-1">Khách hàng <strong>@Model.Customer</strong></p>
             }
@@ -72,7 +73,7 @@
                             <strong>@label</strong>
                             <small class="d-block text-secondary">
                                 @entry.OccurredAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm") · UTC+7
-                                @if (staff)
+                                @if (isAdmin)
                                 {
                                     <span> · @entry.Actor</span>
                                 }
@@ -83,7 +84,7 @@
             }
         </div>
     </div>
-    @if (staff && Model.Status == OrderStatus.Pending)
+    @if (isAdmin && Model.Status == OrderStatus.Pending)
     {
         <form asp-controller="AdminOrders" asp-action="Confirm" method="post">
             <input type="hidden" name="id" value="@Model.Id" />
@@ -96,7 +97,7 @@
             <button class="btn btn-outline-danger">Từ chối đơn</button>
         </form>
     }
-    else if (staff && Model.Status is OrderStatus.Confirmed or OrderStatus.Packing or OrderStatus.Shipped)
+    else if (isAdmin && Model.Status is OrderStatus.Confirmed or OrderStatus.Packing or OrderStatus.Shipped)
     {
         var next = Model.Status == OrderStatus.Confirmed ? "Packing" : Model.Status == OrderStatus.Packing ? "Shipped" : "Completed";
         <form asp-controller="AdminOrders" asp-action="Fulfill" method="post" class="d-flex flex-wrap gap-2">
@@ -120,14 +121,14 @@
             </form>
         }
     }
-    else if (!staff && Model.Status is OrderStatus.Pending or OrderStatus.Confirmed)
+    else if (isCustomer && Model.Status is OrderStatus.Pending or OrderStatus.Confirmed)
     {
         <form asp-controller="Orders" asp-action="Cancel" method="post" onsubmit="return confirm('Xác nhận hủy đơn này?')">
             <input type="hidden" name="id" value="@Model.Id" />
             <button class="btn btn-outline-danger">Hủy đơn</button>
         </form>
     }
-    @if (!staff && Model.Status == OrderStatus.Completed)
+    @if (isCustomer && Model.Status == OrderStatus.Completed)
     {
         <details class="mt-3">
             <summary>Yêu cầu đổi trả</summary>

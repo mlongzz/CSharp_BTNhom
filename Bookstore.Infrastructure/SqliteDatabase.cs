@@ -4,7 +4,7 @@ namespace Bookstore.Infrastructure;
 
 public sealed class SqliteDatabase(string databasePath)
 {
-    private const int SchemaVersion = 5;
+    private const int SchemaVersion = 6;
 
     internal SqliteConnection Open(bool foreignKeys = true)
     {
@@ -53,6 +53,9 @@ public sealed class SqliteDatabase(string databasePath)
             SqliteCatalogRepository.Migrate(connection, transaction);
             SqliteReceiptRepository.Migrate(connection, transaction);
         }
+        if (version < 4)
+            SqliteOrderRepository.MigrateDeliveryReturns(connection, transaction);
+
         if (version < 5)
         {
             using var migrateRoles = Command(
@@ -74,11 +77,9 @@ public sealed class SqliteDatabase(string databasePath)
 
             migrateRoles.ExecuteNonQuery();
         }
-        if (version < 4)
-{
-    SqliteOrderRepository.MigrateDeliveryReturns(
-        connection, transaction);
-}
+        if (version < 6)
+            SqliteCustomerAccounts.RetireLegacyDemoAccounts(connection, transaction);
+
         using (var check = Command(connection, transaction, "PRAGMA foreign_key_check"))
         using (var violations = check.ExecuteReader())
         {

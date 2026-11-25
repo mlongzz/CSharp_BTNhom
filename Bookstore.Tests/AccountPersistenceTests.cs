@@ -67,6 +67,63 @@ public sealed class AccountPersistenceTests : IDisposable
     }
 
     [Fact]
+    public void UpgradeFromVersionFiveLocksLegacyDemoAccountsAndRevokesTheirSessions()
+    {
+        var accounts = Start();
+        var now = DateTimeOffset.UtcNow;
+        var users = new[]
+        {
+            (Username: "KHO", Email: "kho@bookstore.test", Role: AccountRoles.Admin),
+            (Username: "nhanvien", Email: "nhanvien@bookstore.test", Role: AccountRoles.Admin),
+            (Username: "admin", Email: "admin@bookstore.test", Role: AccountRoles.Admin),
+            (Username: "khach", Email: "khach@bookstore.test", Role: AccountRoles.Customer)
+        };
+        foreach (var user in users)
+        {
+            Assert.True(accounts.Create(user.Username, user.Email, user.Username, "hash", user.Role, false));
+            Assert.True(accounts.StartSession(user.Username, "hash", user.Username, now, now.AddHours(8)));
+        }
+
+        SetSchemaVersionFive();
+        accounts = Start();
+
+        foreach (var username in new[] { "KHO", "nhanvien" })
+        {
+            var account = Assert.IsType<Account>(accounts.Find(username));
+            Assert.True(account.IsLocked);
+            Assert.Equal(username, account.Name);
+            Assert.Null(accounts.SessionAccount(username, username, now));
+            Assert.False(accounts.StartSession(username, "hash", "new-session", now, now.AddHours(8)));
+        }
+        Assert.Equal(AccountRoles.Admin, accounts.SessionAccount("admin", "admin", now)?.Role);
+        Assert.Equal(AccountRoles.Customer, accounts.SessionAccount("khach", "khach", now)?.Role);
+
+        using var connection = OpenConnection();
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT COUNT(*) FROM auth_sessions WHERE username COLLATE NOCASE IN ('kho', 'nhanvien')";
+        Assert.Equal(0L, (long)command.ExecuteScalar()!);
+    }
+
+    [Fact]
+    public void UpgradeFromVersionFivePreservesTheOnlyActiveAdministrator()
+    {
+        var accounts = Start();
+        var now = DateTimeOffset.UtcNow;
+        Assert.True(accounts.Create("kho", "kho@bookstore.test", "Kho", "hash", AccountRoles.Admin, false));
+        Assert.True(accounts.Create("admin", "admin@bookstore.test", "Admin", "hash", AccountRoles.Admin, false));
+        Assert.True(accounts.UpdateAccess("admin", AccountRoles.Admin, locked: true));
+        Assert.True(accounts.StartSession("kho", "hash", "last-admin", now, now.AddHours(8)));
+
+        SetSchemaVersionFive();
+        accounts = Start();
+
+        var account = Assert.IsType<Account>(accounts.Find("kho"));
+        Assert.False(account.IsLocked);
+        Assert.Equal(AccountRoles.Admin, account.Role);
+        Assert.NotNull(accounts.SessionAccount("kho", "last-admin", now));
+    }
+
+    [Fact]
     public void AddressDefaultsAreScopedToOwnerAndPromotedAfterDeletion()
     {
         var accounts = Start();
@@ -86,6 +143,25 @@ public sealed class AccountPersistenceTests : IDisposable
         Assert.Equal("22 A", chosen.Street);
         Assert.True(accounts.DeleteAddress("first", chosen.Id));
         Assert.True(Assert.Single(accounts.Addresses("first")).IsDefault);
+    }
+
+    private void SetSchemaVersionFive()
+    {
+        using var connection = OpenConnection();
+        using var command = connection.CreateCommand();
+        command.CommandText = "PRAGMA user_version = 5";
+        command.ExecuteNonQuery();
+    }
+
+    private SqliteConnection OpenConnection()
+    {
+        var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+        {
+            DataSource = DatabasePath,
+            ForeignKeys = true
+        }.ToString());
+        connection.Open();
+        return connection;
     }
 
     public void Dispose()

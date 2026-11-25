@@ -11,31 +11,20 @@
     <header class="site-header mb-4">
         <nav class="container py-3 d-flex flex-wrap align-items-center gap-3" aria-label="Điều hướng chính">
             <a class="brand me-2" asp-controller="Home" asp-action="Index">Nhà sách</a>
-            @if (User.IsInRole("Customer"))
+            @if (User.IsInRole(AccountRoles.Customer))
             {
                 <a asp-controller="Orders" asp-action="Cart">Giỏ hàng</a>
                 <a asp-controller="Orders" asp-action="Index">Lịch sử đơn hàng</a>
                 <a asp-controller="Profile" asp-action="Index">Tài khoản của tôi</a>
-            }
-            @if (User.IsInRole("Sales"))
-            {
-                <a asp-controller="AdminOrders" asp-action="Index">Quản trị đơn hàng</a>
-            }
-            @if (User.IsInRole("Sales") || User.IsInRole("Warehouse") || User.IsInRole("Customer"))
-            {
                 <a asp-controller="Returns" asp-action="Index">Đổi trả</a>
             }
-            @if (User.IsInRole("Warehouse") || User.IsInRole("Admin"))
+            @if (User.IsInRole(AccountRoles.Admin))
             {
+                <a asp-controller="AdminOrders" asp-action="Index">Quản trị đơn hàng</a>
+                <a asp-controller="Returns" asp-action="Index">Đổi trả</a>
                 <a asp-controller="Warehouse" asp-action="Index">Nhập kho</a>
                 <a asp-controller="Warehouse" asp-action="Stock">Kiểm kê</a>
-            }
-            @if (User.IsInRole("Warehouse"))
-            {
                 <a asp-controller="DeliveryReturns" asp-action="Index">Hàng hoàn từ giao vận</a>
-            }
-            @if (User.IsInRole("Admin"))
-            {
                 <a asp-controller="CatalogAdmin" asp-action="Index">Sách và danh mục</a>
                 <a asp-controller="Vouchers" asp-action="Index">Voucher</a>
                 <a asp-controller="AdminAccounts" asp-action="Index">Tài khoản</a>

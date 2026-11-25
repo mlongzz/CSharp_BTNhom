@@ -203,6 +203,15 @@ public sealed class SqliteCatalogRepository(SqliteDatabase database) : ICatalogR
         }
     }
 
+    public void SetBookActive(int id, bool active)
+    {
+        using var connection = database.Open();
+        using var command = Command(connection, null, "UPDATE books SET active=$active WHERE id=$id",
+            ("$id", id), ("$active", active ? 1 : 0));
+        if (command.ExecuteNonQuery() == 0)
+            throw new CatalogException("Không tìm thấy sách.");
+    }
+
     public void DeleteBook(int id)
     {
         using var connection = database.Open();

@@ -1,7 +1,7 @@
 @model InventoryViewModel
 @{
     ViewData["Title"] = "Kiểm kê tồn kho";
-    var canAdjust = User.IsInRole("Warehouse");
+    var canAdjust = User.IsInRole(AccountRoles.Admin);
 }
 <p class="eyebrow mb-1">NGHIỆP VỤ KHO</p>
 <h1>Kiểm kê tồn kho</h1>

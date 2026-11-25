@@ -5,15 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Bookstore.Controllers;
 
-[Authorize]
 public sealed class ReturnsController(OrderService orders) : Controller
 {
     [HttpGet]
-    [Authorize(Roles = "Customer,Sales,Warehouse")]
-    public IActionResult Index() => View(orders.Returns(User.IsInRole("Customer") ? User.Identity!.Name : null));
+    [Authorize(Roles = AccountRoles.Customer + "," + AccountRoles.Admin)]
+    public IActionResult Index() => View(orders.Returns(User.IsInRole(AccountRoles.Admin) ? null : User.Identity!.Name));
 
     [HttpPost]
-    [Authorize(Roles = "Customer")]
+    [Authorize(Roles = AccountRoles.Customer)]
     public IActionResult RequestReturn(long orderId, int bookId, string? reason, string outcome)
     {
         try
@@ -29,12 +28,16 @@ public sealed class ReturnsController(OrderService orders) : Controller
     }
 
     [HttpPost]
-    [Authorize(Roles = "Sales,Warehouse")]
-    public IActionResult Process(long id, string decision)
+    [Authorize(Roles = AccountRoles.Admin)]
+    public IActionResult Process(long id, string? expectedStatus, string? decision)
     {
         try
         {
-            orders.ProcessReturn(id, User.Identity!.Name!, User.IsInRole("Sales") ? "Sales" : "Warehouse", decision);
+            if (!ModelState.IsValid || id <= 0 || expectedStatus is not ("Pending" or "Approved") ||
+                decision is not ("Approve" or "Reject" or "Receive"))
+                throw new OrderRuleException("Thông tin xử lý yêu cầu đổi trả không hợp lệ. Vui lòng tải lại trang.");
+
+            orders.ProcessReturnAsAdmin(id, User.Identity!.Name!, expectedStatus, decision);
             TempData["Success"] = "Đã cập nhật yêu cầu đổi trả.";
         }
         catch (OrderRuleException exception)

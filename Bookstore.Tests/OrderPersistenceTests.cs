@@ -180,10 +180,10 @@ public sealed class OrderPersistenceTests : IDisposable
 
         service.RequestReturn(id, 1, "khach", "Sách còn nguyên vẹn", "Refund");
         var request = Assert.Single(service.Returns("khach"));
-        Assert.Throws<OrderRuleException>(() => service.ProcessReturn(request.Id, "kho", "Warehouse", "Receive"));
-        service.ProcessReturn(request.Id, "nhanvien", "Sales", "Approve");
-        service.ProcessReturn(request.Id, "kho", "Warehouse", "Receive");
-        Assert.Throws<OrderRuleException>(() => service.ProcessReturn(request.Id, "kho", "Warehouse", "Receive"));
+        Assert.Throws<OrderRuleException>(() => service.ProcessReturnAsAdmin(request.Id, "admin", "Pending", "Receive"));
+        service.ProcessReturnAsAdmin(request.Id, "admin", "Pending", "Approve");
+        service.ProcessReturnAsAdmin(request.Id, "admin", "Approved", "Receive");
+        Assert.Throws<OrderRuleException>(() => service.ProcessReturnAsAdmin(request.Id, "admin", "Approved", "Receive"));
         Assert.Equal(5, Stock(service, 1));
         Assert.Equal(130_000L, Assert.Single(service.Returns("khach")).RefundAmount);
     }
@@ -201,18 +201,40 @@ public sealed class OrderPersistenceTests : IDisposable
         service.Fulfill(id, "nhanvien", OrderAction.Completed, null, null, null);
         service.RequestReturn(id, 1, "khach", "Đổi bản khác", "Exchange");
         var request = Assert.Single(service.Returns("khach"));
-        service.ProcessReturn(request.Id, "nhanvien", "Sales", "Approve");
+        service.ProcessReturnAsAdmin(request.Id, "admin", "Pending", "Approve");
 
         Assert.Throws<OrderRuleException>(() =>
-            service.ProcessReturn(request.Id, "kho", "Warehouse", "Receive"));
+            service.ProcessReturnAsAdmin(request.Id, "admin", "Approved", "Receive"));
         Assert.Equal("Approved", Assert.Single(service.Returns("khach")).Status);
         Assert.Equal(0, Stock(service, 1));
 
         service.Cancel(otherOrder, "another");
-        service.ProcessReturn(request.Id, "kho", "Warehouse", "Receive");
+        service.ProcessReturnAsAdmin(request.Id, "admin", "Approved", "Receive");
 
         Assert.Equal("Completed", Assert.Single(service.Returns("khach")).Status);
         Assert.Equal(3, Stock(service, 1));
+    }
+
+    [Fact]
+    public void AdminReturnDecisionsApplyOnlyToTheStageDisplayed()
+    {
+        var service = Start();
+        var id = service.Place("khach", "Địa chỉ", new Dictionary<int, int> { [1] = 2 });
+        service.Confirm(id, "admin");
+        service.Fulfill(id, "admin", OrderAction.Packing, null, null, null);
+        service.Fulfill(id, "admin", OrderAction.Shipped, "Vận chuyển", "RT-2", null);
+        service.Fulfill(id, "admin", OrderAction.Completed, null, null, null);
+        service.RequestReturn(id, 1, "khach", "Sách còn nguyên vẹn", "Refund");
+        var request = Assert.Single(service.Returns());
+
+        service.ProcessReturnAsAdmin(request.Id, "admin", "Pending", "Approve");
+        Assert.Throws<OrderRuleException>(() => service.ProcessReturnAsAdmin(request.Id, "admin", "Pending", "Reject"));
+        Assert.Equal("Approved", Assert.Single(service.Returns()).Status);
+
+        service.ProcessReturnAsAdmin(request.Id, "admin", "Approved", "Receive");
+        Assert.Throws<OrderRuleException>(() => service.ProcessReturnAsAdmin(request.Id, "admin", "Approved", "Receive"));
+        Assert.Equal("Completed", Assert.Single(service.Returns()).Status);
+        Assert.Equal(5, Stock(service, 1));
     }
 
     [Fact]
