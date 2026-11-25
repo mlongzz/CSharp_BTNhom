@@ -18,8 +18,7 @@ Nếu bản trước đang chạy ở cổng này, nhấn `Ctrl+C` trong cửa s
 | Nhân viên bán hàng | `nhanvien` | `Nhanvien123!` |
 | Nhân viên kho | `kho` | `Kho12345!` |
 | Quản trị viên | `admin` | `Admin123!` |
-
-Có thể đăng nhập bằng bí danh ở trên hoặc địa chỉ `<bí danh>@bookstore.test`. Tài khoản tự đăng ký là khách hàng. Các tài khoản mẫu dành cho chạy local.
+Các tài khoản mẫu dành cho chạy local.
 
 ## Luồng demo
 

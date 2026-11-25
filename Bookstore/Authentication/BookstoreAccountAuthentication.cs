@@ -33,11 +33,20 @@ public static class BookstoreAccountAuthentication
             options.TokenValidationParameters = sessions.ValidationParameters;
             options.Events = new JwtBearerEvents
             {
-                OnMessageReceived = context =>
-                {
-                    context.Token = context.Request.Cookies[AccountSessions.CookieName];
-                    return Task.CompletedTask;
-                },
+               OnMessageReceived = context =>
+{
+
+    if (context.Request.Path.StartsWithSegments("/api"))
+    {
+        return Task.CompletedTask;
+    }
+
+
+    context.Token = context.Request.Cookies[
+        AccountSessions.CookieName];
+
+    return Task.CompletedTask;
+},
                 OnTokenValidated = context =>
                 {
                     var services = context.HttpContext.RequestServices;
@@ -52,17 +61,43 @@ public static class BookstoreAccountAuthentication
                     return Task.CompletedTask;
                 },
                 OnChallenge = context =>
-                {
-                    context.HandleResponse();
-                    var url = context.Request.PathBase + context.Request.Path + context.Request.QueryString;
-                    context.Response.Redirect(QueryHelpers.AddQueryString("/Account/Login", "returnUrl", url));
-                    return Task.CompletedTask;
-                },
+{
+    // API trả về 401 thay vì chuyển trang HTML.
+    if (context.Request.Path.StartsWithSegments("/api"))
+    {
+        context.HandleResponse();
+        context.Response.StatusCode =
+            StatusCodes.Status401Unauthorized;
+
+        return Task.CompletedTask;
+    }
+
+    // Giữ cách xử lý đăng nhập hiện tại của Web.
+    context.HandleResponse();
+
+    var url = context.Request.PathBase
+              + context.Request.Path
+              + context.Request.QueryString;
+
+    context.Response.Redirect(
+        QueryHelpers.AddQueryString(
+            "/Account/Login", "returnUrl", url));
+
+    return Task.CompletedTask;
+},
                 OnForbidden = context =>
-                {
-                    context.Response.Redirect("/Account/Denied");
-                    return Task.CompletedTask;
-                }
+{
+    if (context.Request.Path.StartsWithSegments("/api"))
+    {
+        context.Response.StatusCode =
+            StatusCodes.Status403Forbidden;
+
+        return Task.CompletedTask;
+    }
+
+    context.Response.Redirect("/Account/Denied");
+    return Task.CompletedTask;
+}
             };
         });
         services.AddAuthorization();
@@ -83,8 +118,6 @@ public static class BookstoreAccountAuthentication
         using var scope = app.Services.CreateScope();
         var accounts = scope.ServiceProvider.GetRequiredService<ICustomerAccounts>();
         Seed("khach", "Khách hàng mẫu", "Khach123!", AccountRoles.Customer);
-        Seed("nhanvien", "Nhân viên bán hàng", "Nhanvien123!", AccountRoles.Sales);
-        Seed("kho", "Nhân viên kho", "Kho12345!", AccountRoles.Warehouse);
         Seed("admin", "Quản trị viên", "Admin123!", AccountRoles.Admin);
 
         void Seed(string username, string name, string password, string role)
@@ -117,6 +150,31 @@ public sealed class AccountSessions(SymmetricSecurityKey signingKey)
         RoleClaimType = RoleClaim,
         ValidAlgorithms = [SecurityAlgorithms.HmacSha256]
     };
+
+public string CreateToken(
+    Account account,
+    string sessionId,
+    DateTimeOffset now,
+    DateTimeOffset expires)
+{
+    var token = new JwtSecurityToken(
+        Issuer,
+        Audience,
+        [
+            new(NameClaim, account.Username),
+            new(RoleClaim, account.Role),
+            new(JwtRegisteredClaimNames.Jti, sessionId)
+        ],
+        now.UtcDateTime,
+        expires.UtcDateTime,
+        new SigningCredentials(
+            signingKey,
+            SecurityAlgorithms.HmacSha256)
+    );
+
+    return new JwtSecurityTokenHandler()
+        .WriteToken(token);
+}
 
     public void SetCookie(HttpContext context, Account account, string sessionId,
         DateTimeOffset now, DateTimeOffset expires)

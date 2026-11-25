@@ -3,11 +3,10 @@ namespace Bookstore.Domain;
 public static class AccountRoles
 {
     public const string Customer = "Customer";
-    public const string Sales = "Sales";
-    public const string Warehouse = "Warehouse";
     public const string Admin = "Admin";
 
-    public static IReadOnlyList<string> All { get; } = [Customer, Sales, Warehouse, Admin];
+    public static IReadOnlyList<string> All { get; }
+        = [Customer, Admin];
 }
 
 public sealed record Account(string Username, string? Email, string Name, string Phone, string Role,

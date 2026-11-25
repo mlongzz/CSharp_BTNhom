@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Bookstore.Controllers;
 
-[Authorize(Roles = "Warehouse,Admin")]
+[Authorize(Roles = AccountRoles.Admin)]
 public sealed class WarehouseController(ReceivingService receiving, ILogger<WarehouseController> logger) : Controller
 {
     private string Actor => User.Identity!.Name!;
@@ -18,15 +18,15 @@ public sealed class WarehouseController(ReceivingService receiving, ILogger<Ware
     [HttpGet]
     public IActionResult Stock(int? bookId) => View(new InventoryViewModel(receiving.Inventory(), receiving.Movements(bookId), bookId));
 
-    [HttpPost, Authorize(Roles = "Warehouse")]
+    [HttpPost]
     public IActionResult SaveSupplier(int id, string? name, string? phone, string? email, string? address) =>
         Run(() => receiving.SaveSupplier(id, name, phone, email, address), "Đã lưu nhà cung cấp.");
 
-    [HttpPost, Authorize(Roles = "Warehouse")]
+    [HttpPost]
     public IActionResult DeleteSupplier(int id) =>
         Run(() => receiving.DeleteSupplier(id), "Đã xóa nhà cung cấp.");
 
-    [HttpPost, Authorize(Roles = "Warehouse")]
+    [HttpPost]
     public IActionResult Create(int supplierId, [Bind(Prefix = "quantities")] Dictionary<int, int>? quantities,
         [Bind(Prefix = "prices")] Dictionary<int, int>? prices) =>
         Run(() =>
@@ -44,7 +44,7 @@ public sealed class WarehouseController(ReceivingService receiving, ILogger<Ware
         logger.LogInformation("Purchase {PurchaseId} approved by {Actor}", id, Actor);
     }, "Đã duyệt phiếu nhập.");
 
-    [HttpPost, Authorize(Roles = "Warehouse")]
+    [HttpPost]
     public IActionResult Receive(long id, [Bind(Prefix = "quantities")] Dictionary<int, int>? quantities, string? note) =>
         Run(() =>
         {
@@ -52,11 +52,11 @@ public sealed class WarehouseController(ReceivingService receiving, ILogger<Ware
             logger.LogInformation("Purchase {PurchaseId} received by {Actor}", id, Actor);
         }, "Đã xác nhận thực nhận và cập nhật tồn kho.");
 
-    [HttpPost, Authorize(Roles = "Warehouse")]
+    [HttpPost]
     public IActionResult SetMinimum(int bookId, [BindRequired] int minimum) =>
         Run(() => receiving.SetMinimum(bookId, minimum), "Đã cập nhật ngưỡng cảnh báo.", nameof(Stock));
 
-    [HttpPost, Authorize(Roles = "Warehouse")]
+    [HttpPost]
     public IActionResult Reconcile(int bookId, [BindRequired] int expectedStock, [BindRequired] int count, string? reason) =>
         Run(() => receiving.Reconcile(bookId, expectedStock, count, reason, Actor), "Đã ghi nhận kết quả kiểm kê.", nameof(Stock));
 

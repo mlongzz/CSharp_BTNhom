@@ -29,6 +29,7 @@ app.UseRouting();
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 app.MapDefaultControllerRoute();
 
 // Keep URLs from the initial demo available for existing links and bookmarks.

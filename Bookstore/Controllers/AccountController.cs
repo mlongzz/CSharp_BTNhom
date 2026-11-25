@@ -83,8 +83,6 @@ public sealed class AccountController(ICustomerAccounts accounts, IPasswordHashe
 
         return account.Role switch
         {
-            AccountRoles.Sales => RedirectToAction("Index", "AdminOrders"),
-            AccountRoles.Warehouse => RedirectToAction("Index", "Warehouse"),
             AccountRoles.Admin => RedirectToAction("Index", "AdminAccounts"),
             _ => RedirectToAction("Index", "Home")
         };
