@@ -61,9 +61,9 @@ public sealed class AccountPersistenceTests : IDisposable
 
         Assert.True(accounts.UpdateAccess("first", AccountRoles.Customer, locked: false));
         Assert.True(accounts.StartSession("first", "hash", "three", now, now.AddHours(8)));
-        Assert.True(accounts.UpdateAccess("first", AccountRoles.Sales, locked: false));
+        Assert.True(accounts.UpdateAccess("first", AccountRoles.Admin, locked: false));
         Assert.Null(accounts.SessionAccount("first", "three", now));
-        Assert.Equal(AccountRoles.Sales, accounts.Find("first")?.Role);
+        Assert.Equal(AccountRoles.Admin, accounts.Find("first")?.Role);
     }
 
     [Fact]
