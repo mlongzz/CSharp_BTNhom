@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Bookstore.Controllers;
 
-[Authorize(Roles = AccountRoles.Warehouse)]
+[Authorize(Roles = AccountRoles.Admin)]
 public sealed class DeliveryReturnsController(OrderService orders, ILogger<DeliveryReturnsController> logger) : Controller
 {
     [HttpGet]

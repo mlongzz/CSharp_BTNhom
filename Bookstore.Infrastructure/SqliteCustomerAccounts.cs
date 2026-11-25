@@ -16,7 +16,7 @@ public sealed partial class SqliteCustomerAccounts(SqliteDatabase database) : IC
             ALTER TABLE customers ADD COLUMN display_name TEXT NOT NULL DEFAULT '';
             ALTER TABLE customers ADD COLUMN phone TEXT NOT NULL DEFAULT '';
             ALTER TABLE customers ADD COLUMN role TEXT NOT NULL DEFAULT 'Customer'
-                CHECK(role IN ('Customer', 'Sales', 'Warehouse', 'Admin'));
+                CHECK(role IN ('Customer', 'Admin'));
             ALTER TABLE customers ADD COLUMN locked INTEGER NOT NULL DEFAULT 0 CHECK(locked IN (0, 1));
             ALTER TABLE customers ADD COLUMN failed_attempts INTEGER NOT NULL DEFAULT 0;
             ALTER TABLE customers ADD COLUMN locked_until INTEGER;
@@ -57,6 +57,8 @@ public sealed partial class SqliteCustomerAccounts(SqliteDatabase database) : IC
 
     public bool Create(string username, string email, string name, string passwordHash, string role, bool sendWelcome)
     {
+        if (!AccountRoles.All.Contains(role))
+            return false;
         using var connection = database.Open();
         using var transaction = connection.BeginTransaction();
         using var command = Command(connection, transaction, """
@@ -183,6 +185,8 @@ public sealed partial class SqliteCustomerAccounts(SqliteDatabase database) : IC
 
     public bool UpdateAccess(string username, string role, bool locked)
     {
+        if (!AccountRoles.All.Contains(role))
+            return false;
         using var connection = database.Open();
         using var transaction = connection.BeginTransaction();
         using var update = Command(connection, transaction, """

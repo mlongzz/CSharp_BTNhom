@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Bookstore.Controllers;
 
-[Authorize(Roles = "Sales")]
+[Authorize(Roles = AccountRoles.Admin)]
 public class AdminOrdersController(OrderService orders, ILogger<AdminOrdersController> logger) : Controller
 {
     [HttpGet]
