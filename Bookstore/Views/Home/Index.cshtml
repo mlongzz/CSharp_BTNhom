@@ -7,18 +7,18 @@
 <section class="hero mb-4">
     <div>
         <p class="eyebrow mb-2">NHÀ SÁCH TRỰC TUYẾN</p>
-        <h1>Danh mục sách</h1>
+        <h1>Khám phá tủ sách</h1>
         <p class="hero-note mb-0">Tìm sách theo tên, tác giả hoặc ISBN.</p>
     </div>
-</section>
+<div class="shelf-art" aria-hidden="true"><i></i><i></i><i></i><i></i></div></section>
 <form class="surface p-3 p-md-4 mb-4" asp-action="Index" method="get" role="search">
     <div asp-validation-summary="All" class="text-danger" role="alert"></div>
     <div class="row g-3 align-items-end">
-        <div class="col-lg-6">
+        <div class="col-12">
             <label class="form-label" for="q">Tên sách, tác giả hoặc ISBN</label>
             <input id="q" name="q" class="form-control" type="search" value="@filter.Query" />
         </div>
-        <div class="col-lg-3">
+        <div class="col-12">
             <label class="form-label" for="sort">Sắp xếp</label>
             <select class="form-select" id="sort" name="sort">
                 <option value="new">Mới nhất</option>
@@ -27,11 +27,11 @@
                 <option value="bestselling" selected="@(filter.Sort == "bestselling")">Bán chạy</option>
             </select>
         </div>
-        <div class="col-lg-3 d-flex gap-2">
+        <div class="col-12 d-flex gap-2">
             <button class="btn btn-primary">Tìm sách</button>
             <a class="btn btn-outline-secondary" asp-action="Index">Xóa bộ lọc</a>
         </div>
-        <div class="col-6 col-md-4 col-lg-2">
+        <div class="col-6 col-md-4">
             <label class="form-label" for="category">Thể loại</label>
             <select class="form-select" id="category" name="category">
                 <option value="">Tất cả</option>
@@ -41,7 +41,7 @@
                 }
             </select>
         </div>
-        <div class="col-6 col-md-4 col-lg-2">
+        <div class="col-6 col-md-4">
             <label class="form-label" for="author">Tác giả</label>
             <select class="form-select" id="author" name="author">
                 <option value="">Tất cả</option>
@@ -51,7 +51,7 @@
                 }
             </select>
         </div>
-        <div class="col-6 col-md-4 col-lg-2">
+        <div class="col-6 col-md-4">
             <label class="form-label" for="publisher">Nhà xuất bản</label>
             <select class="form-select" id="publisher" name="publisher">
                 <option value="">Tất cả</option>
@@ -61,15 +61,15 @@
                 }
             </select>
         </div>
-        <div class="col-6 col-md-4 col-lg-2">
+        <div class="col-6 col-md-4">
             <label class="form-label" for="minPrice">Giá từ (₫)</label>
             <input class="form-control" id="minPrice" name="minPrice" type="number" min="0" value="@filter.MinimumPrice" />
         </div>
-        <div class="col-6 col-md-4 col-lg-2">
+        <div class="col-6 col-md-4">
             <label class="form-label" for="maxPrice">Giá đến (₫)</label>
             <input class="form-control" id="maxPrice" name="maxPrice" type="number" min="0" value="@filter.MaximumPrice" />
         </div>
-        <div class="col-6 col-md-4 col-lg-2">
+        <div class="col-6 col-md-4">
             <label class="form-label" for="rating">Điểm từ</label>
             <select class="form-select" id="rating" name="rating">
                 <option value="">Tất cả</option>
@@ -83,7 +83,7 @@
 </form>
 @if (ViewData.ModelState.IsValid)
 {
-    <p class="text-secondary">@Model.Total kết quả</p>
+    <h2 class="catalog-title">Danh mục sách (@Model.Total)</h2>
     @if (Model.Books.Count == 0)
     {
         <p>Không tìm thấy sách phù hợp. <a asp-action="Index">Xem toàn bộ danh mục</a></p>
@@ -94,14 +94,14 @@
     {
         <div class="col-sm-6 col-lg-4">
             <article class="catalog-card h-100">
-                <a class="text-decoration-none" asp-action="Details" asp-route-id="@book.Id">
+                <a class="cover-stage text-decoration-none" asp-action="Details" asp-route-id="@book.Id">
                     @if (book.CoverUrl is string cover)
                     {
-                        <img src="@cover" class="w-100 object-fit-contain" style="height: 10rem" alt="Bìa @book.Title" loading="lazy" />
+                        <img src="@cover" class="catalog-image" alt="Bìa @book.Title" loading="lazy" />
                     }
                     else
                     {
-                        <div class="book-cover cover-@book.Id"><span>NHÀ SÁCH</span><strong>@book.Title</strong></div>
+                        <div class="book-cover cover-@book.Id"><strong>@book.Title</strong><span>@book.Author</span></div>
                     }
                 </a>
                 <div class="p-3">

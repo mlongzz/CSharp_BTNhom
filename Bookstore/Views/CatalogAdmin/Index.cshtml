@@ -3,7 +3,7 @@
     ViewData["Title"] = "Quản lý sách";
 }
 <p class="eyebrow mb-1">KHU VỰC QUẢN TRỊ</p>
-<h1>Quản lý sách</h1>
+<h1 class="catalog-title display-5">Quản lý sách</h1>
 <p><a asp-action="References">Thể loại, tác giả và nhà xuất bản</a></p>
 <div class="row g-4">
     <section class="col-lg-5">
@@ -11,7 +11,7 @@
             <h2 class="h5">@(Model.Input.Id is null ? "Thêm sách" : "Sửa thông tin sách")</h2>
             <div asp-validation-summary="All" class="text-danger" role="alert"></div>
             <input asp-for="Input.Id" type="hidden" />
-            <label class="form-label" asp-for="Input.Title">Tên sách</label>
+            <fieldset class="mb-3"><legend class="h6 text-success border-bottom pb-2">Thông tin sách</legend><label class="form-label" asp-for="Input.Title">Tên sách</label>
             <input class="form-control mb-2" asp-for="Input.Title" maxlength="180" required />
             <div class="row g-2">
                 <div class="col-6">
@@ -57,9 +57,9 @@
                     <input class="form-control mb-2" asp-for="Input.Year" min="1000" />
                 </div>
             </div>
-            <label class="form-label" asp-for="Input.CoverUrl">Đường dẫn ảnh bìa</label>
+            </fieldset><fieldset class="mb-3 border rounded p-3"><legend class="h6 text-success">Ảnh bìa</legend><img id="cover-preview" src="@Model.Input.CoverUrl" hidden="@(string.IsNullOrEmpty(Model.Input.CoverUrl))" alt="Ảnh bìa đang chọn" style="max-width:100%;height:110px;object-fit:contain" /><label class="form-label" asp-for="Input.CoverUrl">Đường dẫn ảnh bìa</label>
             <input class="form-control mb-2" asp-for="Input.CoverUrl" maxlength="500" placeholder="https://..." />
-            <label class="form-label" asp-for="Input.Description">Mô tả</label>
+            </fieldset><label class="form-label" asp-for="Input.Description">Mô tả</label>
             <textarea class="form-control mb-2" asp-for="Input.Description" rows="3" maxlength="4000"></textarea>
             <div class="form-check mb-3">
                 <input class="form-check-input" asp-for="Input.Active" />
@@ -78,7 +78,7 @@
             <button class="btn btn-outline-primary">Tìm</button>
         </form>
         <div class="table-responsive surface p-3">
-            <table class="table align-middle">
+            <h2 class="h5">Danh sách sách</h2><table class="table align-middle">
                 <thead><tr><th>Sách / ISBN</th><th>Giá</th><th>Tồn</th><th>Kinh doanh</th><th>Thao tác</th></tr></thead>
                 <tbody>
                     @foreach (var book in Model.Books)
@@ -106,3 +106,13 @@
         </div>
     </section>
 </div>
+<script>
+const coverUrl = document.getElementById('Input_CoverUrl');
+const preview = document.getElementById('cover-preview');
+coverUrl.addEventListener('change', () => {
+    const url = coverUrl.value.trim();
+    preview.hidden = !url;
+    if (url) preview.src = url;
+    else preview.removeAttribute('src');
+});
+</script>

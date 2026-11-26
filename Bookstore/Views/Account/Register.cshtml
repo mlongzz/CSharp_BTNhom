@@ -1,19 +1,21 @@
 @{
     ViewData["Title"] = "Đăng ký";
 }
-<section class="account-panel">
-    <h1>Đăng ký khách hàng</h1>
+<section class="auth-shell"><aside class="auth-brand" aria-hidden="true"><div class="shelf-art" aria-hidden="true"><i></i><i></i><i></i><i></i></div><strong>Nhà sách</strong></aside><div class="auth-content">
+    <h1>Tạo tài khoản</h1><p class="text-secondary">Đăng ký bằng email để mua sách.</p>
     <form asp-action="Register" method="post">
         <div asp-validation-summary="All" class="text-danger"></div>
         <label class="form-label" for="email">Email</label>
         <input class="form-control mb-3" name="email" id="email" type="email" value="@ViewData["Email"]"
                autocomplete="email" maxlength="254" required />
         <label class="form-label" for="password">Mật khẩu</label>
-        <input class="form-control mb-2" type="password" name="password" id="password"
-               autocomplete="new-password" minlength="8" maxlength="72" aria-describedby="password-hint" required />
+        <div class="input-group mb-2"><input class="form-control" type="password" name="password" id="password"
+               autocomplete="new-password" minlength="8" maxlength="72" aria-describedby="password-hint" required /><button class="btn btn-outline-primary" type="button" id="toggle-password" aria-label="Hiện mật khẩu">Hiện</button></div>
         <p id="password-hint" class="form-text">Ít nhất 8 ký tự, gồm chữ và số.</p>
-        <button class="btn btn-primary">Đăng ký</button>
-        <a class="ms-2" asp-action="Login">Quay lại đăng nhập</a>
+        <label class="form-label" for="confirmPassword">Xác nhận mật khẩu</label>
+        <input class="form-control mb-3" type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" maxlength="72" required />
+        <button class="btn btn-primary w-100 py-2 mt-2">Đăng ký</button>
+        <p class="auth-switch">Đã có tài khoản? <a asp-action="Login">Đăng nhập</a></p>
     </form>
-</section>
-
+</div></section>
+<script src="~/js/password-toggle.js" asp-append-version="true" defer></script>

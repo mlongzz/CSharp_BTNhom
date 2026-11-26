@@ -78,3 +78,47 @@ a { color: #185640; }
   --bs-btn-active-border-color: #185640;
 }
 .validation-summary-valid { display: none; }
+
+/* Storefront and account forms */
+.auth-shell { max-width: 58rem; margin: clamp(2rem,7vh,5rem) auto; display:grid; grid-template-columns: 2fr 3fr; overflow:hidden; background:white; border:1px solid #d6e2db; border-radius:1.25rem; box-shadow:0 1rem 3rem #173c2710; }
+.auth-brand { display:grid; align-content:center; justify-items:center; gap:1.5rem; background:#174937; color:#edf3df; }
+.auth-brand strong,.auth-content h1,.catalog-title,.hero h1 { font-family:Georgia,serif; }
+.auth-brand strong { font-size:2.3rem; }
+.auth-content { padding:clamp(1.5rem,4vw,3rem); }
+.auth-content .form-control { min-height:2.85rem; }
+.auth-content .form-label { font-weight:600; }
+.auth-switch { margin:1.5rem 0 0; padding-top:1rem; text-align:center; border-top:1px solid #dce6e0; }
+.shelf-art { display:flex; align-items:flex-end; gap:6px; padding:0 12px; border-bottom:4px solid #cfbc8c; }
+.shelf-art i { width:22px; height:70px; border-radius:3px 3px 0 0; background:repeating-linear-gradient(to bottom,#b5cba8 0 7px,#66866b 8px 9px,#b5cba8 10px 54px); }
+.shelf-art i:nth-child(2) { height:88px; background-color:#ecd7a9; background-image:linear-gradient(transparent 16%,#a49468 17% 19%,transparent 20%); }
+.shelf-art i:nth-child(3) { height:78px; background:#719786; }
+.shelf-art i:last-child { height:65px; background:#d3b58b; transform:rotate(-12deg); transform-origin:bottom left; }
+.hero { align-items:center; }
+.catalog-title { font-size:1.65rem; margin-bottom:1rem; }
+.cover-stage { display:grid; place-items:center; background:#e8eee7; padding:1rem; min-height:13rem; }
+.cover-stage .book-cover { width:min(100%,9rem); height:11rem; box-shadow:4px 5px 0 #16332822,inset 4px 0 0 #ffffff33; }
+.cover-stage .book-cover strong { font-size:1.22rem; }
+.cover-stage .book-cover span { letter-spacing:.02em; }
+.catalog-image { width:100%; height:11rem; object-fit:contain; }
+.catalog-card h2 a { text-decoration:none; }
+.catalog-card h2 a:hover { text-decoration:underline; }
+@media(max-width:680px){ .auth-shell{display:block}.auth-brand,.hero .shelf-art{display:none} }
+
+/* Catalog management, including the always-visible cover picker */
+main:has(#coverFile) { display:grid; grid-template-columns:1fr auto; align-items:center }
+main:has(#coverFile) > .row,main:has(#coverFile) > .alert { grid-column:1/-1 }
+main:has(#coverFile) > .eyebrow { grid-column:1/-1; background:#174937; color:#cfe6d3; padding:18px 26px 0; margin:0!important; border-radius:16px 16px 0 0 }
+main:has(#coverFile) > h1 { align-self:stretch; background:#174937; color:white; padding:8px 26px 20px; margin:0 0 22px; border-radius:0 0 0 16px; font-size:2.25rem }
+main:has(#coverFile) > h1+p { display:grid;align-items:center;align-self:stretch;background:#174937;padding:0 24px 10px;margin:0 0 22px;border-radius:0 0 16px 0 }
+main:has(#coverFile) > h1+p a { color:#fff; text-underline-offset:4px }
+form:has(#coverFile) {display:flex;flex-direction:column;align-items:stretch;border-top:4px solid #327957;box-shadow:0 5px 18px #173c270b}
+form:has(#coverFile) > h2 {order:-4;font-size:1.4rem;font-weight:650}
+form:has(#coverFile) > [role=alert] {order:-3}
+form:has(#coverFile) > fieldset:has(#coverFile) {order:-2;background:#edf5ed;border:1px dashed #76a486!important}
+form:has(#coverFile) legend {font-weight:700;color:#185640!important}
+#coverFile::file-selector-button {background:#185640;color:white;font-weight:600}
+main:has(#coverFile) .table-responsive {border-top:4px solid #327957;box-shadow:0 5px 18px #173c270b}
+main:has(#coverFile) thead th {background:#eef4ef;color:#27563e;font-size:.87rem}
+main:has(#coverFile) tbody td,main:has(#coverFile) tbody th {padding-block:14px}
+main:has(#coverFile) tbody td a {display:inline-block;background:#edf4ef;border-radius:6px;padding:3px 8px;text-decoration:none}
+@media(max-width:680px){main:has(#coverFile){display:block}main:has(#coverFile)>h1{margin:0;border-radius:0}main:has(#coverFile)>h1+p{border-radius:0 0 12px 12px;padding:0 26px 16px}}

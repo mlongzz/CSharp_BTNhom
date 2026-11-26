@@ -1,19 +1,19 @@
 @{
     ViewData["Title"] = "Đăng nhập";
 }
-<section class="account-panel">
+<section class="auth-shell"><aside class="auth-brand" aria-hidden="true"><div class="shelf-art" aria-hidden="true"><i></i><i></i><i></i><i></i></div><strong>Nhà sách</strong></aside><div class="auth-content">
     <h1>Đăng nhập</h1>
-    <p class="text-secondary">Đăng nhập bằng email hoặc tài khoản mẫu.</p>
+    <p class="text-secondary">Dùng email hoặc tên tài khoản của bạn.</p>
     <form asp-action="Login" method="post">
         <div asp-validation-summary="All" class="text-danger"></div>
         <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
-        <label class="form-label" for="username">Email</label>
+        <label class="form-label" for="username">Email hoặc tên tài khoản</label>
         <input class="form-control mb-3" name="username" id="username" value="@ViewData["Identity"]"
                autocomplete="username" maxlength="254" required />
         <label class="form-label" for="password">Mật khẩu</label>
-        <input class="form-control mb-3" type="password" name="password" id="password" autocomplete="current-password" required />
-        <button class="btn btn-primary">Đăng nhập</button>
-        <a class="ms-2" asp-action="Register">Đăng ký tài khoản</a>
+        <div class="input-group mb-2"><input class="form-control" type="password" name="password" id="password" autocomplete="current-password" required /><button class="btn btn-outline-primary" type="button" id="toggle-password" aria-label="Hiện mật khẩu">Hiện</button></div>
+        <button class="btn btn-primary w-100 py-2 mt-2">Đăng nhập</button>
+        <p class="auth-switch">Chưa có tài khoản? <a asp-action="Register">Đăng ký</a></p>
     </form>
-</section>
-
+</div></section>
+<script src="~/js/password-toggle.js" asp-append-version="true" defer></script>
