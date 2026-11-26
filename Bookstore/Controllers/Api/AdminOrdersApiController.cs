@@ -36,7 +36,8 @@ public sealed class AdminOrdersApiController(OrderService orders) : ControllerBa
     public IActionResult Update(long id, OrderUpdate input)
     {
         if (id <= 0 || input.Action is not (OrderAction.Confirmed or OrderAction.Rejected or OrderAction.Packing or
-            OrderAction.Shipped or OrderAction.Completed or OrderAction.DeliveryFailed or OrderAction.ReturnedToWarehouse))
+            OrderAction.Shipped or OrderAction.DeliveryConfirmed or OrderAction.Completed or
+            OrderAction.DeliveryFailed or OrderAction.ReturnedToWarehouse))
             return Problem(detail: "Mã đơn hoặc thao tác không hợp lệ.", statusCode: 400);
 
         var actor = User.Identity!.Name!;

@@ -43,9 +43,15 @@ public class AdminOrdersController(OrderService orders, ILogger<AdminOrdersContr
         {
             if (!ModelState.IsValid)
                 throw new OrderRuleException("Thông tin xử lý đơn không hợp lệ.");
-            orders.Fulfill(id, User.Identity!.Name!, action, carrier, tracking, reason);
+            var status = orders.Fulfill(id, User.Identity!.Name!, action, carrier, tracking, reason);
             logger.LogInformation("Order {OrderId} updated: {Action}", id, action);
-            TempData["Success"] = $"Đã cập nhật đơn #{id}.";
+            TempData["Success"] = (action, status) switch
+            {
+                (_, OrderStatus.Completed) => $"Đơn #{id} đã hoàn tất.",
+                (OrderAction.DeliveryConfirmed or OrderAction.Completed, OrderStatus.Shipped) =>
+                    $"Đã xác nhận giao đơn #{id}. Đang chờ khách hàng xác nhận nhận hàng.",
+                _ => $"Đã cập nhật đơn #{id}."
+            };
         }
         catch (OrderRuleException exception)
         {

@@ -208,6 +208,24 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
         string? Voucher, string Method, long Total, string Reference, DateTimeOffset ExpiresAt);
 
     [HttpPost]
+    public IActionResult ConfirmReceipt(long id)
+    {
+        try
+        {
+            var status = orders.ConfirmReceipt(id, Customer);
+            logger.LogInformation("Receipt confirmed by the customer of order {OrderId}", id);
+            TempData["Success"] = status == OrderStatus.Completed
+                ? $"Đơn #{id} đã hoàn tất."
+                : $"Đã xác nhận nhận đơn #{id}. Đang chờ cửa hàng xác nhận giao hàng.";
+        }
+        catch (OrderRuleException exception)
+        {
+            TempData["Error"] = exception.Message;
+        }
+        return RedirectToAction(nameof(Index), controllerName: null, routeValues: null, fragment: $"order-{id}");
+    }
+
+    [HttpPost]
     public IActionResult Cancel(long id)
     {
         try

@@ -33,8 +33,8 @@ Khi nâng cấp dữ liệu cũ, hệ thống khóa `kho` và `nhanvien` nếu �
 ## Luồng demo
 
 1. **Khách hàng** tìm sách, mở chi tiết, thêm giỏ, chọn địa chỉ và voucher, rồi xem lại tổng tiền. Phí giao hàng demo là 15.000 ₫. Chọn COD hoặc cổng trực tuyến mô phỏng.
-2. **Quản trị viên trên WinForms** vào Đơn hàng để xác nhận và đóng gói. Trong Vận chuyển, ghi vận đơn và xác nhận giao thành công hoặc ghi nhận giao thất bại và nhận hàng về kho. COD được đánh dấu đã thu khi giao thành công.
-3. **Khách hàng** xem vận đơn, đánh giá sách từ đơn hoàn tất hoặc gửi yêu cầu đổi trả trong 7 ngày. **Quản trị viên** xử lý yêu cầu trong form Đổi trả.
+2. **Quản trị viên trên WinForms** vào Đơn hàng để xác nhận và đóng gói. Trong Vận chuyển, ghi vận đơn rồi bấm **Xác nhận đã giao** khi giao thành công. Có thể ghi nhận giao thất bại và nhận hàng về kho khi chưa có bên nào xác nhận thành công.
+3. **Khách hàng** vào Lịch sử đơn hàng để xem vận đơn và bấm **Xác nhận đã nhận hàng**. Hai bên có thể xác nhận theo bất kỳ thứ tự nào. Khi có đủ hai xác nhận, đơn hoàn tất và COD được đánh dấu đã thu. Khách hàng có thể đánh giá sách từ đơn hoàn tất hoặc gửi yêu cầu đổi trả trong 7 ngày. **Quản trị viên** xử lý yêu cầu trong form Đổi trả.
 4. **Quản trị viên** tạo nhà cung cấp, lập và duyệt phiếu nhập, rồi đối chiếu thực nhận. Khi số lượng khác phiếu, nhập ghi chú chênh lệch. Form Tồn kho và kiểm kê cho phép xem lịch sử kho, chỉnh ngưỡng và ghi nhận kiểm kê.
 5. **Quản trị viên** quản lý sách, thể loại, tác giả, NXB và quyền tài khoản trên WinForms. Trong Báo cáo và thống kê, chọn khoảng ngày, bấm Xem báo cáo rồi chọn tab muốn xuất Excel. Tab Tổng quan xuất tất cả các phần.
 

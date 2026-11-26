@@ -7,6 +7,8 @@
         OrderStatus.Pending => ("Chờ xác nhận", "status-pending"),
         OrderStatus.Confirmed => ("Đã xác nhận", "status-confirmed"),
         OrderStatus.Packing => ("Đang đóng gói", "status-pending"),
+        OrderStatus.Shipped when Model.DeliveryConfirmed => ("Chờ khách hàng xác nhận đã nhận", "status-pending"),
+        OrderStatus.Shipped when Model.ReceiptConfirmed => ("Chờ cửa hàng xác nhận đã giao", "status-pending"),
         OrderStatus.Shipped => ("Đang giao", "status-pending"),
         OrderStatus.DeliveryFailed => ("Giao thất bại · Chờ hoàn kho", "status-cancelled"),
         OrderStatus.ReturnedToWarehouse => ("Đã hoàn về kho", "status-confirmed"),
@@ -63,7 +65,9 @@
                             OrderAction.Shipped => "Đang giao",
                             OrderAction.DeliveryFailed => "Giao thất bại",
                             OrderAction.ReturnedToWarehouse => "Kho đã nhận hàng hoàn",
-                            OrderAction.Completed => "Đã giao thành công",
+                            OrderAction.DeliveryConfirmed => "Cửa hàng đã xác nhận giao hàng",
+                            OrderAction.ReceiptConfirmed => "Khách hàng đã xác nhận nhận hàng",
+                            OrderAction.Completed => "Đơn hàng hoàn tất",
                             OrderAction.Rejected => "Đã từ chối",
                             OrderAction.Confirmed => "Đã xác nhận",
                             OrderAction.Cancelled => "Đã hủy",
@@ -99,18 +103,26 @@
     }
     else if (isAdmin && Model.Status is OrderStatus.Confirmed or OrderStatus.Packing or OrderStatus.Shipped)
     {
-        var next = Model.Status == OrderStatus.Confirmed ? "Packing" : Model.Status == OrderStatus.Packing ? "Shipped" : "Completed";
-        <form asp-controller="AdminOrders" asp-action="Fulfill" method="post" class="d-flex flex-wrap gap-2">
-            <input type="hidden" name="id" value="@Model.Id" />
-            <input type="hidden" name="action" value="@next" />
-            @if (next == "Shipped")
-            {
-                <input class="form-control w-auto" name="carrier" aria-label="Đơn vị vận chuyển" placeholder="Đơn vị vận chuyển" maxlength="100" required />
-                <input class="form-control w-auto" name="tracking" aria-label="Mã vận đơn" placeholder="Mã vận đơn" maxlength="100" required />
-            }
-            <button class="btn btn-primary">@(next == "Packing" ? "Bắt đầu đóng gói" : next == "Shipped" ? "Ghi vận đơn và giao hàng" : "Xác nhận giao thành công")</button>
-        </form>
-        @if (Model.Status == OrderStatus.Shipped)
+        var (next, label) = Model.Status switch
+        {
+            OrderStatus.Confirmed => (OrderAction.Packing, "Bắt đầu đóng gói"),
+            OrderStatus.Packing => (OrderAction.Shipped, "Ghi vận đơn và giao hàng"),
+            _ => (OrderAction.DeliveryConfirmed, "Xác nhận giao thành công")
+        };
+        @if (next != OrderAction.DeliveryConfirmed || !Model.DeliveryConfirmed)
+        {
+            <form asp-controller="AdminOrders" asp-action="Fulfill" method="post" class="d-flex flex-wrap gap-2">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="hidden" name="action" value="@next" />
+                @if (next == OrderAction.Shipped)
+                {
+                    <input class="form-control w-auto" name="carrier" aria-label="Đơn vị vận chuyển" placeholder="Đơn vị vận chuyển" maxlength="100" required />
+                    <input class="form-control w-auto" name="tracking" aria-label="Mã vận đơn" placeholder="Mã vận đơn" maxlength="100" required />
+                }
+                <button class="btn btn-primary">@label</button>
+            </form>
+        }
+        @if (Model.CanReportDeliveryFailure)
         {
             <form asp-controller="AdminOrders" asp-action="Fulfill" method="post" class="mt-2 d-flex flex-wrap gap-2">
                 <input type="hidden" name="id" value="@Model.Id" />
@@ -126,6 +138,13 @@
         <form asp-controller="Orders" asp-action="Cancel" method="post" onsubmit="return confirm('Xác nhận hủy đơn này?')">
             <input type="hidden" name="id" value="@Model.Id" />
             <button class="btn btn-outline-danger">Hủy đơn</button>
+        </form>
+    }
+    else if (isCustomer && Model.Status == OrderStatus.Shipped && !Model.ReceiptConfirmed)
+    {
+        <form asp-controller="Orders" asp-action="ConfirmReceipt" method="post" onsubmit="return confirm('Bạn đã nhận được đơn hàng này?')">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button class="btn btn-primary">Xác nhận đã nhận hàng</button>
         </form>
     }
     @if (isCustomer && Model.Status == OrderStatus.Completed)

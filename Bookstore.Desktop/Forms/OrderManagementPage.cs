@@ -163,14 +163,16 @@ internal abstract class OrderManagementPage : AdminPage
             OrderStatus.Pending when !shipping => (OrderAction.Confirmed, "Xác nhận đơn"),
             OrderStatus.Confirmed => (OrderAction.Packing, "Bắt đầu đóng gói"),
             OrderStatus.Packing when shipping => (OrderAction.Shipped, "Bàn giao vận chuyển"),
-            OrderStatus.Shipped when shipping => (OrderAction.Completed, "Giao thành công"),
+            OrderStatus.Shipped when shipping && order is { DeliveryConfirmed: false } =>
+                (OrderAction.DeliveryConfirmed, "Xác nhận đã giao"),
             OrderStatus.DeliveryFailed when shipping => (OrderAction.ReturnedToWarehouse, "Nhận hàng hoàn"),
             _ => ((OrderAction Action, string Label)?)null
         };
         var second = orderStatus switch
         {
             OrderStatus.Pending when !shipping => (OrderAction.Rejected, "Từ chối đơn"),
-            OrderStatus.Shipped when shipping => (OrderAction.DeliveryFailed, "Giao thất bại"),
+            OrderStatus.Shipped when shipping && order is { CanReportDeliveryFailure: true } =>
+                (OrderAction.DeliveryFailed, "Giao thất bại"),
             _ => ((OrderAction Action, string Label)?)null
         };
         SetAction(primary, first);
@@ -239,6 +241,10 @@ internal abstract class OrderManagementPage : AdminPage
             .AppendLine($"{(order.PaymentMethod == "Cod" ? "COD" : "Trực tuyến")}  ·  {payment}");
         if (order.TrackingCode is not null)
             description.AppendLine($"Vận đơn {order.TrackingCode}  ·  {order.Carrier}");
+        if (order.Status == OrderStatus.Shipped && order.DeliveryConfirmed)
+            description.AppendLine("Đã xác nhận giao hàng. Đang chờ khách xác nhận đã nhận hàng.");
+        else if (order.Status == OrderStatus.Shipped && order.ReceiptConfirmed)
+            description.AppendLine("Khách đã xác nhận nhận được hàng. Đang chờ quản trị viên xác nhận đã giao hàng.");
         if (order.RejectionReason is not null)
             description.AppendLine($"Lý do  ·  {order.RejectionReason}");
 
@@ -276,7 +282,9 @@ internal abstract class OrderManagementPage : AdminPage
         OrderAction.Confirmed => "Xác nhận đơn",
         OrderAction.Packing => "Bắt đầu đóng gói",
         OrderAction.Shipped => "Bàn giao vận chuyển",
-        OrderAction.Completed => "Giao thành công",
+        OrderAction.DeliveryConfirmed => "Quản trị viên xác nhận đã giao hàng",
+        OrderAction.ReceiptConfirmed => "Khách xác nhận đã nhận hàng",
+        OrderAction.Completed => "Đơn hàng hoàn tất",
         OrderAction.Cancelled => "Hủy đơn",
         OrderAction.Rejected => "Từ chối đơn",
         OrderAction.DeliveryFailed => "Giao thất bại",

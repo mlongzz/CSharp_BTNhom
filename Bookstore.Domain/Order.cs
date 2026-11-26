@@ -2,7 +2,11 @@ namespace Bookstore.Domain;
 
 public enum OrderStatus { Pending, Confirmed, Packing, Shipped, Completed, Cancelled, DeliveryFailed, ReturnedToWarehouse }
 
-public enum OrderAction { Placed, Confirmed, Packing, Shipped, Completed, Cancelled, Rejected, DeliveryFailed, ReturnedToWarehouse }
+public enum OrderAction
+{
+    Placed, Confirmed, Packing, Shipped, Completed, Cancelled, Rejected, DeliveryFailed, ReturnedToWarehouse,
+    DeliveryConfirmed, ReceiptConfirmed
+}
 
 public sealed record Book(int Id, string Title, int Price, int Stock);
 public sealed record OrderLine(int BookId, string Title, int Quantity, int Price);
@@ -19,6 +23,9 @@ public sealed record Order(long Id, string Customer, string Address, OrderStatus
     public string PaymentStatus { get; init; } = "Unpaid";
     public long Discount { get; init; }
     public long ShippingFee { get; init; }
+    public bool DeliveryConfirmed => Events.Any(entry => entry.Action == OrderAction.DeliveryConfirmed);
+    public bool ReceiptConfirmed => Events.Any(entry => entry.Action == OrderAction.ReceiptConfirmed);
+    public bool CanReportDeliveryFailure => Status == OrderStatus.Shipped && !DeliveryConfirmed && !ReceiptConfirmed;
 }
 
 public sealed record OrderQuote(long Subtotal, long Discount, long ShippingFee)

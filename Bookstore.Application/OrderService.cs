@@ -107,8 +107,12 @@ public sealed class OrderService(IOrderRepository repository, TimeProvider clock
         transaction.Commit();
     }
 
-    public void Fulfill(long id, string staff, OrderAction action, string? carrier, string? tracking, string? reason)
+    public OrderStatus Fulfill(long id, string staff, OrderAction action, string? carrier, string? tracking, string? reason)
     {
+        // Older clients send Completed for the admin's delivery confirmation.
+        if (action is OrderAction.DeliveryConfirmed or OrderAction.Completed)
+            return RecordDeliveryConfirmation(id, staff, OrderAction.DeliveryConfirmed);
+
         using var transaction = repository.BeginTransaction();
         var order = transaction.FindOrder(id) ?? throw OrderNotFound();
         var next = (order.Status, action) switch
@@ -118,8 +122,8 @@ public sealed class OrderService(IOrderRepository repository, TimeProvider clock
             (OrderStatus.Confirmed, OrderAction.Packing) => OrderStatus.Packing,
             (OrderStatus.Packing, OrderAction.Shipped) when !string.IsNullOrWhiteSpace(carrier) && carrier.Length <= 100 &&
                 !string.IsNullOrWhiteSpace(tracking) && tracking.Length <= 100 => OrderStatus.Shipped,
-            (OrderStatus.Shipped, OrderAction.Completed) => OrderStatus.Completed,
-            (OrderStatus.Shipped, OrderAction.DeliveryFailed) when !string.IsNullOrWhiteSpace(reason) && reason.Length <= 500
+            (OrderStatus.Shipped, OrderAction.DeliveryFailed) when order.CanReportDeliveryFailure &&
+                !string.IsNullOrWhiteSpace(reason) && reason.Length <= 500
                 => OrderStatus.DeliveryFailed,
             _ => throw new OrderRuleException("Trạng thái hoặc thông tin xử lý đơn không hợp lệ.")
         };
@@ -128,6 +132,36 @@ public sealed class OrderService(IOrderRepository repository, TimeProvider clock
             action == OrderAction.Shipped ? tracking!.Trim() : null, action is OrderAction.Rejected or OrderAction.DeliveryFailed ? reason!.Trim() : null);
         transaction.AppendEvent(id, new(action, staff, now));
         transaction.Commit();
+        return next;
+    }
+
+    public OrderStatus ConfirmReceipt(long id, string customer) =>
+        RecordDeliveryConfirmation(id, customer, OrderAction.ReceiptConfirmed);
+
+    private OrderStatus RecordDeliveryConfirmation(long id, string actor, OrderAction action)
+    {
+        using var transaction = repository.BeginTransaction();
+        var order = transaction.FindOrder(id);
+        var isReceipt = action == OrderAction.ReceiptConfirmed;
+        if (order is null || (isReceipt && order.Customer != actor))
+            throw OrderNotFound();
+
+        if (isReceipt ? order.ReceiptConfirmed : order.DeliveryConfirmed)
+            return order.Status;
+
+        if (order.Status != OrderStatus.Shipped)
+            throw new OrderRuleException("Chỉ xác nhận giao hoặc nhận hàng cho đơn đang giao.");
+
+        var now = clock.GetUtcNow();
+        var otherConfirmed = isReceipt ? order.DeliveryConfirmed : order.ReceiptConfirmed;
+        transaction.AppendEvent(id, new(action, actor, now));
+        if (otherConfirmed)
+        {
+            transaction.UpdateStatus(id, OrderStatus.Completed, now);
+            transaction.AppendEvent(id, new(OrderAction.Completed, actor, now));
+        }
+        transaction.Commit();
+        return otherConfirmed ? OrderStatus.Completed : OrderStatus.Shipped;
     }
 
     public void ReceiveFailedDelivery(long id, string staff)
