@@ -12,9 +12,9 @@ internal abstract class CatalogPage : AdminPage
         Body.Controls.Add(Toolbar);
     }
 
-    protected Button AddButton(string text, Func<Task> click)
+    protected Button AddButton(string text, Func<Task> click, bool primary = false)
     {
-        var button = ActionButton(text);
+        var button = ActionButton(text, primary);
         button.Click += async (_, _) => await click();
         Toolbar.Controls.Add(button);
         return button;

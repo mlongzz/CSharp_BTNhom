@@ -25,10 +25,11 @@ public sealed class FrmSuppliers : Form
     {
         this.api = api;
         Text = "Nhà cung cấp";
+        Font = new Font("Segoe UI", 10);
 
-        var add = Button("Thêm nhà cung cấp");
+        var add = Button("Thêm nhà cung cấp", primary: true);
         var reload = Button("Tải lại");
-        page = Page(Text, Toolbar(search, add, edit, delete, reload), grid);
+        page = Page(Toolbar(search, add, edit, delete, reload), grid);
         Controls.Add(page);
 
         add.Click += async (_, _) => await EditAsync(null);

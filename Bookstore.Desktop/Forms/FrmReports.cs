@@ -25,7 +25,7 @@ internal sealed class FrmReports : AdminPage
         start.Value = new DateTime(today.Year, today.Month, 1);
         end.Value = today.ToDateTime(TimeOnly.MinValue);
 
-        var load = ActionButton("Xem báo cáo");
+        var load = ActionButton("Xem báo cáo", primary: true);
         var toolbar = CreateToolbar();
         toolbar.Controls.AddRange([FieldLabel("Từ ngày"), start, FieldLabel("Đến ngày"), end, load, export]);
         AddTab("Tổng quan", "Overview", overview);
@@ -57,7 +57,7 @@ internal sealed class FrmReports : AdminPage
 
     private void AddTab(string title, string section, DataGridView grid)
     {
-        var page = new TabPage(title) { Tag = section, Padding = new Padding(5), BackColor = Color.White };
+        var page = new TabPage(title) { Tag = section, Padding = new Padding(5), BackColor = AdminTheme.Surface };
         page.Controls.Add(grid);
         tabs.TabPages.Add(page);
     }

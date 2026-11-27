@@ -18,11 +18,11 @@ internal sealed class FrmReturns : AdminPage
     private readonly TextBox details = new()
     {
         Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical,
-        BackColor = Color.White, AccessibleName = "Chi tiết yêu cầu đổi trả"
+        BackColor = AdminTheme.Surface, AccessibleName = "Chi tiết yêu cầu đổi trả"
     };
-    private readonly Button approve = ActionButton("Duyệt yêu cầu");
+    private readonly Button approve = ActionButton("Duyệt yêu cầu", primary: true);
     private readonly Button reject = ActionButton("Từ chối yêu cầu");
-    private readonly Button receive = ActionButton("Xác nhận đã nhận sách");
+    private readonly Button receive = ActionButton("Xác nhận đã nhận sách", primary: true);
     private readonly FlowLayoutPanel actions = CreateToolbar();
 
     private ReturnRequest? SelectedRequest => grid.CurrentRow?.DataBoundItem as ReturnRequest;

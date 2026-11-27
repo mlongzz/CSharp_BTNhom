@@ -20,50 +20,50 @@ public sealed class FrmLogin : Form
         api = new BookstoreApiClient(string.IsNullOrWhiteSpace(apiUrl) ? "http://localhost:5187/" : apiUrl.Trim());
 
         Text = "Đăng nhập - Bookstore Admin";
-        ClientSize = new Size(420, 330);
+        ClientSize = new Size(420, 338);
         StartPosition = FormStartPosition.CenterScreen;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
-        BackColor = Color.White;
+        AutoScaleMode = AutoScaleMode.Font;
+        BackColor = AdminTheme.Surface;
+        ForeColor = AdminTheme.Text;
         Font = new Font("Segoe UI", 10);
 
         var title = new Label
         {
-            Text = "BOOKSTORE ADMIN",
-            Font = new Font("Segoe UI", 19, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleCenter,
-            Bounds = new Rectangle(25, 25, 370, 50)
+            Dock = DockStyle.Top,
+            Height = 92,
+            Text = "Bookstore Admin",
+            Font = new Font("Segoe UI", 22, FontStyle.Bold),
+            BackColor = AdminTheme.Forest,
+            ForeColor = AdminTheme.Surface,
+            TextAlign = ContentAlignment.MiddleCenter
         };
 
         var lblUsername = new Label
         {
             Text = "Tài khoản",
-            Bounds = new Rectangle(50, 90, 320, 25)
+            Bounds = new Rectangle(50, 120, 320, 25)
         };
 
-        txtUsername.Bounds =
-            new Rectangle(50, 115, 320, 32);
+        txtUsername.Bounds = new Rectangle(50, 145, 320, 32);
+        txtUsername.AccessibleName = lblUsername.Text;
         txtUsername.MaxLength = 254;
 
         var lblPassword = new Label
         {
             Text = "Mật khẩu",
-            Bounds = new Rectangle(50, 160, 320, 25)
+            Bounds = new Rectangle(50, 184, 320, 25)
         };
 
-        txtPassword.Bounds =
-            new Rectangle(50, 185, 320, 32);
-
+        txtPassword.Bounds = new Rectangle(50, 209, 320, 32);
+        txtPassword.AccessibleName = lblPassword.Text;
         txtPassword.UseSystemPasswordChar = true;
         txtPassword.MaxLength = 128;
 
-        btnLogin.Text = "ĐĂNG NHẬP";
-        btnLogin.Bounds =
-            new Rectangle(50, 245, 320, 42);
-
-        btnLogin.BackColor = Color.FromArgb(45, 55, 72);
-        btnLogin.ForeColor = Color.White;
-        btnLogin.FlatStyle = FlatStyle.Flat;
+        btnLogin.Text = "Đăng nhập";
+        btnLogin.Bounds = new Rectangle(50, 266, 320, 42);
+        AdminTheme.StyleButton(btnLogin, primary: true);
 
         Controls.AddRange(new Control[]
         {

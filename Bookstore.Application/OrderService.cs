@@ -199,20 +199,30 @@ public sealed class OrderService(IOrderRepository repository, TimeProvider clock
         transaction.Commit();
     }
 
-    public void ProcessReturnAsAdmin(long id, string staff, string expectedStatus, string decision)
+    public void ProcessReturn(long id, string staff, string decision) =>
+        ProcessReturn(id, staff, decision, expectedStatus: null);
+
+    public void ProcessReturnAsAdmin(long id, string staff, string expectedStatus, string decision) =>
+        ProcessReturn(id, staff, decision, expectedStatus);
+
+    private void ProcessReturn(long id, string staff, string decision, string? expectedStatus)
     {
         using var transaction = repository.BeginTransaction();
         var request = transaction.FindReturn(id) ?? throw new OrderRuleException("Không tìm thấy yêu cầu đổi trả.");
-        if (request.Status != expectedStatus)
+        if (expectedStatus is not null && request.Status != expectedStatus)
             throw new OrderRuleException("Trạng thái yêu cầu đổi trả đã thay đổi hoặc thao tác không được phép.");
 
         var now = clock.GetUtcNow();
         var status = (request.Status, decision) switch
         {
             ("Pending", "Approve") => "Approved",
-            ("Pending" or "Approved", "Reject") => "Rejected",
+            ("Pending", "Reject") => "Rejected",
+
+            ("Approved", "Reject") => "Rejected",
             ("Approved", "Receive") => "Completed",
-            _ => throw new OrderRuleException("Không thể thực hiện thao tác đổi trả này.")
+
+            _ => throw new OrderRuleException(
+                "Không thể thực hiện thao tác đổi trả này.")
         };
         if (status == "Completed")
         {

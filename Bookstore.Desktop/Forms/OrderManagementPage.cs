@@ -19,12 +19,12 @@ internal abstract class OrderManagementPage : AdminPage
     private readonly TextBox details = new()
     {
         Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical,
-        BackColor = Color.White, AccessibleName = "Chi tiết và lịch sử đơn hàng"
+        BackColor = AdminTheme.Surface, AccessibleName = "Chi tiết và lịch sử đơn hàng"
     };
     private readonly TextBox reason = new() { Width = 210, MaxLength = 500, AccessibleName = "Lý do" };
     private readonly TextBox carrier = new() { Width = 155, MaxLength = 100, PlaceholderText = "Đơn vị vận chuyển", AccessibleName = "Đơn vị vận chuyển" };
     private readonly TextBox tracking = new() { Width = 140, MaxLength = 100, PlaceholderText = "Mã vận đơn", AccessibleName = "Mã vận đơn" };
-    private readonly Button primary = ActionButton(string.Empty);
+    private readonly Button primary = ActionButton(string.Empty, primary: true);
     private readonly Button secondary = ActionButton(string.Empty);
     private readonly FlowLayoutPanel actions = CreateToolbar();
     private long? selectedOrderId;

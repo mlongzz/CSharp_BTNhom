@@ -1,14 +1,14 @@
 @model WarehouseViewModel
 @{
     ViewData["Title"] = "Quản lý nhập hàng";
-    var isAdmin = User.IsInRole(AccountRoles.Admin);
+    var warehouse = User.IsInRole("Admin");
 }
 <p class="eyebrow mb-1">NGHIỆP VỤ KHO</p>
 <h1>Quản lý nhập hàng</h1>
 <p class="text-secondary">Lập phiếu, duyệt và xác nhận số lượng sách thực nhận.</p>
 <a class="btn btn-outline-secondary mb-4" asp-action="Stock">Tồn kho và kiểm kê</a>
 
-@if (isAdmin)
+@if (warehouse)
 {
     <section class="surface p-4 mb-4">
         <h2 class="h4">Nhà cung cấp</h2>
@@ -111,14 +111,14 @@
             {
                 <p>Ghi chú: @purchase.Note</p>
             }
-            @if (purchase.Status == PurchaseStatus.Pending && isAdmin)
+            @if (purchase.Status == PurchaseStatus.Pending && User.IsInRole("Admin"))
             {
                 <form asp-action="Approve" method="post">
                     <input type="hidden" name="id" value="@purchase.Id" />
                     <button class="btn btn-primary">Duyệt phiếu</button>
                 </form>
             }
-            @if (purchase.Status == PurchaseStatus.Approved && isAdmin)
+            @if (purchase.Status == PurchaseStatus.Approved && warehouse)
             {
                 <form asp-action="Receive" method="post">
                     <input type="hidden" name="id" value="@purchase.Id" />

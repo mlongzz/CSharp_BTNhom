@@ -5,22 +5,21 @@ namespace Bookstore.Desktop.Forms;
 
 internal static class WarehouseForm
 {
-    internal static TableLayoutPanel Page(string title, Control toolbar, Control content)
+    internal static TableLayoutPanel Page(Control toolbar, Control content)
     {
-        var heading = new Label
+        var layout = new TableLayoutPanel
         {
-            Text = title,
-            AutoSize = true,
-            Font = new Font(SystemFonts.MessageBoxFont!.FontFamily, 15, FontStyle.Bold),
-            Margin = new Padding(3, 3, 3, 10)
+            Dock = DockStyle.Fill,
+            BackColor = AdminTheme.Background,
+            ForeColor = AdminTheme.Text,
+            ColumnCount = 1,
+            RowCount = 2
         };
-        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3 };
-        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        toolbar.Margin = new Padding(3, 3, 3, 8);
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        layout.Controls.Add(heading, 0, 0);
-        layout.Controls.Add(toolbar, 0, 1);
-        layout.Controls.Add(content, 0, 2);
+        layout.Controls.Add(toolbar, 0, 0);
+        layout.Controls.Add(content, 0, 1);
         return layout;
     }
 
@@ -31,12 +30,18 @@ internal static class WarehouseForm
         return toolbar;
     }
 
-    internal static Button Button(string text) => new()
+    internal static Button Button(string text, bool primary = false)
     {
-        Text = text,
-        AutoSize = true,
-        Padding = new Padding(7, 3, 7, 3)
-    };
+        var button = new Button
+        {
+            Text = text,
+            AutoSize = true,
+            MinimumSize = new Size(0, 32),
+            Padding = new Padding(8, 0, 8, 0)
+        };
+        AdminTheme.StyleButton(button, primary);
+        return button;
+    }
 
     internal static DataGridView Grid(params DataGridViewTextBoxColumn[] columns)
     {
@@ -50,11 +55,9 @@ internal static class WarehouseForm
             AllowUserToDeleteRows = false,
             MultiSelect = false,
             RowHeadersVisible = false,
-            SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-            BackgroundColor = Color.White,
-            BorderStyle = BorderStyle.FixedSingle
+            SelectionMode = DataGridViewSelectionMode.FullRowSelect
         };
-        grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 248, 251);
+        AdminTheme.StyleGrid(grid);
         grid.Columns.AddRange(columns);
         return grid;
     }
@@ -100,6 +103,8 @@ internal static class WarehouseForm
         {
             Text = title,
             Font = owner.Font,
+            BackColor = AdminTheme.Surface,
+            ForeColor = AdminTheme.Text,
             StartPosition = FormStartPosition.CenterParent,
             FormBorderStyle = FormBorderStyle.FixedDialog,
             ClientSize = new Size(width, height),
@@ -109,7 +114,7 @@ internal static class WarehouseForm
         };
         var buttons = Toolbar();
         buttons.FlowDirection = FlowDirection.RightToLeft;
-        var confirm = Button(submitText);
+        var confirm = Button(submitText, primary: true);
         var cancel = Button("Hủy");
         cancel.DialogResult = DialogResult.Cancel;
         buttons.Controls.AddRange([confirm, cancel]);

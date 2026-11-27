@@ -12,10 +12,16 @@ internal abstract class AdminPage : Form
     protected AdminPage(string title)
     {
         Text = title;
-        BackColor = Color.White;
+        BackColor = AdminTheme.Background;
+        ForeColor = AdminTheme.Text;
         Font = new Font("Segoe UI", 10);
 
-        var footer = new StatusStrip { SizingGrip = false };
+        var footer = new StatusStrip
+        {
+            BackColor = AdminTheme.Background,
+            ForeColor = AdminTheme.Muted,
+            SizingGrip = false
+        };
         footer.Items.Add(status);
         Controls.Add(Body);
         Controls.Add(footer);
@@ -24,7 +30,7 @@ internal abstract class AdminPage : Form
     protected void SetStatus(string message, bool error = false)
     {
         status.Text = message;
-        status.ForeColor = error ? Color.Firebrick : SystemColors.ControlText;
+        status.ForeColor = error ? Color.Firebrick : AdminTheme.Muted;
     }
 
     protected async Task RunAsync(Func<CancellationToken, Task> operation)
@@ -85,8 +91,6 @@ internal abstract class AdminPage : Form
         var grid = new DataGridView
         {
             Dock = DockStyle.Fill,
-            BackgroundColor = Color.White,
-            BorderStyle = BorderStyle.None,
             ReadOnly = true,
             AllowUserToAddRows = false,
             AllowUserToDeleteRows = false,
@@ -97,7 +101,7 @@ internal abstract class AdminPage : Form
         };
         foreach (var heading in headings)
             grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = heading, MinimumWidth = 85 });
-        grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(246, 248, 251);
+        AdminTheme.StyleGrid(grid);
         return grid;
     }
 
@@ -109,9 +113,23 @@ internal abstract class AdminPage : Form
         Padding = new Padding(0, 3, 0, 7)
     };
 
-    protected static Label FieldLabel(string text) => new() { Text = text, AutoSize = true, Margin = new Padding(4, 8, 4, 0) };
+    protected static Label FieldLabel(string text) => new()
+    {
+        Text = text, ForeColor = AdminTheme.Muted, AutoSize = true, Margin = new Padding(4, 8, 4, 0)
+    };
 
-    protected static Button ActionButton(string text) => new() { Text = text, AutoSize = true, MinimumSize = new Size(0, 29) };
+    protected static Button ActionButton(string text, bool primary = false)
+    {
+        var button = new Button
+        {
+            Text = text,
+            AutoSize = true,
+            MinimumSize = new Size(0, 32),
+            Padding = new Padding(8, 0, 8, 0)
+        };
+        AdminTheme.StyleButton(button, primary);
+        return button;
+    }
 
     protected static DateOnly Today() => DateOnly.FromDateTime(DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(7)).DateTime);
 

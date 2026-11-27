@@ -20,6 +20,8 @@ internal sealed class CatalogEditorDialog : Form
         ClientSize = new Size(565, height);
         StartPosition = FormStartPosition.CenterParent;
         FormBorderStyle = FormBorderStyle.FixedDialog;
+        BackColor = AdminTheme.Surface;
+        ForeColor = AdminTheme.Text;
         ShowInTaskbar = false;
         MinimizeBox = MaximizeBox = false;
         AutoScaleMode = AutoScaleMode.Font;
@@ -29,6 +31,8 @@ internal sealed class CatalogEditorDialog : Form
 
         var save = new Button { Text = "Lưu", AutoSize = true, Height = 31 };
         var cancel = new Button { Text = "Hủy", DialogResult = DialogResult.Cancel, AutoSize = true, Height = 31 };
+        AdminTheme.StyleButton(save, primary: true);
+        AdminTheme.StyleButton(cancel);
         var footer = new FlowLayoutPanel
         {
             Dock = DockStyle.Bottom,

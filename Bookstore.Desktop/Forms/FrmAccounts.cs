@@ -9,7 +9,7 @@ internal sealed class FrmAccounts : AdminPage
     private readonly TextBox search = new() { Width = 260, PlaceholderText = "Tài khoản, tên hoặc email", AccessibleName = "Tìm tài khoản" };
     private readonly ComboBox role = new() { Width = 155, DropDownStyle = ComboBoxStyle.DropDownList, AccessibleName = "Vai trò" };
     private readonly CheckBox locked = new() { Text = "Khóa tài khoản", AutoSize = true, Margin = new Padding(14, 7, 8, 0) };
-    private readonly Button save = ActionButton("Lưu quyền");
+    private readonly Button save = ActionButton("Lưu quyền", primary: true);
     private readonly Label selection = FieldLabel("");
     private readonly DataGridView grid = CreateGrid("Tài khoản", "Họ tên", "Email", "Vai trò", "Trạng thái", "Đăng nhập gần nhất");
     private List<Account> accounts = [];

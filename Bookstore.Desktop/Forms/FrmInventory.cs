@@ -10,7 +10,7 @@ public sealed class FrmInventory : Form
     private readonly TextBox search = new() { Width = 185, PlaceholderText = "Tìm đầu sách", AccessibleName = "Tìm đầu sách" };
     private readonly CheckBox lowOnly = new() { Text = "Sắp hết", AutoSize = true, Margin = new Padding(7, 9, 7, 3) };
     private readonly Button minimum = Button("Đặt ngưỡng");
-    private readonly Button reconcile = Button("Kiểm kê");
+    private readonly Button reconcile = Button("Kiểm kê", primary: true);
     private readonly Button byBook = Button("Biến động sách đã chọn");
     private readonly Label historyTitle = new() { Text = "Lịch sử biến động", AutoSize = true, Margin = new Padding(3, 9, 8, 3) };
     private readonly DataGridView stock = Grid(
@@ -37,6 +37,7 @@ public sealed class FrmInventory : Form
     {
         this.api = api;
         Text = "Tồn kho và kiểm kê";
+        Font = new Font("Segoe UI", 10);
 
         var reload = Button("Tải lại");
         var all = Button("Tất cả biến động");
@@ -47,7 +48,7 @@ public sealed class FrmInventory : Form
         content.Controls.Add(stock, 0, 0);
         content.Controls.Add(Toolbar(historyTitle, byBook, all), 0, 1);
         content.Controls.Add(history, 0, 2);
-        page = Page(Text, Toolbar(search, lowOnly, minimum, reconcile, reload), content);
+        page = Page(Toolbar(search, lowOnly, minimum, reconcile, reload), content);
         Controls.Add(page);
 
         Shown += async (_, _) => await RunAsync(page, LoadAsync);

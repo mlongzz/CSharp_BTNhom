@@ -23,7 +23,11 @@ public sealed class FrmReceiving : Form
         Column("Số lượng đặt", nameof(PurchaseLine.Quantity), 88, "N0"),
         Column("Giá nhập (₫)", nameof(PurchaseLine.UnitCost), 92, "N0"),
         Column("Thực nhận", nameof(PurchaseLine.ReceivedQuantity), 80, "N0"));
-    private readonly TextBox summary = new() { Dock = DockStyle.Fill, Height = 50, ReadOnly = true, Multiline = true, ScrollBars = ScrollBars.Vertical };
+    private readonly TextBox summary = new()
+    {
+        Dock = DockStyle.Fill, Height = 50, ReadOnly = true, Multiline = true, ScrollBars = ScrollBars.Vertical,
+        BackColor = AdminTheme.Surface
+    };
     private readonly TableLayoutPanel page;
     private List<PurchaseOrder> orders = [];
 
@@ -33,10 +37,11 @@ public sealed class FrmReceiving : Form
     {
         this.api = api;
         Text = "Nhập kho";
+        Font = new Font("Segoe UI", 10);
         statusFilter.Items.AddRange(["Mọi trạng thái", "Chờ duyệt", "Đã duyệt", "Đã nhập"]);
         statusFilter.SelectedIndex = 0;
 
-        var create = Button("Lập phiếu nhập");
+        var create = Button("Lập phiếu nhập", primary: true);
         var reload = Button("Tải lại");
         var content = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4 };
         content.RowStyles.Add(new RowStyle(SizeType.Percent, 52));
@@ -47,7 +52,7 @@ public sealed class FrmReceiving : Form
         content.Controls.Add(new Label { Text = "Chi tiết phiếu nhập", AutoSize = true, Margin = new Padding(3, 8, 3, 4) }, 0, 1);
         content.Controls.Add(details, 0, 2);
         content.Controls.Add(summary, 0, 3);
-        page = Page(Text, Toolbar(statusFilter, create, approve, receive, reload), content);
+        page = Page(Toolbar(statusFilter, create, approve, receive, reload), content);
         Controls.Add(page);
 
         create.Click += async (_, _) => await CreateAsync();

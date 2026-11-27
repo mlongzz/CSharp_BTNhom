@@ -19,7 +19,7 @@ internal sealed class FrmBooks : CatalogPage
         Toolbar.Controls.Add(search);
         search.AccessibleName = "Tìm sách";
         AddButton("Tìm kiếm / Tải lại", () => RunAsync(LoadBooksAsync));
-        AddButton("Thêm sách", () => EditBookAsync(null));
+        AddButton("Thêm sách", () => EditBookAsync(null), primary: true);
         edit = AddButton("Sửa", EditSelectedBookAsync);
         availability = AddButton("Ẩn sách", SetAvailabilityAsync);
         delete = AddButton("Xóa", DeleteBookAsync);

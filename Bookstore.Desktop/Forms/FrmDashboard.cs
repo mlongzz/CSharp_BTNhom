@@ -4,108 +4,150 @@ namespace Bookstore.Desktop.Forms;
 
 public sealed class FrmDashboard : Form
 {
-    private static readonly Color SidebarColor = Color.FromArgb(35, 43, 55);
-    private static readonly Color MenuColor = Color.FromArgb(45, 55, 72);
-    private static readonly Color ActiveMenuColor = Color.FromArgb(47, 92, 150);
-
-    private readonly BookstoreApiClient api;
-    private readonly Panel workspace = new() { Dock = DockStyle.Fill, BackColor = Color.White, Padding = new Padding(16) };
-    private readonly FlowLayoutPanel sidebar = new()
+    private readonly Panel workspace = new() { Dock = DockStyle.Fill };
+    private readonly TableLayoutPanel menu = new()
     {
-        Dock = DockStyle.Fill, BackColor = SidebarColor, FlowDirection = FlowDirection.TopDown,
-        WrapContents = false, AutoScroll = true, Padding = new Padding(12)
+        Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, ColumnCount = 1,
+        ColumnStyles = { new ColumnStyle(SizeType.Percent, 100) },
+        Padding = new Padding(12, 4, 12, 8)
     };
     private readonly Label heading = new()
     {
-        Dock = DockStyle.Fill, Font = new Font("Segoe UI", 16, FontStyle.Bold),
-        TextAlign = ContentAlignment.MiddleLeft, Padding = new Padding(18, 0, 0, 0)
+        Dock = DockStyle.Top, Height = 68, Font = new Font("Segoe UI", 18, FontStyle.Bold),
+        TextAlign = ContentAlignment.MiddleLeft, Padding = new Padding(20, 0, 20, 0),
+        BackColor = AdminTheme.Forest, ForeColor = AdminTheme.Surface
     };
     private Form? currentPage;
     private Button? currentMenu;
 
     public FrmDashboard(BookstoreApiClient apiClient)
     {
-        api = apiClient;
         Text = "Bookstore - Hệ thống quản trị";
         WindowState = FormWindowState.Maximized;
         MinimumSize = new Size(980, 640);
-        BackColor = Color.White;
+        BackColor = AdminTheme.Background;
+        ForeColor = AdminTheme.Text;
         Font = new Font("Segoe UI", 10);
 
-        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 2 };
-        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 218));
-        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 58));
-        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-
-        sidebar.Controls.Add(new Label
+        var layout = new TableLayoutPanel
         {
-            Text = "Bookstore", ForeColor = Color.White, Font = new Font("Segoe UI", 17, FontStyle.Bold),
-            Width = 176, Height = 40, Margin = new Padding(2, 0, 0, 6)
-        });
-        var overview = AddPage("Tổng quan", () => new DashboardOverview(api));
-        AddPage("Quản lý sách", () => new FrmBooks(api));
-        AddPage("Thể loại, tác giả, NXB", () => new FrmCategories(api));
-        AddPage("Đơn hàng", () => new FrmOrders(api));
-        AddPage("Vận chuyển", () => new FrmShipping(api));
-        AddPage("Đổi trả", () => new FrmReturns(api));
-        AddPage("Nhà cung cấp", () => new FrmSuppliers(api));
-        AddPage("Nhập kho", () => new FrmReceiving(api));
-        AddPage("Tồn kho và kiểm kê", () => new FrmInventory(api));
-        AddPage("Tài khoản và phân quyền", () => new FrmAccounts(api));
-        AddPage("Báo cáo và thống kê", () => new FrmReports(api));
-
-        var logout = CreateMenu("Đăng xuất");
-        logout.Margin = new Padding(0, 14, 0, 3);
-        sidebar.Controls.Add(logout);
-        logout.Click += (_, _) => Close();
-
-        var header = new Panel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(244, 246, 248) };
-        header.Controls.Add(heading);
-        header.Controls.Add(new Label
+            Dock = DockStyle.Fill, BackColor = AdminTheme.Border, ColumnCount = 2, RowCount = 2,
+            ColumnStyles = { new ColumnStyle(SizeType.Absolute, 248), new ColumnStyle(SizeType.Percent, 100) },
+            RowStyles = { new RowStyle(SizeType.Absolute, 69), new RowStyle(SizeType.Percent, 100) }
+        };
+        var header = CreateHeader();
+        var sidebar = CreateSidebar(apiClient.Username);
+        var content = new Panel
         {
-            Text = api.Username is { } username ? $"Admin · {username}" : "Admin",
-            AutoEllipsis = true, Dock = DockStyle.Right, Width = 190, TextAlign = ContentAlignment.MiddleRight,
-            Padding = new Padding(0, 0, 18, 0)
-        });
-        layout.Controls.Add(sidebar, 0, 0);
-        layout.SetRowSpan(sidebar, 2);
-        layout.Controls.Add(header, 1, 0);
-        layout.Controls.Add(workspace, 1, 1);
+            Dock = DockStyle.Fill, Margin = Padding.Empty, Padding = new Padding(22, 20, 22, 16),
+            BackColor = AdminTheme.Background
+        };
+        content.Controls.Add(workspace);
+        content.Controls.Add(heading);
+        layout.Controls.Add(header, 0, 0);
+        layout.SetColumnSpan(header, 2);
+        layout.Controls.Add(sidebar, 0, 1);
+        layout.Controls.Add(content, 1, 1);
         Controls.Add(layout);
+
+        var overview = AddPage("Tổng quan", () => new DashboardOverview(apiClient));
+        AddPage("Quản lý sách", () => new FrmBooks(apiClient));
+        AddPage("Thể loại, tác giả, NXB", () => new FrmCategories(apiClient));
+        AddPage("Đơn hàng", () => new FrmOrders(apiClient));
+        AddPage("Vận chuyển", () => new FrmShipping(apiClient));
+        AddPage("Đổi trả", () => new FrmReturns(apiClient));
+        AddPage("Nhà cung cấp", () => new FrmSuppliers(apiClient));
+        AddPage("Nhập kho", () => new FrmReceiving(apiClient));
+        AddPage("Tồn kho và kiểm kê", () => new FrmInventory(apiClient));
+        AddPage("Tài khoản và phân quyền", () => new FrmAccounts(apiClient));
+        AddPage("Báo cáo và thống kê", () => new FrmReports(apiClient));
 
         Shown += (_, _) => overview.PerformClick();
     }
 
+    private TableLayoutPanel CreateHeader()
+    {
+        var header = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill, Margin = new Padding(0, 0, 0, 1), BackColor = AdminTheme.Border,
+            ColumnCount = 2, RowCount = 1,
+            ColumnStyles = { new ColumnStyle(SizeType.Percent, 100), new ColumnStyle(SizeType.Absolute, 180) },
+            RowStyles = { new RowStyle(SizeType.Percent, 100) }
+        };
+        header.Controls.Add(new Label
+        {
+            Text = "Bookstore", Dock = DockStyle.Fill, Margin = Padding.Empty,
+            BackColor = AdminTheme.Surface, ForeColor = AdminTheme.Forest,
+            TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 20, FontStyle.Bold)
+        }, 0, 0);
+
+        var logoutArea = new Panel
+        {
+            Dock = DockStyle.Fill, Margin = new Padding(1, 0, 0, 0),
+            Padding = new Padding(22, 14, 22, 14), BackColor = AdminTheme.Surface
+        };
+        var logout = new Button { Text = "Đăng xuất", Dock = DockStyle.Fill };
+        AdminTheme.StyleButton(logout);
+        logout.Click += (_, _) => Close();
+        logoutArea.Controls.Add(logout);
+        header.Controls.Add(logoutArea, 1, 0);
+        return header;
+    }
+
+    private Panel CreateSidebar(string? username)
+    {
+        var sidebar = new Panel
+        {
+            Dock = DockStyle.Fill, Margin = new Padding(0, 0, 1, 0), BackColor = AdminTheme.Surface
+        };
+        var navigation = new Panel { Dock = DockStyle.Fill, AutoScroll = true };
+        navigation.Controls.Add(menu);
+        sidebar.Controls.Add(navigation);
+        sidebar.Controls.Add(new Label
+        {
+            Text = "Menu chức năng", Dock = DockStyle.Top, Height = 55, Padding = new Padding(20, 0, 12, 0),
+            ForeColor = AdminTheme.Forest, Font = new Font("Segoe UI", 11, FontStyle.Bold),
+            TextAlign = ContentAlignment.MiddleLeft
+        });
+        sidebar.Controls.Add(new Label
+        {
+            Text = username is null ? "Admin" : $"Admin · {username}", Dock = DockStyle.Bottom, Height = 44,
+            Padding = new Padding(20, 0, 12, 0), AutoEllipsis = true, BackColor = AdminTheme.Tint,
+            ForeColor = AdminTheme.Muted, TextAlign = ContentAlignment.MiddleLeft
+        });
+        return sidebar;
+    }
+
     private Button AddPage(string caption, Func<Form> create)
     {
-        var button = CreateMenu(caption);
-        sidebar.Controls.Add(button);
+        var button = new Button
+        {
+            Text = caption, Dock = DockStyle.Fill, Margin = new Padding(0, 2, 0, 2),
+            TextAlign = ContentAlignment.MiddleLeft, Padding = new Padding(9, 0, 0, 0),
+            Font = new Font("Segoe UI", 9.5f)
+        };
+        StyleMenuButton(button, active: false);
+        var row = menu.RowCount++;
+        menu.RowStyles.Add(new RowStyle(SizeType.Absolute, 37));
+        menu.Controls.Add(button, 0, row);
         button.Click += (_, _) =>
         {
             if (currentMenu == button)
                 return;
 
             if (currentMenu is not null)
-                currentMenu.BackColor = MenuColor;
+                StyleMenuButton(currentMenu, active: false);
             currentMenu = button;
-            button.BackColor = ActiveMenuColor;
+            StyleMenuButton(button, active: true);
             OpenPage(create(), caption);
         };
         return button;
     }
 
-    private static Button CreateMenu(string text)
+    private static void StyleMenuButton(Button button, bool active)
     {
-        var button = new Button
-        {
-            Text = text, Width = 174, Height = 38, Margin = new Padding(0, 2, 0, 2),
-            BackColor = MenuColor, ForeColor = Color.White, FlatStyle = FlatStyle.Flat,
-            TextAlign = ContentAlignment.MiddleLeft, Padding = new Padding(9, 0, 0, 0),
-            Font = new Font("Segoe UI", 9.5f)
-        };
+        AdminTheme.StyleButton(button, primary: active);
         button.FlatAppearance.BorderSize = 0;
-        return button;
     }
 
     private void OpenPage(Form page, string caption)
@@ -113,6 +155,7 @@ public sealed class FrmDashboard : Form
         currentPage?.Dispose();
         currentPage = page;
         heading.Text = caption;
+        heading.Visible = page is not FrmCategories;
         page.TopLevel = false;
         page.FormBorderStyle = FormBorderStyle.None;
         page.Dock = DockStyle.Fill;
@@ -132,7 +175,7 @@ public sealed class FrmDashboard : Form
         public DashboardOverview(BookstoreApiClient api) : base("Tổng quan")
         {
             this.api = api;
-            var cards = new TableLayoutPanel { Dock = DockStyle.Top, Height = 88, ColumnCount = 4, RowCount = 1 };
+            var cards = new TableLayoutPanel { Dock = DockStyle.Top, Height = 102, ColumnCount = 4, RowCount = 1 };
             foreach (var (index, title, value) in new[]
                      {
                          (0, "Doanh thu hôm nay", revenue), (1, "Đơn mới hôm nay", newOrders),
@@ -148,7 +191,7 @@ public sealed class FrmDashboard : Form
             toolbar.Controls.Add(refresh);
             var inventoryTitle = new Label
             {
-                Text = "Sách dưới ngưỡng tồn", Dock = DockStyle.Top, Height = 38,
+                Text = "Sách dưới ngưỡng tồn", Dock = DockStyle.Top, Height = 46, ForeColor = AdminTheme.Forest,
                 TextAlign = ContentAlignment.MiddleLeft, Font = new Font("Segoe UI", 12, FontStyle.Bold)
             };
 
@@ -183,15 +226,19 @@ public sealed class FrmDashboard : Form
         {
             var card = new Panel
             {
-                Dock = DockStyle.Fill, BackColor = Color.FromArgb(237, 243, 250), Padding = new Padding(10, 7, 10, 6)
+                Dock = DockStyle.Fill, BackColor = AdminTheme.Surface, Padding = new Padding(13, 10, 13, 9)
             };
             value.Text = "—";
             value.Dock = DockStyle.Fill;
             value.TextAlign = ContentAlignment.MiddleLeft;
             value.AutoEllipsis = true;
             value.Font = new Font("Segoe UI", 16, FontStyle.Bold);
+            value.ForeColor = AdminTheme.Forest;
             card.Controls.Add(value);
-            card.Controls.Add(new Label { Text = title, Dock = DockStyle.Top, Height = 25, AutoEllipsis = true });
+            card.Controls.Add(new Label
+            {
+                Text = title, Dock = DockStyle.Top, Height = 27, AutoEllipsis = true, ForeColor = AdminTheme.Muted
+            });
             return card;
         }
     }
