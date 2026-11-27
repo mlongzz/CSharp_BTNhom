@@ -69,8 +69,6 @@ else
                 <label class="form-label" for="address">Địa chỉ mới</label>
                 <p id="address-help" class="form-text">Nếu nhập địa chỉ mới, đơn hàng sẽ giao đến địa chỉ đó.</p>
                 <textarea class="form-control mb-3" id="address" name="address" aria-describedby="address-help" rows="2" maxlength="@OrderRules.MaximumAddressLength">@Model.Address</textarea>
-                <label class="form-label" for="voucher">Mã giảm giá</label>
-                <input class="form-control mb-3" id="voucher" name="voucher" value="@Model.Voucher" maxlength="50" />
                 <label class="form-label" for="method">Phương thức</label>
                 <select class="form-select mb-3" name="method" id="method">
                     <option value="Cod">Thanh toán khi nhận hàng (COD)</option>

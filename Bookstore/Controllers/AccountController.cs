@@ -68,6 +68,9 @@ public sealed class AccountController(ICustomerAccounts accounts, IPasswordHashe
         }
 
         var account = credentials.Account;
+        if (account.Role != AccountRoles.Customer)
+            return Failed("Tài khoản quản trị đăng nhập qua ứng dụng WinForms.");
+
         var expires = now.AddHours(8);
         var sessionId = Guid.NewGuid().ToString("N");
         if (!accounts.StartSession(account.Username, credentials.PasswordHash, sessionId, now, expires))
@@ -81,11 +84,7 @@ public sealed class AccountController(ICustomerAccounts accounts, IPasswordHashe
         if (Url.IsLocalUrl(returnUrl))
             return LocalRedirect(returnUrl);
 
-        return account.Role switch
-        {
-            AccountRoles.Admin => RedirectToAction("Index", "AdminAccounts"),
-            _ => RedirectToAction("Index", "Home")
-        };
+        return RedirectToAction("Index", "Home");
     }
 
     [Authorize]

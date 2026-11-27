@@ -9,11 +9,11 @@ public sealed class OrderService(IOrderRepository repository, TimeProvider clock
     public IReadOnlyList<Order> AllOrders() => repository.Orders(null);
     public IReadOnlyList<ReturnRequest> Returns(string? customer = null) => repository.Returns(customer);
 
-    public OrderQuote Quote(string? address, IReadOnlyDictionary<int, int> quantities, string? voucher)
+    public OrderQuote Quote(string? address, IReadOnlyDictionary<int, int> quantities)
     {
         OrderRules.ValidatePlacement(address, quantities);
         using var transaction = repository.BeginTransaction();
-        return Price(transaction, SelectLines(transaction, quantities), voucher, false);
+        return Price(SelectLines(transaction, quantities));
     }
 
     public long? FindPlacedOrder(string customer, string reference) => repository.FindPayment(customer, reference);
@@ -26,7 +26,7 @@ public sealed class OrderService(IOrderRepository repository, TimeProvider clock
     }
 
     public long Place(string customer, string? address, IReadOnlyDictionary<int, int> quantities,
-        string? voucher = null, string? paymentReference = null, long? expectedTotal = null, bool online = false)
+        string? paymentReference = null, long? expectedTotal = null, bool online = false)
     {
         var shippingAddress = OrderRules.ValidatePlacement(address, quantities);
         using var transaction = repository.BeginTransaction();
@@ -36,7 +36,7 @@ public sealed class OrderService(IOrderRepository repository, TimeProvider clock
             throw new OrderRuleException("Phiên thanh toán đã kết thúc. Vui lòng tạo lượt thanh toán mới.");
 
         var lines = SelectLines(transaction, quantities);
-        var quote = Price(transaction, lines, voucher, true);
+        var quote = Price(lines);
         if (expectedTotal is long expected && expected != quote.Total)
             throw new OrderRuleException("Tổng tiền đã thay đổi. Vui lòng kiểm tra giỏ và thanh toán lại.");
 
@@ -60,13 +60,10 @@ public sealed class OrderService(IOrderRepository repository, TimeProvider clock
         return lines;
     }
 
-    private static OrderQuote Price(IOrderTransaction transaction, List<OrderLine> lines, string? voucher, bool redeem)
+    private static OrderQuote Price(List<OrderLine> lines)
     {
-        var subtotal = OrderRules.Total(lines);
         const long shippingFee = 15_000;
-        var discount = string.IsNullOrWhiteSpace(voucher)
-            ? 0 : transaction.VoucherDiscount(voucher.Trim().ToUpperInvariant(), subtotal, redeem);
-        return new(subtotal, discount, shippingFee);
+        return new(OrderRules.Total(lines), Discount: 0, ShippingFee: shippingFee);
     }
 
     public void Confirm(long id, string staff)

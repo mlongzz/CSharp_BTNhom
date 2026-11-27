@@ -18,18 +18,6 @@
                 <a asp-controller="Profile" asp-action="Index">Tài khoản của tôi</a>
                 <a asp-controller="Returns" asp-action="Index">Đổi trả</a>
             }
-            @if (User.IsInRole(AccountRoles.Admin))
-            {
-                <a asp-controller="AdminOrders" asp-action="Index">Quản trị đơn hàng</a>
-                <a asp-controller="Returns" asp-action="Index">Đổi trả</a>
-                <a asp-controller="Warehouse" asp-action="Index">Nhập kho</a>
-                <a asp-controller="Warehouse" asp-action="Stock">Kiểm kê</a>
-                <a asp-controller="DeliveryReturns" asp-action="Index">Hàng hoàn từ giao vận</a>
-                <a asp-controller="CatalogAdmin" asp-action="Index">Sách và danh mục</a>
-                <a asp-controller="Vouchers" asp-action="Index">Voucher</a>
-                <a asp-controller="AdminAccounts" asp-action="Index">Tài khoản</a>
-                <a asp-controller="Reports" asp-action="Index">Báo cáo</a>
-            }
             @if (User.Identity?.IsAuthenticated == true)
             {
                 <form asp-controller="Account" asp-action="Logout" method="post" class="ms-auto">

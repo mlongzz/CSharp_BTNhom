@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Bookstore.Controllers;
 
 [Authorize(Roles = "Admin")]
+[NonController]
 public sealed class VouchersController(CatalogService catalog, TimeProvider clock) : Controller
 {
     [HttpGet]

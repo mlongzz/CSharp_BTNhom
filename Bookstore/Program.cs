@@ -38,8 +38,6 @@ app.MapControllerRoute("legacy-register", "Home/Register", new { controller = "A
 app.MapControllerRoute("legacy-logout", "Home/Logout", new { controller = "Account", action = "Logout" });
 app.MapControllerRoute("legacy-denied", "Home/Denied", new { controller = "Account", action = "Denied" });
 app.MapControllerRoute("legacy-orders", "Home/MyOrders", new { controller = "Orders", action = "Index" });
-app.MapControllerRoute("legacy-admin", "Home/Admin", new { controller = "AdminOrders", action = "Index" });
-app.MapControllerRoute("legacy-confirm", "Home/Confirm", new { controller = "AdminOrders", action = "Confirm" });
 app.Run();
 
 

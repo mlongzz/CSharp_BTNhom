@@ -5,37 +5,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Bookstore.Controllers;
 
-[Authorize]
+[Authorize(Roles = AccountRoles.Customer)]
 public sealed class ReturnsController(OrderService orders) : Controller
 {
     [HttpGet]
-    [Authorize(Roles = "Customer,Admin")]
-    public IActionResult Index() => View(orders.Returns(User.IsInRole("Customer") ? User.Identity!.Name : null));
+    public IActionResult Index() => View(orders.Returns(User.Identity!.Name!));
 
     [HttpPost]
-    [Authorize(Roles = "Customer")]
     public IActionResult RequestReturn(long orderId, int bookId, string? reason, string outcome)
     {
         try
         {
             orders.RequestReturn(orderId, bookId, User.Identity!.Name!, reason, outcome);
             TempData["Success"] = "Đã gửi yêu cầu đổi trả.";
-        }
-        catch (OrderRuleException exception)
-        {
-            TempData["Error"] = exception.Message;
-        }
-        return RedirectToAction(nameof(Index));
-    }
-
-[HttpPost]
-[Authorize(Roles = "Admin")]
-    public IActionResult Process(long id, string decision)
-    {
-        try
-        {
-            orders.ProcessReturn(id, User.Identity!.Name!, decision);
-            TempData["Success"] = "Đã cập nhật yêu cầu đổi trả.";
         }
         catch (OrderRuleException exception)
         {

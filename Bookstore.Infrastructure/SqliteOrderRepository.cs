@@ -189,31 +189,6 @@ public sealed partial class SqliteOrderRepository(SqliteDatabase database) : IOr
         public long? FindPayment(string customer, string reference) =>
             ReadPayment(connection, transaction, customer, reference);
 
-        public long VoucherDiscount(string code, long subtotal, bool redeem)
-        {
-            using var query = Command(connection, transaction, """
-                SELECT discount_type, value FROM vouchers
-                WHERE code=$code AND used_count < max_uses AND minimum_total <= $subtotal
-                    AND datetime(starts_at) <= datetime('now') AND datetime(ends_at) >= datetime('now')
-                """, ("$code", code), ("$subtotal", subtotal));
-            long discount;
-            using (var reader = query.ExecuteReader())
-            {
-                if (!reader.Read())
-                    throw new OrderRuleException("Mã giảm giá không hợp lệ hoặc đã hết hạn.");
-                var value = reader.GetInt64(1);
-                discount = reader.GetString(0) == "Percent"
-                    ? (long)(subtotal * (decimal)value / 100) : value;
-            }
-            if (redeem)
-            {
-                using var update = Command(connection, transaction,
-                    "UPDATE vouchers SET used_count=used_count+1 WHERE code=$code", ("$code", code));
-                update.ExecuteNonQuery();
-            }
-            return Math.Min(discount, subtotal);
-        }
-
         public long InsertOrder(string customer, string address, OrderQuote quote, IReadOnlyList<OrderLine> lines,
             DateTimeOffset created, string? paymentReference, bool online)
         {

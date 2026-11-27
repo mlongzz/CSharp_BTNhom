@@ -20,7 +20,7 @@ dotnet run --project .\Bookstore.Desktop\Bookstore.Desktop.csproj
 
 WinForms mặc định kết nối `http://localhost:5187`. Nếu backend chạy ở địa chỉ khác, đặt `$env:Bookstore__DesktopApiUrl` thành URL của backend trước khi chạy WinForms. Đăng nhập WinForms bằng tài khoản quản trị viên.
 
-Hệ thống có hai vai trò. Admin phụ trách quản trị, bán hàng, vận chuyển và kho. User là khách hàng trên web, dùng vai trò `Customer` trong mã nguồn.
+Hệ thống có hai vai trò. Admin đăng nhập WinForms để quản trị, bán hàng, vận chuyển và kho. User mua hàng trên web, dùng vai trò `Customer` trong mã nguồn.
 
 | Vai trò | Tài khoản mẫu | Mật khẩu |
 |---|---|---|
@@ -32,7 +32,7 @@ Khi nâng cấp dữ liệu cũ, hệ thống khóa `kho` và `nhanvien` nếu �
 
 ## Luồng demo
 
-1. **Khách hàng** tìm sách, mở chi tiết, thêm giỏ, chọn địa chỉ và voucher, rồi xem lại tổng tiền. Phí giao hàng demo là 15.000 ₫. Chọn COD hoặc cổng trực tuyến mô phỏng.
+1. **Khách hàng** tìm sách, mở chi tiết, thêm giỏ, chọn địa chỉ rồi xem lại tổng tiền. Phí giao hàng demo là 15.000 ₫. Chọn COD hoặc cổng trực tuyến mô phỏng.
 2. **Quản trị viên trên WinForms** vào Đơn hàng để xác nhận và đóng gói. Trong Vận chuyển, ghi vận đơn rồi bấm **Xác nhận đã giao** khi giao thành công. Có thể ghi nhận giao thất bại và nhận hàng về kho khi chưa có bên nào xác nhận thành công.
 3. **Khách hàng** vào Lịch sử đơn hàng để xem vận đơn và bấm **Xác nhận đã nhận hàng**. Hai bên có thể xác nhận theo bất kỳ thứ tự nào. Khi có đủ hai xác nhận, đơn hoàn tất và COD được đánh dấu đã thu. Khách hàng có thể đánh giá sách từ đơn hoàn tất hoặc gửi yêu cầu đổi trả trong 7 ngày. **Quản trị viên** xử lý yêu cầu trong form Đổi trả.
 4. **Quản trị viên** tạo nhà cung cấp, lập và duyệt phiếu nhập, rồi đối chiếu thực nhận. Khi số lượng khác phiếu, nhập ghi chú chênh lệch. Form Tồn kho và kiểm kê cho phép xem lịch sử kho, chỉnh ngưỡng và ghi nhận kiểm kê.

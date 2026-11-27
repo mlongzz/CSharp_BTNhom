@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace Bookstore.Controllers;
 
 [Authorize(Roles = AccountRoles.Admin)]
+[NonController]
 public sealed class WarehouseController(ReceivingService receiving, ILogger<WarehouseController> logger) : Controller
 {
     private string Actor => User.Identity!.Name!;

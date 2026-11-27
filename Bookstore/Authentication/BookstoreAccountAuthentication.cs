@@ -58,6 +58,8 @@ public static class BookstoreAccountAuthentication
                         accounts.SessionAccount(username, sessionId, clock.GetUtcNow()) is not { } account ||
                         !context.Principal!.IsInRole(account.Role))
                         context.Fail("Session is invalid or has been revoked.");
+                    else if (account.Role != AccountRoles.Customer && !context.Request.Path.StartsWithSegments("/api"))
+                        context.Fail("Only customer accounts can sign in to the website.");
                     return Task.CompletedTask;
                 },
                 OnChallenge = context =>

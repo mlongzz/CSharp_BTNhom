@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Bookstore.Controllers;
 
 [Authorize(Roles = "Admin")]
+[NonController]
 public sealed class ReportsController(IBookstoreReports reports, TimeProvider clock) : Controller
 {
     [HttpGet]

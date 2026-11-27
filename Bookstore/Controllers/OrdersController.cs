@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.DataProtection;
 using Bookstore.Application;
@@ -13,6 +14,7 @@ namespace Bookstore.Controllers;
 public class OrdersController(OrderService orders, ICustomerAccounts accounts, IDataProtectionProvider protection,
     TimeProvider clock, ILogger<OrdersController> logger) : Controller
 {
+    private const string VoucherDisabledCheckout = "Mã giảm giá đã ngừng áp dụng. Vui lòng xem lại đơn để cập nhật tổng tiền.";
     private readonly IDataProtector checkout = protection.CreateProtector("Bookstore.Checkout.v1");
     private string Customer => User.Identity!.Name!;
     private string CartKey => $"cart:{Customer}";
@@ -78,14 +80,13 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
     }
 
     [HttpPost]
-    public IActionResult Review(string? address, long? addressId, string? voucher, string method)
+    public IActionResult Review(string? address, long? addressId, string method)
     {
         var selected = ReadCart();
 
         CartViewModel CurrentCart() => BuildCart(selected, address) with
         {
             AddressId = addressId,
-            Voucher = voucher,
             Method = method
         };
 
@@ -102,8 +103,8 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
             if (currentCart.StockNotices.Count > 0)
                 return View(nameof(Cart), currentCart);
 
-            var quote = orders.Quote(shippingAddress, selected, voucher);
-            var draft = new CheckoutDraft(Customer, shippingAddress!, selected, voucher, method,
+            var quote = orders.Quote(shippingAddress, selected);
+            var draft = new CheckoutDraft(Customer, shippingAddress!, selected, method,
                 quote.Total, Guid.NewGuid().ToString("N"), clock.GetUtcNow().AddMinutes(15));
             var ticket = checkout.Protect(JsonSerializer.Serialize(draft));
             return View(new CheckoutViewModel(quote, shippingAddress!, method, ticket));
@@ -127,6 +128,11 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
             TempData["Error"] = "Phiên thanh toán không hợp lệ hoặc đã hết hạn.";
             return RedirectToAction(nameof(Cart));
         }
+        if (!string.IsNullOrWhiteSpace(draft.Voucher))
+        {
+            TempData["Error"] = VoucherDisabledCheckout;
+            return RedirectToAction(nameof(Cart));
+        }
         return View(new CheckoutPaymentViewModel(draft.Total, ticket));
     }
 
@@ -146,6 +152,12 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
         if (orders.FindPlacedOrder(Customer, draft.Reference) is long previous)
             return RedirectToAction(nameof(Result), new { id = previous });
 
+        if (!string.IsNullOrWhiteSpace(draft.Voucher))
+        {
+            TempData["Error"] = VoucherDisabledCheckout;
+            return RedirectToAction(nameof(Cart));
+        }
+
         var selected = ReadCart();
         var cartChanged = selected.Count != draft.Quantities.Count ||
             draft.Quantities.Any(item => selected.GetValueOrDefault(item.Key) != item.Value);
@@ -159,8 +171,7 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
             return RedirectToAction(nameof(Cart));
         }
 
-        return PlaceOrder(draft.Address, selected, draft.Voucher,
-            draft.Reference, draft.Total, method == "Online");
+        return PlaceOrder(draft.Address, selected, draft.Reference, draft.Total, method == "Online");
     }
 
     private CheckoutDraft? ReadDraft(string? ticket)
@@ -183,7 +194,7 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
     public IActionResult PlaceLegacy(string? address, [Bind(Prefix = "quantities")] Dictionary<int, int>? quantities) =>
         PlaceOrder(address, quantities?.Where(item => item.Value != 0).ToDictionary() ?? [], reconcileSession: false);
 
-    private IActionResult PlaceOrder(string? address, Dictionary<int, int> selected, string? voucher = null,
+    private IActionResult PlaceOrder(string? address, Dictionary<int, int> selected,
         string? paymentReference = null, long? expectedTotal = null, bool online = false, bool reconcileSession = true)
     {
         try
@@ -191,7 +202,7 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
             if (!ModelState.IsValid)
                 throw new OrderRuleException("Thông tin đặt hàng không hợp lệ.");
 
-            var id = orders.Place(Customer, address, selected, voucher, paymentReference, expectedTotal, online);
+            var id = orders.Place(Customer, address, selected, paymentReference, expectedTotal, online);
             HttpContext.Session.Remove(CartKey);
             logger.LogInformation("Order {OrderId} placed by {Customer}", id, Customer);
             TempData["Success"] = $"Đã đặt đơn #{id}.";
@@ -205,7 +216,12 @@ public class OrdersController(OrderService orders, ICustomerAccounts accounts, I
     }
 
     private sealed record CheckoutDraft(string Customer, string Address, Dictionary<int, int> Quantities,
-        string? Voucher, string Method, long Total, string Reference, DateTimeOffset ExpiresAt);
+        string Method, long Total, string Reference, DateTimeOffset ExpiresAt)
+    {
+        // Read tickets issued before checkout stopped applying vouchers.
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Voucher { get; init; }
+    }
 
     [HttpPost]
     public IActionResult ConfirmReceipt(long id)

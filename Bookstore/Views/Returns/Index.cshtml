@@ -21,21 +21,5 @@
         {
             <p>Tiền hoàn đã ghi nhận: @item.RefundAmount.ToString("N0") ₫</p>
         }
-        @if (User.IsInRole("Admin") && item.Status == "Pending")
-        {
-            <form asp-action="Process" method="post" class="d-flex gap-2">
-                <input type="hidden" name="id" value="@item.Id" />
-                <button class="btn btn-primary" name="decision" value="Approve">Duyệt</button>
-                <button class="btn btn-outline-danger" name="decision" value="Reject">Từ chối</button>
-            </form>
-        }
-        @if (User.IsInRole("Admin") && item.Status == "Approved")
-        {
-            <form asp-action="Process" method="post" class="d-flex gap-2">
-                <input type="hidden" name="id" value="@item.Id" />
-                <button class="btn btn-primary" name="decision" value="Receive">Xác nhận đã nhận sách nguyên vẹn</button>
-                <button class="btn btn-outline-danger" name="decision" value="Reject">Hàng không đạt</button>
-            </form>
-        }
     </article>
 }

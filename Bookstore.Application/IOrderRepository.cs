@@ -18,7 +18,6 @@ public interface IOrderTransaction : IDisposable
     void RejectPayment(string reference);
     bool PaymentRejected(string reference);
     long? FindPayment(string customer, string reference);
-    long VoucherDiscount(string code, long subtotal, bool redeem);
     long InsertOrder(string customer, string address, OrderQuote quote, IReadOnlyList<OrderLine> lines,
         DateTimeOffset created, string? paymentReference, bool online);
     void UpdateStatus(long id, OrderStatus status, DateTimeOffset at, string? carrier = null,

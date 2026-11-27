@@ -153,7 +153,7 @@ public sealed class OrderPersistenceTests : IDisposable
             service.Place("khach", "Địa chỉ", quantities, paymentReference: "failed-payment", online: true));
         Assert.Empty(service.AllOrders());
 
-        var quote = service.Quote("Địa chỉ", quantities, null);
+        var quote = service.Quote("Địa chỉ", quantities);
         var id = service.Place("khach", "Địa chỉ", quantities, paymentReference: "paid-payment",
             expectedTotal: quote.Total, online: true);
         var retry = service.Place("khach", "Địa chỉ", quantities, paymentReference: "paid-payment",
